@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "engine": "chromium",
+      "check": "Single idempotent full viewport backdrop"
+    },
+    {
+      "engine": "chromium",
+      "check": "Grid advances through composited transform"
+    },
+    {
+      "engine": "chromium",
+      "check": "Actual logo RGB pixels render and short burst finishes"
+    },
+    {
+      "engine": "chromium",
+      "check": "Fast, still, user and system reduced motion policies apply"
+    },
+    {
+      "engine": "chromium",
+      "check": "Simulated visibility and video events suspend decoration"
+    },
+    {
+      "engine": "chromium",
+      "check": "Landscape fills viewport; teardown removes compositor and listeners"
+    },
+    {
+      "engine": "webkit",
+      "check": "Single idempotent full viewport backdrop"
+    },
+    {
+      "engine": "webkit",
+      "check": "Grid advances through composited transform"
+    },
+    {
+      "engine": "webkit",
+      "check": "Actual logo RGB pixels render and short burst finishes"
+    },
+    {
+      "engine": "webkit",
+      "check": "Fast, still, user and system reduced motion policies apply"
+    },
+    {
+      "engine": "webkit",
+      "check": "Simulated visibility and video events suspend decoration"
+    },
+    {
+      "engine": "webkit",
+      "check": "Landscape fills viewport; teardown removes compositor and listeners"
+    }
+  ],
+  "failures": [],
+  "physical_device_tested": false
+}

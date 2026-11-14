@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "origin": "http://127.0.0.1:9020",
+  "checks": [
+    {
+      "browser": "chromium",
+      "name": "Live release poll updates visible version while own-domain download links stay stable"
+    },
+    {
+      "browser": "chromium",
+      "name": "New source revision waits for settings/idle then refreshes the page safely"
+    },
+    {
+      "browser": "webkit",
+      "name": "Live release poll updates visible version while own-domain download links stay stable"
+    },
+    {
+      "browser": "webkit",
+      "name": "New source revision waits for settings/idle then refreshes the page safely"
+    }
+  ],
+  "failures": [],
+  "viewports": [],
+  "physical_devices_tested": false,
+  "live_domain_modified": false,
+  "limitations": [
+    "Headless Linux Chromium/WebKit; not physical iPhone, Windows or television.",
+    "Release and revision polling uses owned fixtures; actual release endpoints have separate HTTP tests."
+  ]
+}

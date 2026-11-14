@@ -1,0 +1,6 @@
+{
+  "passed": true,
+  "schema": "https://openapi.vercel.sh/vercel.json",
+  "scope": "configuration instance; current upstream meta-schema check skipped",
+  "errors": []
+}

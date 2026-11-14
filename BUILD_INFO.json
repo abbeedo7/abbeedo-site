@@ -1,0 +1,26 @@
+{
+  "prepared_at_utc": "2026-11-14T04:22:36.142455+00:00",
+  "version": "2.0.0",
+  "application_version": "1.1.0",
+  "domain": "https://abbeedo.com",
+  "current_primary_domain": "https://www.abbeedo.com",
+  "live_domain_changed": false,
+  "vercel_project_access": false,
+  "github_repo_connected_by_agent": false,
+  "private_blob_configuration_required": true,
+  "current_domain_health_status": 503,
+  "current_domain_health_code": "HOSTING_CONFIG",
+  "tests": {
+    "source_node_tests": 18,
+    "browser_checks": 22,
+    "viewport_observations": 16,
+    "background_checks": 12,
+    "qr_decodes": 12,
+    "actual_node_endpoints": 4
+  },
+  "phone": "0571514382",
+  "source_root": "/workspace/abbeedo-com-vercel",
+  "file": "/workspace/library-files/abbeedo-com-Vercel-Ready.zip",
+  "source_build_passed": true,
+  "revision": "web-19a5cc19e10312da"
+}

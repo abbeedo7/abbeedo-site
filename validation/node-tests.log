@@ -1,0 +1,30 @@
+
+> abbeedo-com@2.0.0 test
+> node --test api/tests/*.test.mjs tests/*.test.mjs
+
+✔ metadata exposes stable own-domain aliases, current versions and no upstream secrets (29.514453ms)
+✔ a freshly published APK is selected without a website rebuild (1.669713ms)
+✔ one failed platform does not hide other valid downloads (1.07849ms)
+✔ download targets reject foreign hosts, credentials, queries, mismatched versions and wrong types (6.280092ms)
+✔ malformed integrity or file availability never yields a redirect (1.029699ms)
+✔ feed fetching fails closed on HTML, redirects, oversized bodies and arbitrary URLs (1.107263ms)
+✔ timeout aborts an unavailable source instead of an unbounded loading state (14.802712ms)
+✔ public release endpoint is uncached and HEAD/OPTIONS have no body (1.483307ms)
+✔ download redirect keeps GET/HEAD methods and uses exact validated binary URLs (2.27174ms)
+✔ arbitrary and duplicate download parameters fail before any network call (0.334173ms)
+✔ combined application build preserves storefront, PWA identity, required assets and isolated streaming backend (172.724366ms)
+✔ offline application navigation matches only exact app routes and the old installed query (22.336944ms)
+✔ storefront pages, live release metadata, APIs and range requests never fall back to cached application HTML (4.567226ms)
+✔ activation removes obsolete app shell caches while retaining offline media and unrelated site caches (2.010295ms)
+✔ application page rewrites never capture its script directory or the storefront apps page (1.324654ms)
+✔ fixed download aliases and release endpoint remain separate from private application API (0.205994ms)
+✔ missing display-version feed retains usable Windows downloads and Android status (22.66692ms)
+✔ frontend metadata still rejects injected versions and a replaced download URL (0.380992ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 518.854527

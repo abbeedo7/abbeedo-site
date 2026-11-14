@@ -1,0 +1,23 @@
+{
+  "name": "abbeedo-com",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "test": "node --test api/tests/*.test.mjs tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12"
+  },
+  "dependencies": {
+    "@netlify/blobs": "11.1.9",
+    "@vercel/blob": "2.9.0",
+    "jsqr": "^1.4.0",
+    "qrcode-generator": "^1.4.4"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

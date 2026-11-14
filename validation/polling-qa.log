@@ -1,0 +1,6 @@
+PASS chromium Live release poll updates visible version while own-domain download links stay stable
+PASS chromium New source revision waits for settings/idle then refreshes the page safely
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+PASS webkit Live release poll updates visible version while own-domain download links stay stable
+PASS webkit New source revision waits for settings/idle then refreshes the page safely
+{"passed": true, "checks": 4, "failures": 0}

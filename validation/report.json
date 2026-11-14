@@ -1,0 +1,231 @@
+{
+  "passed": true,
+  "origin": "http://127.0.0.1:9020",
+  "checks": [
+    {
+      "browser": "chromium",
+      "name": "Root and downloads fit 4 phone/landscape/desktop sizes without horizontal overflow",
+      "samples": 8
+    },
+    {
+      "browser": "chromium",
+      "name": "Visible content and links contain only the new TV identity; single viewport backdrop"
+    },
+    {
+      "browser": "chromium",
+      "name": "Free language/color/contrast/text/motion choices persist across pages; mobile menu works"
+    },
+    {
+      "browser": "chromium",
+      "name": "QRs load, keyboard tabs and installation shortcut work; copied phone and stable links are exact"
+    },
+    {
+      "browser": "chromium",
+      "name": "Single app grid really moves and actual logo glitch paints pixels then clears"
+    },
+    {
+      "browser": "chromium",
+      "name": "User and system reduced-motion settings stop grid/glitch; Still stops grid"
+    },
+    {
+      "browser": "chromium",
+      "name": "Settings remain functional with blocked storage and give an honest persistence message"
+    },
+    {
+      "browser": "chromium",
+      "name": "Live release poll updates visible version while own-domain download links stay stable"
+    },
+    {
+      "browser": "chromium",
+      "name": "Existing Home Screen context reaches /app on the same origin and can open the demo"
+    },
+    {
+      "browser": "chromium",
+      "name": "Legacy installed start URL serves app HTML instead of replacing it with storefront"
+    },
+    {
+      "browser": "webkit",
+      "name": "Root and downloads fit 4 phone/landscape/desktop sizes without horizontal overflow",
+      "samples": 8
+    },
+    {
+      "browser": "webkit",
+      "name": "Visible content and links contain only the new TV identity; single viewport backdrop"
+    },
+    {
+      "browser": "webkit",
+      "name": "Free language/color/contrast/text/motion choices persist across pages; mobile menu works"
+    },
+    {
+      "browser": "webkit",
+      "name": "QRs load, keyboard tabs and installation shortcut work; copied phone and stable links are exact"
+    },
+    {
+      "browser": "webkit",
+      "name": "Single app grid really moves and actual logo glitch paints pixels then clears"
+    },
+    {
+      "browser": "webkit",
+      "name": "User and system reduced-motion settings stop grid/glitch; Still stops grid"
+    },
+    {
+      "browser": "webkit",
+      "name": "Settings remain functional with blocked storage and give an honest persistence message"
+    },
+    {
+      "browser": "webkit",
+      "name": "Live release poll updates visible version while own-domain download links stay stable"
+    },
+    {
+      "browser": "webkit",
+      "name": "New source revision waits for settings/idle then refreshes the page safely"
+    },
+    {
+      "browser": "webkit",
+      "name": "Existing Home Screen context reaches /app on the same origin and can open the demo"
+    },
+    {
+      "browser": "webkit",
+      "name": "Legacy installed start URL serves app HTML instead of replacing it with storefront"
+    },
+    {
+      "browser": "chromium",
+      "name": "New source revision waits for settings/idle then refreshes the page safely"
+    }
+  ],
+  "failures": [],
+  "viewports": [
+    {
+      "browser": "chromium",
+      "path": "/",
+      "w": 320,
+      "h": 568,
+      "scroll": 320
+    },
+    {
+      "browser": "chromium",
+      "path": "/apps",
+      "w": 320,
+      "h": 568,
+      "scroll": 320
+    },
+    {
+      "browser": "chromium",
+      "path": "/",
+      "w": 390,
+      "h": 844,
+      "scroll": 390
+    },
+    {
+      "browser": "chromium",
+      "path": "/apps",
+      "w": 390,
+      "h": 844,
+      "scroll": 390
+    },
+    {
+      "browser": "chromium",
+      "path": "/",
+      "w": 844,
+      "h": 390,
+      "scroll": 844
+    },
+    {
+      "browser": "chromium",
+      "path": "/apps",
+      "w": 844,
+      "h": 390,
+      "scroll": 844
+    },
+    {
+      "browser": "chromium",
+      "path": "/",
+      "w": 1920,
+      "h": 1080,
+      "scroll": 1920
+    },
+    {
+      "browser": "chromium",
+      "path": "/apps",
+      "w": 1920,
+      "h": 1080,
+      "scroll": 1920
+    },
+    {
+      "browser": "webkit",
+      "path": "/",
+      "w": 320,
+      "h": 568,
+      "scroll": 320
+    },
+    {
+      "browser": "webkit",
+      "path": "/apps",
+      "w": 320,
+      "h": 568,
+      "scroll": 320
+    },
+    {
+      "browser": "webkit",
+      "path": "/",
+      "w": 390,
+      "h": 844,
+      "scroll": 390
+    },
+    {
+      "browser": "webkit",
+      "path": "/apps",
+      "w": 390,
+      "h": 844,
+      "scroll": 390
+    },
+    {
+      "browser": "webkit",
+      "path": "/",
+      "w": 844,
+      "h": 390,
+      "scroll": 844
+    },
+    {
+      "browser": "webkit",
+      "path": "/apps",
+      "w": 844,
+      "h": 390,
+      "scroll": 844
+    },
+    {
+      "browser": "webkit",
+      "path": "/",
+      "w": 1920,
+      "h": 1080,
+      "scroll": 1920
+    },
+    {
+      "browser": "webkit",
+      "path": "/apps",
+      "w": 1920,
+      "h": 1080,
+      "scroll": 1920
+    }
+  ],
+  "physical_devices_tested": false,
+  "live_domain_modified": false,
+  "limitations": [
+    "Headless Linux Chromium/WebKit; not physical iPhone, Windows or television.",
+    "Release and revision polling uses owned fixtures; actual release endpoints have separate HTTP tests."
+  ],
+  "initial_retry_note": "Chromium source-revision idle reload exposed overlapping reload callbacks; parent added an idempotent reloading guard, then the exact polling flow passed on Chromium and WebKit.",
+  "resolved_initial_failures": [
+    {
+      "browser": "chromium",
+      "group": "polling",
+      "message": "net::ERR_ABORTED; maybe frame was detached?",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/abbeedo-com-vercel/validation/qa.py\", line 116, in <module>\n    try:group(browser,name)\n        ^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/abbeedo-com-vercel/validation/qa.py\", line 100, in polling\n    with p.expect_navigation(wait_until='domcontentloaded',timeout=20000):p.clock.fast_forward(16000)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 85, in __exit__\n    self._event.value\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 266, in continuation\n    raise Error(event[\"error\"])\nplaywright._impl._errors.Error: net::ERR_ABORTED; maybe frame was detached?\n"
+    }
+  ],
+  "targeted_retry": "polling-report.json",
+  "additional_visual_checks": [
+    "Fixed backdrop remains viewport-aligned after scrolling to subscription section.",
+    "Captured final storefront viewport and standalone app demo home."
+  ]
+}

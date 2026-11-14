@@ -1,0 +1,42 @@
+PASS chromium Root and downloads fit 4 phone/landscape/desktop sizes without horizontal overflow
+PASS chromium Visible content and links contain only the new TV identity; single viewport backdrop
+PASS chromium Free language/color/contrast/text/motion choices persist across pages; mobile menu works
+PASS chromium QRs load, keyboard tabs and installation shortcut work; copied phone and stable links are exact
+PASS chromium Single app grid really moves and actual logo glitch paints pixels then clears
+PASS chromium User and system reduced-motion settings stop grid/glitch; Still stops grid
+PASS chromium Settings remain functional with blocked storage and give an honest persistence message
+PASS chromium Live release poll updates visible version while own-domain download links stay stable
+Traceback (most recent call last):
+  File "/workspace/abbeedo-com-vercel/validation/qa.py", line 116, in <module>
+    try:group(browser,name)
+        ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/abbeedo-com-vercel/validation/qa.py", line 100, in polling
+    with p.expect_navigation(wait_until='domcontentloaded',timeout=20000):p.clock.fast_forward(16000)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 85, in __exit__
+    self._event.value
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py", line 59, in value
+    raise exception
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py", line 266, in continuation
+    raise Error(event["error"])
+playwright._impl._errors.Error: net::ERR_ABORTED; maybe frame was detached?
+
+PASS chromium Existing Home Screen context reaches /app on the same origin and can open the demo
+PASS chromium Legacy installed start URL serves app HTML instead of replacing it with storefront
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+PASS webkit Root and downloads fit 4 phone/landscape/desktop sizes without horizontal overflow
+PASS webkit Visible content and links contain only the new TV identity; single viewport backdrop
+PASS webkit Free language/color/contrast/text/motion choices persist across pages; mobile menu works
+PASS webkit QRs load, keyboard tabs and installation shortcut work; copied phone and stable links are exact
+PASS webkit Single app grid really moves and actual logo glitch paints pixels then clears
+PASS webkit User and system reduced-motion settings stop grid/glitch; Still stops grid
+PASS webkit Settings remain functional with blocked storage and give an honest persistence message
+PASS webkit Live release poll updates visible version while own-domain download links stay stable
+PASS webkit New source revision waits for settings/idle then refreshes the page safely
+PASS webkit Existing Home Screen context reaches /app on the same origin and can open the demo
+PASS webkit Legacy installed start URL serves app HTML instead of replacing it with storefront
+{"passed": false, "checks": 21, "failures": 1}
+
+FINAL TARGETED RECHECK: parent fixed overlapping reload callbacks with an idempotent guard.
+Polling flow passed on Chromium and WebKit (4/4); aggregate report.json PASS22/22 with16 viewport observations.
+Final storefront and standalone-app screenshots captured; fixed backdrop verified after mid-page scrolling.
