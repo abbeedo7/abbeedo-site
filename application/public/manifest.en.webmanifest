@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "abbeedo TV",
+  "short_name": "abbeedo TV",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "/app?source=installed",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a1116",
+  "theme_color": "#0a1116",
+  "description": "Your subscription channels, movies and series in one app.",
+  "icons": [
+    {
+      "src": "/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

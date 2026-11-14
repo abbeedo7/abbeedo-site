@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "ابوناصر TV",
+  "short_name": "ابوناصر TV",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/app?source=installed",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a1116",
+  "theme_color": "#0a1116",
+  "description": "قنواتك وأفلامك ومسلسلاتك من اشتراكك في واجهة واحدة.",
+  "icons": [
+    {
+      "src": "/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

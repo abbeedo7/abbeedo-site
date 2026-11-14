@@ -1,0 +1,172 @@
+{
+  "brand": "abbeedo TV",
+  "domain": "https://abbeedo.com",
+  "format": "SVG",
+  "externalImages": false,
+  "validated": true,
+  "qrCodes": [
+    {
+      "file": "/assets/qr/website.svg",
+      "url": "https://abbeedo.com",
+      "errorCorrection": "M",
+      "modules": 25,
+      "quietZoneModules": 4,
+      "width": 264,
+      "height": 264,
+      "sha256": "2e63d3f4c0e11522d1b2ad97223b371bfc2f13938421a5b2499dc3663baa28d9",
+      "validation": {
+        "passed": true,
+        "rasterizer": "Chromium SVG image + Canvas 2D",
+        "decoder": "jsQR 1.4.0",
+        "rasters": [
+          {
+            "width": 264,
+            "height": 264,
+            "decodedURL": "https://abbeedo.com"
+          },
+          {
+            "width": 192,
+            "height": 192,
+            "decodedURL": "https://abbeedo.com"
+          }
+        ]
+      }
+    },
+    {
+      "file": "/assets/qr/app.svg",
+      "url": "https://abbeedo.com/open",
+      "errorCorrection": "M",
+      "modules": 25,
+      "quietZoneModules": 4,
+      "width": 264,
+      "height": 264,
+      "sha256": "d8e4ed3caa659d0134e0e5d6ccb927da188a08215beabb65e8e6430a0ad75977",
+      "validation": {
+        "passed": true,
+        "rasterizer": "Chromium SVG image + Canvas 2D",
+        "decoder": "jsQR 1.4.0",
+        "rasters": [
+          {
+            "width": 264,
+            "height": 264,
+            "decodedURL": "https://abbeedo.com/open"
+          },
+          {
+            "width": 192,
+            "height": 192,
+            "decodedURL": "https://abbeedo.com/open"
+          }
+        ]
+      }
+    },
+    {
+      "file": "/assets/qr/android.svg",
+      "url": "https://abbeedo.com/downloads/android.apk",
+      "errorCorrection": "M",
+      "modules": 29,
+      "quietZoneModules": 4,
+      "width": 296,
+      "height": 296,
+      "sha256": "33f451d25d0dbf03a8263cd9855548ad4e00262ec32a240de2f6d5c4d94e5922",
+      "validation": {
+        "passed": true,
+        "rasterizer": "Chromium SVG image + Canvas 2D",
+        "decoder": "jsQR 1.4.0",
+        "rasters": [
+          {
+            "width": 296,
+            "height": 296,
+            "decodedURL": "https://abbeedo.com/downloads/android.apk"
+          },
+          {
+            "width": 192,
+            "height": 192,
+            "decodedURL": "https://abbeedo.com/downloads/android.apk"
+          }
+        ]
+      }
+    },
+    {
+      "file": "/assets/qr/windows.svg",
+      "url": "https://abbeedo.com/downloads/windows.exe",
+      "errorCorrection": "M",
+      "modules": 29,
+      "quietZoneModules": 4,
+      "width": 296,
+      "height": 296,
+      "sha256": "0a4af0d76605534549cec96e5f57f51bfa7a9cd1c095f2e8f1f884a33dd2bef3",
+      "validation": {
+        "passed": true,
+        "rasterizer": "Chromium SVG image + Canvas 2D",
+        "decoder": "jsQR 1.4.0",
+        "rasters": [
+          {
+            "width": 296,
+            "height": 296,
+            "decodedURL": "https://abbeedo.com/downloads/windows.exe"
+          },
+          {
+            "width": 192,
+            "height": 192,
+            "decodedURL": "https://abbeedo.com/downloads/windows.exe"
+          }
+        ]
+      }
+    },
+    {
+      "file": "/assets/qr/windows-portable.svg",
+      "url": "https://abbeedo.com/downloads/windows-portable.exe",
+      "errorCorrection": "M",
+      "modules": 33,
+      "quietZoneModules": 4,
+      "width": 328,
+      "height": 328,
+      "sha256": "04f9b91b829172ff5531ab402e8858d12f562ea38973d23383a03b3f02ab5e7d",
+      "validation": {
+        "passed": true,
+        "rasterizer": "Chromium SVG image + Canvas 2D",
+        "decoder": "jsQR 1.4.0",
+        "rasters": [
+          {
+            "width": 328,
+            "height": 328,
+            "decodedURL": "https://abbeedo.com/downloads/windows-portable.exe"
+          },
+          {
+            "width": 192,
+            "height": 192,
+            "decodedURL": "https://abbeedo.com/downloads/windows-portable.exe"
+          }
+        ]
+      }
+    },
+    {
+      "file": "/assets/qr/whatsapp.svg",
+      "url": "https://wa.me/966571514382",
+      "errorCorrection": "M",
+      "modules": 25,
+      "quietZoneModules": 4,
+      "width": 264,
+      "height": 264,
+      "sha256": "d058509a7a3b1a6aef641074c677a8ce121acd18c98a241d8e11d7ec278e604b",
+      "validation": {
+        "passed": true,
+        "rasterizer": "Chromium SVG image + Canvas 2D",
+        "decoder": "jsQR 1.4.0",
+        "rasters": [
+          {
+            "width": 264,
+            "height": 264,
+            "decodedURL": "https://wa.me/966571514382"
+          },
+          {
+            "width": 192,
+            "height": 192,
+            "decodedURL": "https://wa.me/966571514382"
+          }
+        ]
+      }
+    }
+  ],
+  "actualDecodeChecks": 12
+}

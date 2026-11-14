@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<title>ربط اشتراكك بالجهاز — ابوناصر TV</title>
+<link rel="stylesheet" href="/pair.css">
+<script src="/pair.js" defer></script>
+</head>
+<body>
+<main>
+<header><img src="/brand.png" alt="ابوناصر TV" width="76" height="76"><div><span>ABBEEDO · ربط الجهاز</span><h1>أضف اشتراكك من الجوال</h1></div></header>
+<p class="intro">امسح الرمز الذي يظهر في تطبيقك، واختر طريقة الاشتراك. تُنقل البيانات مشفّرة إلى الجهاز الذي أمامك.</p>
+<section id="device" aria-labelledby="device-heading" hidden><h2 id="device-heading">الجهاز الذي ستربطه</h2><p id="device-name"></p><dl><dt>MAC الخاص بمشغّل Stalker</dt><dd id="mac" dir="ltr"></dd><dt>معرّف الجهاز</dt><dd id="device-id" dir="ltr"></dd></dl><p class="hint">هذا عنوان المشغّل المستخدم مع Stalker، وليس عنوان شبكة Wi-Fi. يمكنك استخدامه لدى مزودك إذا كان الاشتراك يتطلب MAC.</p><p id="expires" class="hint"></p></section>
+<p id="status" role="status" aria-live="polite">جاري التحقق من رمز الربط…</p>
+<form id="subscription" hidden autocomplete="off">
+<label class="field">طريقة إضافة الاشتراك<select id="type"><option value="provider">اشتراك أبوناصر</option><option value="xtream">Xtream Codes</option><option value="m3u">رابط قائمة M3U</option><option value="stalker">Stalker Portal (MAC)</option></select></label>
+<label class="field" id="field-name">اسم الاشتراك <span class="optional">اختياري</span><input id="name" type="text" maxlength="60" placeholder="اشتراكي"></label>
+<label class="field" id="field-server">رابط السيرفر / البوابة<input id="server" type="url" dir="ltr" inputmode="url" spellcheck="false" maxlength="2048" placeholder="https://example.com:8080"></label>
+<label class="field" id="field-username">اسم المستخدم<input id="username" type="text" dir="ltr" spellcheck="false" autocapitalize="none" maxlength="256"></label>
+<label class="field" id="field-password">كلمة المرور<span class="password"><input id="password" type="password" dir="ltr" maxlength="256"><button id="show-password" type="button" aria-label="إظهار كلمة المرور">إظهار</button></span></label>
+<label class="field" id="field-playlist">رابط قائمة M3U<input id="playlist" type="url" dir="ltr" inputmode="url" spellcheck="false" maxlength="4096" placeholder="https://example.com/list.m3u"></label>
+<label class="field" id="field-mac">MAC لدى مزود Stalker<input id="portal-mac" type="text" dir="ltr" spellcheck="false" maxlength="17" placeholder="00:1A:79:12:34:56"></label>
+<p id="method-hint" class="hint"></p>
+<button id="submit" class="primary" type="submit">إرسال الاشتراك للجهاز</button>
+<p class="hint">تأكد من اسم الجهاز قبل الإرسال. لن تظهر كلمة المرور في الرابط، ولا تُخزَّن بيانات الدخول كنص مكشوف في خدمة الربط.</p>
+</form>
+<section id="remote" hidden aria-labelledby="remote-heading"><h2 id="remote-heading">تحكّم بالجهاز المرتبط</h2><p class="hint">يبقى هذا الريموت متاحًا أثناء جلسة الربط. يجب أن يبقى التطبيق مفتوحًا ومتصلًا بالإنترنت.</p><p id="playback-state" class="hint"></p><div class="remote-grid"><button type="button" data-command="up" class="up" aria-label="أعلى">↑</button><button type="button" data-command="left" class="left" aria-label="يسار">←</button><button type="button" data-command="ok" class="ok">OK</button><button type="button" data-command="right" class="right" aria-label="يمين">→</button><button type="button" data-command="down" class="down" aria-label="أسفل">↓</button></div><div class="actions"><button type="button" data-command="back">رجوع</button><button type="button" data-command="play_pause">تشغيل / إيقاف</button><button type="button" data-command="volume_down">الصوت −</button><button type="button" data-command="volume_up">الصوت +</button><button type="button" data-command="previous_channel">القناة السابقة</button><button type="button" data-command="seek" data-value="-10">رجوع 10 ثوانٍ</button><button type="button" data-command="seek" data-value="10">تقديم 10 ثوانٍ</button></div><form id="keyboard"><label class="field">اكتب أو ابحث من جوالك<input id="remote-text" type="text" maxlength="256" placeholder="اسم قناة أو فيلم"></label><button type="submit">إرسال البحث للجهاز</button></form><p id="remote-status" role="status" aria-live="polite"></p><div class="transfer"><h3>نقل المفضلة والإعدادات</h3><p class="hint">انقل نسخة بين أجهزتك المرتبطة يدويًا. لا تتضمن بيانات الاشتراك أو كلمة المرور أو رمز PIN، وستطلب الاستعادة موافقتك على شاشة الجهاز.</p><div class="actions"><button id="export-settings" type="button">طلب نسخة من الجهاز</button><button id="download-settings" type="button" disabled>تحميل نسخة الإعدادات</button></div><label class="field">استعادة نسخة إلى الجهاز<input id="settings-file" type="file" accept="application/json,.json"></label><p id="file-summary" class="hint"></p><div class="actions"><button id="import-settings" type="button" disabled>إرسال الإعدادات للاستعادة</button><button id="resume-playback" type="button" disabled>متابعة المشاهدة من النسخة</button></div></div></section>
+<footer>للإلغاء، أغلق شاشة الربط في التطبيق. تنتهي الجلسة تلقائيًا بعد 20 دقيقة. لا تشارك صورة QR أو رابطها مع الآخرين.</footer>
+</main>
+</body>
+</html>
