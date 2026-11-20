@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "browser": "chromium",
+      "check": "Moving background covers the actually scrolled footer at 844/700/900px viewport heights"
+    },
+    {
+      "browser": "webkit",
+      "check": "Moving background covers the actually scrolled footer at 844/700/900px viewport heights"
+    }
+  ],
+  "physical_devices_tested": false
+}

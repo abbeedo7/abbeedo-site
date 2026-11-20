@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checked_at_utc": "2026-11-14T17:55:17.014208+00:00",
+  "fresh_npm_ci_passed": true,
+  "fresh_build_passed": true,
+  "fresh_node_tests": 56,
+  "fresh_node_test_failures": 0,
+  "revision": "web-c4d68d97eb2c7944",
+  "build_and_native_source_inputs_match": true,
+  "inputs_checked": 140,
+  "notes": "Export extracted to a separate folder; installed real locked dependencies without borrowing another node_modules tree. Runtime is Node24 in this workspace; Vercel config targets Node22."
+}

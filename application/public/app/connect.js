@@ -1,6 +1,6 @@
 /** Temporary encrypted device pairing and owner-only Watch Together sessions. */
 import * as Native from './native.js';
-const DEFAULT_ORIGIN='https://abunasser-apple-web.m05871268.chatgpt.site';
+const DEFAULT_ORIGIN='https://www.abbeedo.com';
 const PAIR_ROOT='/api/device-pairings', WATCH_ROOT='/api/watch/rooms';
 const encoder=new TextEncoder(),decoder=new TextDecoder('utf-8',{fatal:true});
 const PAIR_ID=/^[A-Za-z0-9_-]{22}$/,PAIR_SECRET=/^[A-Za-z0-9_-]{43}$/;

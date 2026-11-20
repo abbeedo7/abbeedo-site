@@ -9,7 +9,7 @@ const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=
 const server=http.createServer(async(req,res)=>{
  try{
   const url=new URL(req.url,'http://127.0.0.1');
-  if(url.pathname==='/api/releases')return releases(req,res);
+  if((url.pathname==='/api/releases'||url.pathname==='/updates.json'))return releases(req,res);
   if(url.pathname==='/api/download'||url.pathname.startsWith('/downloads/'))return download(req,res);
   if(url.pathname==='/api/announcements'){res.setHeader('Content-Type','application/json');res.setHeader('Cache-Control','no-store');res.end('{"messages":[]}');return;}
   if(url.pathname.startsWith('/api/')){res.statusCode=503;res.setHeader('Content-Type','application/json');res.end('{"code":"LOCAL_PREVIEW","error":"Local preview only; use Vercel private storage for application APIs."}');return;}

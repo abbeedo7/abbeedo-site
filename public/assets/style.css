@@ -28,3 +28,5 @@ body[data-reduced-motion=true] *,body[data-reduced-motion=true] *:before{scroll-
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before{transition:none!important}}
 
 body[data-theme=light] img[src="/assets/brand.png"]{filter:brightness(0)}
+
+.settings-action{width:auto;min-width:130px;min-height:56px;font-size:16px;padding:11px 18px;gap:12px}.settings-action .app-icon{width:28px;height:28px}@media(max-width:650px){.settings-action{min-width:50px;width:50px;min-height:50px;padding:11px}.settings-action>span{display:none}}

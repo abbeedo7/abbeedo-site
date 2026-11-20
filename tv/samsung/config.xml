@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="https://abbeedo.com/tv" version="1.2.0" viewmodes="maximized">
+  <tizen:application id="AbbeedoTV1.tv" package="AbbeedoTV1" required_version="7.0"/>
+  <content src="index.html"/>
+  <name>ابوناصر TV</name>
+  <name xml:lang="en">abbeedo TV</name>
+  <description>قنواتك وأفلامك ومسلسلاتك من اشتراكك في ابوناصر TV.</description>
+  <author href="https://abbeedo.com">Abbeedo</author>
+  <icon src="icon.png"/>
+  <access origin="https://www.abbeedo.com" subdomains="false"/>
+  <access origin="https://abbeedo.com" subdomains="false"/>
+  <access origin="https://www.youtube.com" subdomains="false"/>
+  <access origin="https://www.youtube-nocookie.com" subdomains="false"/>
+  <tizen:privilege name="http://tizen.org/privilege/internet"/>
+  <tizen:profile name="tv-samsung"/>
+  <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
+  <tizen:content-security-policy>default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; font-src 'self'; connect-src https://www.abbeedo.com; media-src https://www.abbeedo.com blob:; worker-src 'self' blob:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self';</tizen:content-security-policy>
+</widget>

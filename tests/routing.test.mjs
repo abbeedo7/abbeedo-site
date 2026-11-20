@@ -11,5 +11,5 @@ test('application page rewrites never capture its script directory or the storef
 });
 test('fixed download aliases and release endpoint remain separate from private application API',()=>{
  assert.equal(destination('/downloads/android.apk'),'/download?file=android');assert.equal(destination('/downloads/windows.exe'),'/download?file=windows');assert.equal(destination('/downloads/windows-portable.exe'),'/download?file=portable');
- assert.equal(destination('/api/releases'),'/releases');assert.equal(destination('/api/client'),'/api');assert.equal(destination('/api/watch/rooms'),'/api');assert.equal(destination('/api/releases-invalid'),'/api');assert.equal(destination('/downloads/androidXapk'),'filesystem');assert.equal(destination('/open'),'/app');
+ assert.equal(destination('/api/releases'),'/releases');assert.equal(destination('/api/client'),'/api');assert.equal(destination('/api/watch/rooms'),'/api');assert.equal(destination('/api/releases-invalid'),'/api');assert.equal(destination('/downloads/androidXapk'),'filesystem');assert.equal(destination('/open'),'/app');assert.equal(destination('/updates.json'),'/releases?format=android');
 });

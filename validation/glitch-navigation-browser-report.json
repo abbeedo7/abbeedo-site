@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "browser": "chromium",
+      "check": "Actual same-origin navigation consumes its marker and starts the arriving-page logo burst after texture load"
+    },
+    {
+      "browser": "webkit",
+      "check": "Actual same-origin navigation consumes its marker and starts the arriving-page logo burst after texture load"
+    }
+  ],
+  "failures": []
+}

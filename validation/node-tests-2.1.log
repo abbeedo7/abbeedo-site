@@ -1,0 +1,68 @@
+
+> abbeedo-com@2.1.0 test
+> node --test api/tests/*.test.mjs tests/*.test.mjs
+
+✔ metadata follows publisher-owned release manifest, preserving stable public aliases and integrity (24.240396ms)
+✔ a newer published release is selected with no website build or URL change (1.295661ms)
+✔ incomplete platform metadata does not hide another valid platform (1.058971ms)
+✔ release assets reject foreign repositories, injected URLs, wrong names and malformed hashes (1.675485ms)
+✔ manifest redirects cannot escape own repository or GitHub release-asset CDN (1.650858ms)
+✔ manifest tag must match observed or explicitly selected release tag (0.669572ms)
+✔ unconfigured or unavailable hosting never falls back to an unrelated download host (0.902718ms)
+✔ manifest parser bounds response size and rejects HTML, invalid JSON and arbitrary input URLs (1.360617ms)
+✔ one bounded timeout aborts a stalled manifest request (15.401299ms)
+✔ public release metadata is uncached; GET, HEAD and OPTIONS use correct empty-body semantics (2.149528ms)
+✔ download aliases redirect only to validated own-repository assets and retain GET/HEAD semantics (2.837328ms)
+✔ arbitrary and duplicate file parameters fail before any network request (0.556104ms)
+✔ optional public Blob hosting is pinned to one configured public store (0.963589ms)
+✔ Android updater endpoint uses compatible version-code schema and its fixed own-domain download alias (1.116525ms)
+✔ Android updater does not announce a download when only Windows is available (1.981247ms)
+✔ combined application build preserves storefront, PWA identity, required assets and isolated streaming backend (221.680962ms)
+✔ offline application navigation matches only exact app routes and the old installed query (25.223925ms)
+✔ storefront pages, live release metadata, APIs and range requests never fall back to cached application HTML (7.19532ms)
+✔ activation removes obsolete app shell caches while retaining offline media and unrelated site caches (2.027717ms)
+✔ notification clicks keep website and app windows separate without interrupting app playback (7.875239ms)
+✔ application waits for its actual logo, repeats on the largest visible brand and suspends every idle timer (5.196637ms)
+✔ application replays the initial request once the delayed texture is ready (0.877271ms)
+✔ application covers the changing visual viewport and leaves card content stable when a dialog opens (0.587902ms)
+✔ website waits for its actual logo, repeats on the largest visible brand and suspends every idle timer (2.975673ms)
+✔ website replays the initial request once the delayed texture is ready (0.830202ms)
+✔ website covers the changing visual viewport and leaves card content stable when a dialog opens (0.530167ms)
+✔ website consumes a recent navigation marker and paints only after the arriving logo is ready (0.517528ms)
+✔ application page rewrites never capture its script directory or the storefront apps page (1.508758ms)
+✔ fixed download aliases and release endpoint remain separate from private application API (0.221749ms)
+✔ TV route context is narrow and does not expose browser guest or admin operations (30.664563ms)
+✔ preflight only allows listed methods/headers and requests a package context for JSON APIs (2.248654ms)
+✔ context IDs do not authenticate; provider/source rules continue through the real account API (8.152219ms)
+✔ the gateway strips cookies, browser-origin metadata and context header before delegating host bearer requests (1.65179ms)
+✔ real Watch Together host and device pairing secrets remain enforced (2.837588ms)
+✔ media accepts a scoped token without a custom header but the real media cipher validation still rejects forgery (8.446856ms)
+✔ an actual resolve capability reaches only its owned source and preserves its requested media range (8.297985ms)
+✔ binary video range responses retain exact bytes and headers without buffering or cookie forwarding (0.766848ms)
+✔ JSON/NDJSON media URLs rewrite across chunks while large catalogues stream before completion (1.660943ms)
+✔ JSON rewrite never changes a URL embedded inside a provider URL, or long unrelated text (16.898068ms)
+✔ HLS playlists rewrite exact own media line/URI references, not other hosts or comments (1.176985ms)
+✔ TV detection requires the real package ID and leaves normal browsers untouched (0.76234ms)
+✔ packaged TV fetch adapts only known own API paths, preserves body/bearer and strips cookies (1.482599ms)
+✔ built TV downloads match their recorded SHA-256 and actual byte counts (8.134322ms)
+✔ Samsung WGT contains a local runnable frontend and no invented signing identity (2.044511ms)
+✔ all local Samsung entry resources exist inside the WGT (0.57995ms)
+✔ packaged configuration requires the real native Samsung ID (2.862786ms)
+✔ Chromium 94 encrypted-memory fallback preserves binary records without structuredClone (7.153348ms)
+✔ LG IPK is a real archive with official webOS metadata and hosted loader (2.942373ms)
+✔ LG hosted loader reports offline state and retries with remote OK or network recovery (1.406766ms)
+✔ ZIP builder preserves Unicode entries and detects data corruption (1.450261ms)
+✔ website OS notifications require an explicit boolean opt-in (1.2003ms)
+✔ the initial release feed seeds silently and repeated versions never flood notices (1.98872ms)
+✔ release outage, unknown version or downgrade does not manufacture another update (0.295088ms)
+✔ notice history is bounded and contains no account data or untrusted IDs (0.409988ms)
+✔ an unavailable Windows release does not hide a valid Android release (28.86893ms)
+✔ frontend metadata still rejects injected versions and a replaced download URL (0.353564ms)
+ℹ tests 56
+ℹ suites 0
+ℹ pass 56
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1053.935943

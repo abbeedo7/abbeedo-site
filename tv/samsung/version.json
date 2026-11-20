@@ -1,0 +1,23 @@
+{
+  "name": "ابوناصر TV",
+  "version": "1.2.0",
+  "platforms": [
+    "iOS",
+    "web",
+    "Windows"
+  ],
+  "androidBaseline": "3.9.3",
+  "nativeDistribution": "Samsung store package / Windows installer / iPhone Home Screen",
+  "webInstallable": true,
+  "name_en": "abbeedo TV",
+  "windows": {
+    "version": "1.2.0",
+    "setup": "https://www.abbeedo.com/downloads/windows.exe",
+    "portable": "https://www.abbeedo.com/downloads/windows-portable.exe"
+  },
+  "android": {
+    "version": "3.9.4",
+    "versionCode": 29,
+    "downloadUrl": "https://www.abbeedo.com/downloads/android.apk"
+  }
+}

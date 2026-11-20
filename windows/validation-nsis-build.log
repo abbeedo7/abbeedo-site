@@ -1,0 +1,9 @@
+  • electron-builder  version=26.18.0 os=6.18.57
+  • loaded configuration  file=package.json ("build" field)
+  • building        target=nsis file=dist/abbeedo-TV-Setup.exe archs=x64 oneClick=false perMachine=false
+  • skipped archiving  reason=Archive file is up to date outFile=/workspace/abbeedo-com-vercel/windows/dist/abunasser-tv-windows-1.2.0-x64.nsis.7z
+  • file signing skipped via signExecutable configuration  file=dist/abbeedo-TV-Setup.__uninstaller.exe
+  • file signing skipped via signExecutable configuration  file=dist/abbeedo-TV-Setup.exe
+  • building block map  blockMapFile=dist/abbeedo-TV-Setup.exe.blockmap
+  • building        target=portable file=dist/abbeedo-TV-Portable.exe archs=x64
+  • file signing skipped via signExecutable configuration  file=dist/abbeedo-TV-Portable.exe

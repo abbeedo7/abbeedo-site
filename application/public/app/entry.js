@@ -1,10 +1,12 @@
-import {startVisualEffects} from './glitch.js';
-import {isAppContext, installationPlatform} from './install-gate.js';
+import {configureTVPresentation} from './tv-presentation.js';
+import {startVisualEffects} from './glitch.js?site=2.1';
+import {isAppContext, installationPlatform} from './install-gate.js?site=2.1';
 import {RELEASE_INDEX} from './distribution.js?site=2.0';
 import {applyClientPreferences,readPreferences,migrateVaultPreferences,chooseInitialLanguage,openPublicPreferences,text} from './preferences.js';
 
 // Apply a saved locale before any labels become visible, including the download page.
 applyClientPreferences();
+configureTVPresentation();
 const visualEffects = startVisualEffects();
 const gate = document.getElementById('install-gate');
 const shell = document.getElementById('app-shell');
@@ -40,7 +42,7 @@ window.addEventListener('abbeedo:preferences',()=>{applyClientPreferences();rend
 // Migrate only public settings from an existing encrypted installation. Never expose account data.
 if(!readPreferences().chosenLanguage&&isAppContext()){
   gate.hidden=true;
-  try{const {Vault}=await import('./core.js?release=1.1');const vault=new Vault({namespace:'interface-v1'});const saved=await vault.get('ui',null);migrateVaultPreferences(saved?.settings);}catch{}
+  try{const {Vault}=await import('./core.js?release=1.2');const vault=new Vault({namespace:'interface-v1'});const saved=await vault.get('ui',null);migrateVaultPreferences(saved?.settings);}catch{}
   applyClientPreferences();
 }
 if(!readPreferences().chosenLanguage)await chooseInitialLanguage();
@@ -50,7 +52,7 @@ function openIfInstalled(){
   if(starting)return true;
   starting=true;gate.hidden=true;shell.hidden=false;shell.inert=true;
   document.documentElement.dataset.launchContext='app';
-  import('./ui.js?release=1.1').then(async module=>{await module.appReady;shell.inert=false;}).catch(()=>{
+  import('./ui.js?release=1.2').then(async module=>{await module.appReady;shell.inert=false;}).catch(()=>{
     starting=false;loadFailed=true;gate.hidden=false;shell.hidden=true;shell.inert=true;
     document.getElementById('install-instructions').hidden=true;document.getElementById('install-note').hidden=true;renderGate();
   });

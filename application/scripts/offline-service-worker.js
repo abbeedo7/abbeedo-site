@@ -24,8 +24,9 @@ self.addEventListener('notificationclick',event=>{
     let url;try{url=new URL(event.notification.data?.url||'/app',self.location.origin);}catch{url=new URL('/app',self.location.origin);}
     if(url.origin!==self.location.origin||!['https:','http:'].includes(url.protocol))url=new URL('/app',self.location.origin);
     const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
-    const existing=windows.find(client=>{try{return new URL(client.url).origin===self.location.origin;}catch{return false;}});
-    // Focus the current app rather than interrupt an existing playback session.
+    const isApp=target=>['/app','/app/','/app.html','/open'].includes(target.pathname)||(target.pathname==='/'&&target.searchParams.get('source')==='installed');
+    const existing=windows.find(client=>{try{const target=new URL(client.url);return target.origin===self.location.origin&&isApp(target)===isApp(url);}catch{return false;}});
+    // Keep website notices on the website and app notices with existing playback.
     if(existing?.focus)return existing.focus();
     return self.clients.openWindow(url.href);
   })());

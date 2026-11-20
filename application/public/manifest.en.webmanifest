@@ -1,11 +1,11 @@
 {
-  "id": "/",
+  "id": "/app",
   "name": "abbeedo TV",
   "short_name": "abbeedo TV",
   "lang": "en",
   "dir": "ltr",
   "start_url": "/app?source=installed",
-  "scope": "/",
+  "scope": "/app",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0a1116",

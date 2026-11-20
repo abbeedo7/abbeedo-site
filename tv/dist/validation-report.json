@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-11-14",
+  "version": "1.2.0",
+  "packageTests": {"command": "node --test tests/tv-package.test.mjs", "passed": 8, "failed": 0},
+  "packagedBrowserSmoke": {
+    "engine": "Playwright WebKit",
+    "origin": "file://",
+    "viewport": "1920x1080",
+    "nativeTizenId": "Mocked in the test only; not a physical TV test",
+    "apiResponses": "Mocked; live subscription and provider playback were not tested",
+    "checks": {
+      "firstRunLanguageDialog": true,
+      "languageDialogRemoteArrows": true,
+      "arabicLaunch": true,
+      "savedEnglishLaunch": true,
+      "initialHomeFocusIsLive": true,
+      "loginFitsWithoutVerticalOverflow": true,
+      "homeFitsWithoutVerticalOverflow": true,
+      "localBrandImagesLoaded": true,
+      "settingsEscapeReturnsHome": true,
+      "samsungNativeReturnKeyReturnsHome": true,
+      "backdropTransformsAnimate": true,
+      "announcementsUseNarrowTVGateway": true,
+      "javascriptErrors": 0,
+      "failedResourceRequests": 0
+    }
+  },
+  "physicalTVTested": false,
+  "samsungOwnerCertificateAvailable": false,
+  "storeSubmissionPerformed": false
+}

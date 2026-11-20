@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.7.3">
+
+    <issue
+        id="ApplySharedPref"
+        severity="Warning"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        category="Correctness"
+        priority="6"
+        summary="Use `apply()` on `SharedPreferences`"
+        explanation="Consider using `apply()` instead of `commit` on shared preferences. Whereas `commit` blocks and writes its data to persistent storage immediately, `apply` will handle it in the background."
+        errorLine1="    context.getSharedPreferences(&quot;offline_download_types&quot;,0).edit().putString(request.id,mime==null?&quot;&quot;:mime).putString(request.id+&quot;_keys&quot;,keys.toString()).commit();"
+        errorLine2="                                                                                                                                                           ~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/OfflineDownloads.java"
+            line="197"
+            column="156"/>
+    </issue>
+
+    <issue
+        id="ApplySharedPref"
+        severity="Warning"
+        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+        category="Correctness"
+        priority="6"
+        summary="Use `apply()` on `SharedPreferences`"
+        explanation="Consider using `apply()` instead of `commit` on shared preferences. Whereas `commit` blocks and writes its data to persistent storage immediately, `apply` will handle it in the background."
+        errorLine1=" public static synchronized void activate(Context c,Core.Account a)throws Exception{List&lt;Core.Account> rows=readAll(c);String k=keyOf(a);boolean found=false;for(Core.Account row:rows)if(keyOf(row).equals(k)){found=true;break;}if(!found)throw new Exception(&quot;الاشتراك غير محفوظ&quot;);c.getSharedPreferences(PREF,0).edit().putString(ACTIVE,k).commit();}"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                ~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/Vault.java"
+            line="28"
+            column="337"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        severity="Warning"
+        message="Attribute `allowAudioPlaybackCapture` is only used in API level 29 and higher (current min is 26)"
+        category="Correctness"
+        priority="6"
+        summary="Attribute unused on older versions"
+        explanation="This check finds attributes set in XML files that were introduced in a version newer than the oldest version targeted by your application (with the `minSdkVersion` attribute).&#xA;&#xA;This is not an error; the application will simply ignore the attribute. However, if the attribute is important to the appearance or functionality of your application, you should consider finding an alternative way to achieve the same result with only available attributes, and then you can optionally create a copy of the layout in a layout-vNN folder which will be used on API NN or higher where you can take advantage of the newer attribute.&#xA;&#xA;Note: This check does not only apply to attributes. For example, some tags can be unused too, such as the new `&lt;tag>` element in layouts introduced in API 21."
+        errorLine1=" &lt;application android:name=&quot;.App&quot; android:label=&quot;@string/app_name&quot; android:icon=&quot;@drawable/launcher&quot; android:banner=&quot;@drawable/tv_banner&quot; android:theme=&quot;@style/AppTheme&quot; android:allowBackup=&quot;false&quot; android:supportsRtl=&quot;true&quot; android:usesCleartextTraffic=&quot;true&quot; android:allowAudioPlaybackCapture=&quot;true&quot;>"
+        errorLine2="                                                                                                                                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/AndroidManifest.xml"
+            line="15"
+            column="262"/>
+    </issue>
+
+    <issue
+        id="CustomSplashScreen"
+        severity="Warning"
+        message="The application should not provide its own launch screen"
+        category="Correctness"
+        priority="5"
+        summary="Application-defined Launch Screen"
+        explanation="Starting in Android 12 (API 31+), the application&apos;s Launch Screen is provided by the system and the application should not create its own, otherwise the user will see two splashscreens. Please check the `SplashScreen` class to check how the Splash Screen can be controlled and customized."
+        url="https://developer.android.com/guide/topics/ui/splash-screen"
+        urls="https://developer.android.com/guide/topics/ui/splash-screen"
+        errorLine1="public class SplashActivity extends Activity {"
+        errorLine2="             ~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/SplashActivity.java"
+            line="15"
+            column="14"/>
+    </issue>
+
+    <issue
+        id="PictureInPictureIssue"
+        severity="Warning"
+        message="An activity in this app supports picture-in-picture and the targetSdkVersion is 31 or above; it is therefore strongly recommended to call both `setAutoEnterEnabled(true)` and `setSourceRectHint(...)`"
+        category="Correctness"
+        priority="5"
+        summary="Picture In Picture best practices not followed"
+        explanation="Starting in Android 12, the recommended approach for enabling picture-in-picture (PiP) has changed. If your app does not use the new approach, your app&apos;s transition animations will be of poor quality compared to other apps. The new approach requires calling `setAutoEnterEnabled(true)` and `setSourceRectHint(...)`."
+        url="https://developer.android.com/develop/ui/views/picture-in-picture#smoother-transition"
+        urls="https://developer.android.com/develop/ui/views/picture-in-picture#smoother-transition"
+        errorLine1=" &lt;application android:name=&quot;.App&quot; android:label=&quot;@string/app_name&quot; android:icon=&quot;@drawable/launcher&quot; android:banner=&quot;@drawable/tv_banner&quot; android:theme=&quot;@style/AppTheme&quot; android:allowBackup=&quot;false&quot; android:supportsRtl=&quot;true&quot; android:usesCleartextTraffic=&quot;true&quot; android:allowAudioPlaybackCapture=&quot;true&quot;>"
+        errorLine2="  ~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/AndroidManifest.xml"
+            line="15"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        severity="Warning"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this method; see https://g.co/dev/packagevisibility for details"
+        category="Correctness"
+        priority="5"
+        summary="Using APIs affected by query permissions"
+        explanation="Apps that target Android 11 cannot query or interact with other installed apps by default. If you need to query or interact with other installed apps, you may need to add a `&lt;queries>` declaration in your manifest.&#xA;&#xA;As a corollary, the methods `PackageManager#getInstalledPackages` and `PackageManager#getInstalledApplications` will no longer return information about all installed apps. To query specific apps or types of apps, you can use methods like `PackageManager#getPackageInfo` or `PackageManager#queryIntentActivities`."
+        url="https://g.co/dev/packagevisibility"
+        urls="https://g.co/dev/packagevisibility"
+        errorLine1="            if (intent.resolveActivity(activity.getPackageManager()) == null) throw new IllegalStateException(&quot;Projection unsupported&quot;);"
+        errorLine2="                       ~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlaybackCapture.java"
+            line="162"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of androidx.core:core than 1.9.0 is available: 1.10.1"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1=" implementation &apos;androidx.core:core:1.9.0&apos;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/build.gradle"
+            line="13"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="DataExtractionRules"
+        severity="Warning"
+        message="The attribute `android:allowBackup` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher."
+        category="Security"
+        priority="3"
+        summary="Missing data extraction rules"
+        explanation="Before Android 12, the attributes `android:allowBackup` and `android:fullBackupContent` were used to configure all forms of backup, including cloud backups, device-to-device transfers and adb backup.&#xA;&#xA;In Android 12 and higher, these attributes have been deprecated and will only apply to cloud backups. You should instead use the attribute `android:dataExtractionRules`, specifying an `@xml` resource that configures which files to back up, for cloud backups and for device-to-device transfers, separately. If your `minSdkVersion` supports older versions, you&apos;ll still want to specify an `android:fullBackupContent` resource if the default behavior is not right for your app."
+        url="https://developer.android.com/about/versions/12/backup-restore#xml-changes"
+        urls="https://developer.android.com/about/versions/12/backup-restore#xml-changes,https://goo.gle/DataExtractionRules"
+        errorLine1=" &lt;application android:name=&quot;.App&quot; android:label=&quot;@string/app_name&quot; android:icon=&quot;@drawable/launcher&quot; android:banner=&quot;@drawable/tv_banner&quot; android:theme=&quot;@style/AppTheme&quot; android:allowBackup=&quot;false&quot; android:supportsRtl=&quot;true&quot; android:usesCleartextTraffic=&quot;true&quot; android:allowAudioPlaybackCapture=&quot;true&quot;>"
+        errorLine2="                                                                                                                                                                                               ~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/AndroidManifest.xml"
+            line="15"
+            column="192"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        severity="Warning"
+        message="Unnecessary; SDK_INT is always >= 26"
+        category="Performance"
+        priority="6"
+        summary="Obsolete SDK_INT Version Check"
+        explanation="This check flags version checks that are not necessary, because the `minSdkVersion` (or surrounding known API level) is already at least as high as the version checked for.&#xA;&#xA;Similarly, it also looks for resources in `-vNN` folders, such as `values-v14` where the version qualifier is less than or equal to the `minSdkVersion`, where the contents should be merged into the best folder."
+        errorLine1="   if(Build.VERSION.SDK_INT>=26&amp;&amp;!activity.getPackageManager().canRequestPackageInstalls()){"
+        errorLine2="      ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/AppUpdateDownload.java"
+            line="128"
+            column="7"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        severity="Warning"
+        message="Unnecessary; SDK_INT is always >= 26"
+        category="Performance"
+        priority="6"
+        summary="Obsolete SDK_INT Version Check"
+        explanation="This check flags version checks that are not necessary, because the `minSdkVersion` (or surrounding known API level) is already at least as high as the version checked for.&#xA;&#xA;Similarly, it also looks for resources in `-vNN` folders, such as `values-v14` where the version qualifier is less than or equal to the `minSdkVersion`, where the contents should be merged into the best folder."
+        errorLine1=" public static void notify(Context c,Release r){if(r.code&lt;=installed(c)||prefs(c).getInt(&quot;notified&quot;,0)>=r.code)return;if(Build.VERSION.SDK_INT>=33&amp;&amp;c.checkSelfPermission(&quot;android.permission.POST_NOTIFICATIONS&quot;)!=PackageManager.PERMISSION_GRANTED)return;try{NotificationManager nm=(NotificationManager)c.getSystemService(Context.NOTIFICATION_SERVICE);if(Build.VERSION.SDK_INT>=24&amp;&amp;!((Boolean)NotificationManager.class.getMethod(&quot;areNotificationsEnabled&quot;).invoke(nm)))return;Notification.Builder b=Notification.Builder.class.getConstructor(Context.class,String.class).newInstance(c,CHANNEL);Intent open=new Intent(c,MainActivity.class).putExtra(&quot;check_updates&quot;,true).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);PendingIntent pi=PendingIntent.getActivity(c,NOTE,open,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);Notification n=b.setSmallIcon(R.drawable.ic_update).setContentTitle(Lang.extra(&quot;تحديث جديد لـ ابوناصر TV&quot;,&quot;abbeedo TV update available&quot;)).setContentText(Lang.extra(&quot;الإصدار &quot;,&quot;Version &quot;)+r.name+Lang.extra(&quot; — اضغط للتحميل&quot;,&quot; — tap to download&quot;)).setContentIntent(pi).setAutoCancel(true).build();nm.notify(NOTE,n);prefs(c).edit().putInt(&quot;notified&quot;,r.code).apply();}catch(Exception ignored){}}"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/Updates.java"
+            line="15"
+            column="354"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        severity="Warning"
+        message="Do not place Android context classes in static fields; this is a memory leak"
+        category="Performance"
+        priority="6"
+        summary="Static Field Leaks"
+        explanation="A static field will leak contexts.&#xA;&#xA;Non-static inner classes have an implicit reference to their outer class. If that outer class is for example a `Fragment` or `Activity`, then this reference means that the long-running handler/loader/task will hold a reference to the activity which prevents it from getting garbage collected.&#xA;&#xA;Similarly, direct field references to activities and fragments from these longer running instances can cause leaks.&#xA;&#xA;ViewModel classes should never point to Views or non-application Contexts."
+        errorLine1="    private static volatile Context context;"
+        errorLine2="            ~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/EpgStore.java"
+            line="43"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.raw.demo` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.&#xA;&#xA;&#xA;The unused resource check can ignore tests. If you want to include resources that are only referenced from tests, consider packaging them in a test source set instead.&#xA;&#xA;You can include test sources in the unused resource check by setting the system property lint.unused-resources.include-tests =true, and to exclude them (usually for performance reasons), use lint.unused-resources.exclude-tests =true.&#xA;,">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/res/raw/demo.mp4"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        severity="Warning"
+        message="The resource `R.drawable.focus_card` appears to be unused"
+        category="Performance"
+        priority="3"
+        summary="Unused resources"
+        explanation="Unused resources make applications larger and slow down builds.&#xA;&#xA;&#xA;The unused resource check can ignore tests. If you want to include resources that are only referenced from tests, consider packaging them in a test source set instead.&#xA;&#xA;You can include test sources in the unused resource check by setting the system property lint.unused-resources.include-tests =true, and to exclude them (usually for performance reasons), use lint.unused-resources.exclude-tests =true.&#xA;,"
+        errorLine1="&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/res/drawable/focus_card.xml"
+            line="1"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        severity="Warning"
+        message="Found bitmap drawable `res/drawable/tv_banner.png` in densityless folder"
+        category="Usability:Icons"
+        priority="5"
+        summary="Image defined in density-independent drawable folder"
+        explanation="The res/drawable folder is intended for density-independent graphics such as shapes defined in XML. For bitmaps, move it to `drawable-mdpi` and consider providing higher and lower resolution versions in `drawable-ldpi`, `drawable-hdpi` and `drawable-xhdpi`. If the icon **really** is density independent (for example a solid color) you can place it in `drawable-nodpi`."
+        url="https://developer.android.com/guide/practices/screens_support.html"
+        urls="https://developer.android.com/guide/practices/screens_support.html">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/res/drawable/tv_banner.png"/>
+    </issue>
+
+    <issue
+        id="ViewConstructor"
+        severity="Warning"
+        message="Custom view `LoadingView` is missing constructor used by tools: `(Context)` or `(Context,AttributeSet)` or `(Context,AttributeSet,int)`"
+        category="Usability"
+        priority="3"
+        summary="Missing View constructors for XML inflation"
+        explanation="Some layout tools (such as the Android layout editor) need to find a constructor with one of the following signatures:&#xA;* `View(Context context)`&#xA;* `View(Context context, AttributeSet attrs)`&#xA;* `View(Context context, AttributeSet attrs, int defStyle)`&#xA;&#xA;If your custom view needs to perform initialization which does not apply when used in a layout editor, you can surround the given code with a check to see if `View#isInEditMode()` is false, since that method will return `false` at runtime but true within a user interface editor."
+        errorLine1="    static final class LoadingView extends View {"
+        errorLine2="                       ~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/Glitch.java"
+            line="77"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="   detail.setText(state(d)+&quot; • &quot;+bytes(d.getBytesDownloaded())+(d.contentLength>0?&quot; / &quot;+bytes(d.contentLength):&quot;&quot;)+(percent>=0?String.format(Locale.US,&quot; • %.0f%%&quot;,percent):&quot;&quot;)+&quot;\n&quot;+x(&quot;مجموعة الاشتراك: &quot;,&quot;Source collection: &quot;)+(entry.metadata.account.isEmpty()?x(&quot;محلية&quot;,&quot;Local&quot;):entry.metadata.account.substring(0,Math.min(8,entry.metadata.account.length()))));"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/DownloadsActivity.java"
+            line="84"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        status.setText(x(&quot;جاري تحديث دليل &quot;, &quot;Loading guide for &quot;) + channel.name);"
+        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/EpgActivity.java"
+            line="144"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        status.setText(x(&quot;التوقيت: &quot;, &quot;Timezone: &quot;) + EpgStore.timezone() + &quot; • &quot;"
+        errorLine2="                       ^">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/EpgActivity.java"
+            line="177"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="  if(status!=null){status.setText(x(&quot;جارٍ تجهيز القائمة… يمكنك الرجوع أو تغيير القسم&quot;,&quot;Preparing the list… you can go back or switch sections&quot;));status.setVisibility(shown.isEmpty()?View.VISIBLE:View.GONE);}if(heading!=null)heading.setText(t(app.kind)+(shown.isEmpty()?&quot;  •  &quot;+x(&quot;جارٍ التحميل…&quot;,&quot;Loading…&quot;):&quot; / &quot;+shown.size()+&quot; · &quot;+x(&quot;المحتوى متاح، تجهيز البقية…&quot;,&quot;Items available; preparing the rest…&quot;)));"
+        errorLine2="                                                                                                                                                                                                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/MainActivity.java"
+            line="344"
+            column="241"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1=" void applyCatalog(CatalogWorker.Result result){updateCatalogToolIcons();shown=result.rows;if(!shown.isEmpty())CatalogTimings.first(this,catalogBegan,shown.size());if(!catalogLoading)CatalogTimings.finish(this,catalogBegan,&quot;ready&quot;);catalogPage=CatalogPages.clampPage(catalogPage,shown.size(),catalogPageSize);configureCatalogPage();if(adapter!=null)adapter.notifyDataSetChanged();populateCategories();updateCatalogPager();boolean vod=!&quot;live&quot;.equals(app.kind);String label=vod&amp;&amp;recentOnly?x(&quot;المضاف حديثًا&quot;,&quot;Recently added&quot;):vod&amp;&amp;recommendOnly?x(&quot;مقترحات محلية من بيانات المشاهدة&quot;,&quot;Local suggestions from viewing metadata&quot;):favoritesOnly?t(&quot;favorites&quot;):vod&amp;&amp;watchlistOnly?x(&quot;أريد مشاهدته&quot;,&quot;Watchlist&quot;):t(app.kind);if(heading!=null)heading.setText(label+&quot;  /  &quot;+shown.size()+(!group.isEmpty()?&quot;  •  &quot;+categoryLabel(group):&quot;&quot;)+(catalogPartial?&quot; · &quot;+x(catalogLoading?&quot;جارٍ جلب البقية…&quot;:&quot;قائمة جزئية؛ تحديث لإكمالها&quot;,catalogLoading?&quot;Fetching remaining items…&quot;:&quot;Partial list; refresh to complete&quot;):&quot;&quot;));if(status!=null){status.setVisibility(shown.isEmpty()?View.VISIBLE:View.GONE);status.setText(busy||catalogLoading?t(&quot;loading&quot;):t(&quot;empty&quot;));}}"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/MainActivity.java"
+            line="354"
+            column="747"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="   card.setLayoutParams(new AbsListView.LayoutParams(-1,catalogPaged()?Math.max(1,catalogRowHeight):dp(wide?200:235)));holder.image.setVisibility(View.VISIBLE);holder.title.setText((favorites.contains(catalogResult!=null?catalogResult.keys.get(item):app.key(item))?&quot;♥ &quot;:&quot;&quot;)+item.name);holder.group.setText(item.group);Images.load(holder.image,item.logo,item.kind);card.setContentDescription(item.name);return card;"
+        errorLine2="                                                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/MainActivity.java"
+            line="380"
+            column="182"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="   if(heading!=null&amp;&amp;!app.items.isEmpty())heading.setText(t(kind)+&quot; / &quot;+app.items.size()+&quot; · &quot;+x(&quot;قائمة جزئية، تحديث لإكمالها&quot;,&quot;Partial list; refresh to complete&quot;));"
+        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/MainActivity.java"
+            line="482"
+            column="59"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1=" void myAccount(){if(app.account==null){message(x(&quot;سجّل الدخول أولاً&quot;,&quot;Sign in first&quot;));return;}Core.Account a=app.account;execute(()->{if(!a.mode.equals(&quot;m3u&quot;)&amp;&amp;!a.mode.equals(&quot;m3u-file&quot;))Core.authenticate(a);},()->{LinearLayout box=column();box.setPadding(dp(20),dp(16),dp(20),dp(16));box.addView(text(SubscriptionExpiry.label(a,System.currentTimeMillis(),&quot;ar&quot;.equals(Lang.code),TimeZone.getDefault()),18));box.addView(text(x(&quot;اسم المستخدم: &quot;,&quot;Username: &quot;)+a.user,16));TextView password=text(x(&quot;كلمة المرور: &quot;,&quot;Password: &quot;)+&quot;••••••••&quot;,16);box.addView(password);box.addView(button(x(&quot;إظهار / إخفاء كلمة المرور&quot;,&quot;Show / hide password&quot;),()->{boolean visible=Boolean.TRUE.equals(password.getTag());password.setTag(!visible);password.setText(x(&quot;كلمة المرور: &quot;,&quot;Password: &quot;)+(visible?&quot;••••••••&quot;:a.password));}));AlertDialog d=new Ui.DialogBuilder(this).setTitle(x(&quot;حسابي&quot;,&quot;My account&quot;)).setView(box).setPositiveButton(t(&quot;close&quot;),null).create();d.show();d.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);});}"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/MainActivity.java"
+            line="522"
+            column="740"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="                time.setText(clock(at)+&quot; / &quot;+clock(duration));"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="119"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="                if(status!=null)status.setText(x(&quot;سرعة التشغيل: &quot;,&quot;Playback speed: &quot;)+PlaybackSpeed.label(speed));"
+        errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="149"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){public void onStartTrackingTouch(SeekBar bar){dragging=true;handler.removeCallbacks(hide);}public void onStopTrackingTouch(SeekBar bar){if(player!=null)player.seekTo(bar.getProgress());dragging=false;scheduleHide();}public void onProgressChanged(SeekBar bar,int value,boolean from){if(from)time.setText(clock(value)+&quot; / &quot;+clock(duration()));}});"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="231"
+            column="382"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        status.setText(hint+&quot; (&quot;+code+&quot;)&quot;);"
+        errorLine2="                       ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="326"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        if(network&amp;&amp;retryCount&lt;2){int delay=1000*(1&lt;&lt;retryCount++);status.setText(x(&quot;انقطع البث؛ محاولة إعادة الاتصال &quot;,&quot;Stream interrupted; reconnect attempt &quot;)+retryCount+&quot;/2&quot;+(http>0?&quot; (HTTP &quot;+http+&quot;)&quot;:&quot;&quot;));int generation=loadGeneration;handler.postDelayed(()->{if(!stopped&amp;&amp;generation==loadGeneration){resume=true;startResolved();}},delay);}"
+        errorLine2="                                                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="335"
+            column="83"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="            Core.Item selected=selection.rows.get(n);boolean current=item!=null&amp;&amp;item.id.equals(selected.id);int at=snapshot.indexById.getOrDefault(selected.id,n)+1;number.setText(String.format(Locale.US,&quot;%03d&quot;,at));title.setText((current?&quot;▶ &quot;:&quot;&quot;)+(snapshot.favoriteIds.contains(selected.id)?&quot;♥ &quot;:&quot;&quot;)+selected.name);title.setTextColor(current?0xffffce82:Color.WHITE);row.setBackground(Ui.shape(current?0x60536785:Color.TRANSPARENT,current?0xffffb64d:Color.TRANSPARENT,current?2:0,6,PlayerActivity.this));Images.load(logo,selected.logo,&quot;live&quot;);row.setContentDescription(number.getText()+&quot; &quot;+selected.name+(current?x(&quot;، تعمل الآن&quot;,&quot;, playing now&quot;):&quot;&quot;));return row;"
+        errorLine2="                                                                                                                                                                                                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="601"
+            column="231"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="    private void updatePreviewText(Core.Item selected){if(previewInfo!=null)previewInfo.setText(selected.name+&quot;\n&quot;+guideText(selected));}"
+        errorLine2="                                                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="653"
+            column="97"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="    private class TextRows extends BaseAdapter {private final List&lt;String> labels;TextRows(List&lt;String> labels){this.labels=labels;}public int getCount(){return labels.size();}public Object getItem(int n){return labels.get(n);}public long getItemId(int n){return n;}public View getView(int n,View old,android.view.ViewGroup parent){TextView text=old instanceof TextView?(TextView)old:Ui.text(PlayerActivity.this,&quot;&quot;,12);boolean category=parent==channelGroups&amp;&amp;channels!=null&amp;&amp;labels==channels.categoryLabels;boolean active=category&amp;&amp;n&lt;channelCategoryKeys.size()&amp;&amp;channelGroup.equals(channelCategoryKeys.get(n));text.setText((category?String.format(Locale.US,&quot;%03d  &quot;,n+1):&quot;&quot;)+labels.get(n));text.setTextColor(active?0xffffce82:Color.WHITE);text.setBackground(Ui.shape(active?0x60536785:Color.TRANSPARENT,active?0xffffb64d:Color.TRANSPARENT,active?2:0,6,PlayerActivity.this));text.setPadding(dp(7),dp(6),dp(7),dp(6));text.setMaxLines(2);text.setGravity(Gravity.CENTER_VERTICAL);text.setLayoutParams(new AbsListView.LayoutParams(-1,dp(54)));return text;}}"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="654"
+            column="624"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        if(live()&amp;&amp;key>=KeyEvent.KEYCODE_0&amp;&amp;key&lt;=KeyEvent.KEYCODE_9){if(digits.length()>=5)digits=&quot;&quot;;digits+=(key-KeyEvent.KEYCODE_0);status.setText(x(&quot;القناة &quot;,&quot;Channel &quot;)+digits);showControls(true);handler.removeCallbacks(numberAction);handler.postDelayed(numberAction,1200);return true;}"
+        errorLine2="                                                                                                                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="679"
+            column="150"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        footer.setId(R.id.tv_settings_footer);footer.setTextSize(11);footer.setSingleLine(true);footer.setHorizontallyScrolling(false);footer.setText(Brand.NAME+&quot; · &quot;+version());footer.setPadding(0,0,0,0);footer.setIncludeFontPadding(false);root.addView(footer,new LinearLayout.LayoutParams(-1,dp(20)));"
+        errorLine2="                                                                                                                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/SettingsActivity.java"
+            line="152"
+            column="151"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        footer.setId(R.id.tv_settings_footer);footer.setTextSize(12);footer.setText(Brand.NAME+&quot; · &quot;+version()+&quot;\n&quot;+x(&quot;برمجة أبوناصر&quot;,&quot;Developed by Abunasser&quot;));footer.setPadding(0,dp(20),0,dp(12));footer.setIncludeFontPadding(false);content.addView(footer,new LinearLayout.LayoutParams(-1,-2));"
+        errorLine2="                                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/SettingsActivity.java"
+            line="164"
+            column="85"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        severity="Warning"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        category="Internationalization"
+        priority="6"
+        summary="TextView Internationalization"
+        explanation="When calling `TextView#setText`&#xA;* Never call `Number#toString()` to format numbers; it will not handle fraction separators and locale-specific digits properly. Consider using `String#format` with proper format specifications (`%d` or `%f`) instead.&#xA;* Do not pass a string literal (e.g. &quot;Hello&quot;) to display text. Hardcoded text can not be properly translated to other languages. Consider using Android resource strings instead.&#xA;* Do not build messages by concatenating text chunks. Such messages can not be properly translated."
+        url="https://developer.android.com/guide/topics/resources/localization.html"
+        urls="https://developer.android.com/guide/topics/resources/localization.html"
+        errorLine1="        story.setText(x(&quot;القصة\n&quot;, &quot;Story\n&quot;) + (TitleDetails.clean(item.plot, 16384).isEmpty() ? x(&quot;لم يرسل المصدر وصفًا لهذا المحتوى.&quot;, &quot;The source has not supplied a synopsis for this title.&quot;) : item.plot));"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/TitleDetailsActivity.java"
+            line="125"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="RtlHardcoded"
+        severity="Warning"
+        message="Use &quot;`Gravity.START`&quot; instead of &quot;`Gravity.LEFT`&quot; to ensure correct behavior in right-to-left locales"
+        category="Internationalization:Bidirectional Text"
+        priority="5"
+        summary="Using left/right instead of start/end attributes"
+        explanation="Using `Gravity#LEFT` and `Gravity#RIGHT` can lead to problems when a layout is rendered in locales where text flows from right to left. Use `Gravity#START` and `Gravity#END` instead. Similarly, in XML `gravity` and `layout_gravity` attributes, use `start` rather than `left`.&#xA;&#xA;For XML attributes such as paddingLeft and `layout_marginLeft`, use `paddingStart` and `layout_marginStart`. **NOTE**: If your `minSdkVersion` is less than 17, you should add **both** the older left/right attributes **as well as** the new start/end attributes. On older platforms, where RTL is not supported and the start/end attributes are unknown and therefore ignored, you need the older left/right attributes. There is a separate lint check which catches that type of error.&#xA;&#xA;(Note: For `Gravity#LEFT` and `Gravity#START`, you can use these constants even when targeting older platforms, because the `start` bitmask is a superset of the `left` bitmask. Therefore, you can use `gravity=&quot;start&quot;` rather than `gravity=&quot;left|start&quot;`.)"
+        errorLine1="        channelOverlay.addView(receiverPanel,new FrameLayout.LayoutParams(-1,-1));int width=receiverWidth(root.getWidth()>0?root.getWidth():getResources().getDisplayMetrics().widthPixels,root.getHeight()>0?root.getHeight():getResources().getDisplayMetrics().heightPixels,dp(620));root.addView(channelOverlay,new FrameLayout.LayoutParams(width,-1,Gravity.LEFT));root.requestApplyInsets();"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                  ~~~~">
+        <location
+            file="/workspace/abbeedo-3.9.4/app/src/main/java/com/abbeedo/player/PlayerActivity.java"
+            line="529"
+            column="355"/>
+    </issue>
+
+</issues>

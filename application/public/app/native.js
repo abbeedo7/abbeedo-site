@@ -39,7 +39,7 @@ let requestSerial = 0;
 /** A standard streaming Response over the same-Site URLSession bridge. */
 export async function nativeFetch(input, options = {}) {
   if (!isNative()) return globalThis.fetch(input, options);
-  const origin = globalThis.ABUNASSER_CONFIG?.apiOrigin || globalThis.ABUNASSER_NATIVE_CONFIG?.apiOrigin || 'https://abunasser-apple-web.m05871268.chatgpt.site';
+  const origin = globalThis.ABUNASSER_CONFIG?.apiOrigin || globalThis.ABUNASSER_NATIVE_CONFIG?.apiOrigin || 'https://www.abbeedo.com';
   const raw = typeof input === 'string' || input instanceof URL ? String(input) : input.url;
   const url = new URL(raw, origin); if (url.origin !== new URL(origin).origin || url.protocol !== 'https:' || url.username || url.password) throw new TypeError('Native API destination is not allowed');
   const headers = Object.fromEntries(new Headers(options.headers || (input instanceof Request ? input.headers : undefined)));

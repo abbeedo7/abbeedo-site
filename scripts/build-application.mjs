@@ -40,7 +40,7 @@ export async function buildApplication({projectRoot,outputRoot}){
   }
   for(const filename of ['manifest.webmanifest','manifest.en.webmanifest']){
     const destination=path.join(staticDir,filename),manifest=JSON.parse(await fs.readFile(destination,'utf8'));
-    manifest.id='/';manifest.scope='/';manifest.start_url='/app?source=installed';
+    manifest.id='/app';manifest.scope='/app';manifest.start_url='/app?source=installed';
     await fs.writeFile(destination,JSON.stringify(manifest,null,2)+'\n');
   }
   const shell=copied.filter(file=>!file.includes('watch-demo')&&!['/sw.js','/version.json','/pair.html','/pair.js','/pair.css','/watch.html','/watch.js','/watch.css','/watch-media.js'].includes(file));

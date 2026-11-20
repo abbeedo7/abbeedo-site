@@ -1,0 +1,58 @@
+/* Shared icon proportions and adaptive sizing for PWA, web and Windows. */
+.app-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  inline-size: var(--app-icon-size, 22px);
+  block-size: var(--app-icon-size, 22px);
+  vertical-align: middle;
+  overflow: visible;
+  pointer-events: none;
+}
+button > .app-icon {
+  width: var(--app-icon-size, clamp(19px, 1.65vw, 26px));
+  height: var(--app-icon-size, clamp(19px, 1.65vw, 26px));
+}
+/* The tile controls its icon, so resizing a window changes both together. */
+.home-card, .setting-tile { container-type: inline-size; }
+.home-card > .app-icon {
+  --app-icon-size: clamp(64px, 6.5vw, 80px);
+  width: var(--app-icon-size);
+  height: var(--app-icon-size);
+  color: var(--accent);
+}
+.setting-tile > .app-icon {
+  --app-icon-size: clamp(26px, 2.5vw, 44px);
+  width: var(--app-icon-size);
+  height: var(--app-icon-size);
+  color: var(--accent);
+}
+@supports (width: 1cqi) {
+  .home-card > .app-icon { --app-icon-size: clamp(64px, 38cqi, 80px); }
+  .setting-tile > .app-icon { --app-icon-size: clamp(26px, 17cqi, 44px); }
+}
+/* Keep the one-screen landscape layouts within their available height. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .home-card > .app-icon { --app-icon-size: clamp(42px, 12vh, 55px); }
+  .setting-tile > .app-icon { --app-icon-size: clamp(24px, 6.5vh, 34px); }
+}
+@media (orientation: landscape) and (max-height: 390px) {
+  .home-card > .app-icon { --app-icon-size: clamp(38px, 11vh, 46px); }
+}
+/* Dense controls retain their existing layout and focusable button sizes. */
+.icon-button > .app-icon { --app-icon-size: 23px; }
+.search-bar .icon-button > .app-icon { --app-icon-size: 21px; }
+.field-icon > .app-icon, .import-row button > .app-icon { --app-icon-size: 18px; }
+.card-actions button > .app-icon { --app-icon-size: 17px; }
+.player-tools button > .app-icon { --app-icon-size: 20px; }
+.search-input > span > .app-icon { --app-icon-size: 20px; }
+.fallback-poster > .app-icon { --app-icon-size: 80px; width: var(--app-icon-size); height: var(--app-icon-size); }
+.live-grid .fallback-poster > .app-icon { --app-icon-size: 54px; }
+/* Preserve the compact text toolbar used by the one-screen home layout. */
+.home-tools .app-icon, .app-header > .pill .app-icon { display: none; }
+:root[dir="ltr"] .app-icon[data-app-icon="back"] { transform: scaleX(-1); }
+@media (pointer: coarse) {
+  .icon-button, .player-tools button, .card-actions button {
+    min-inline-size: 44px;
+    min-block-size: 44px;
+  }
+}

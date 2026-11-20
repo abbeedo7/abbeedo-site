@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "version": "3.9.4",
+  "versionCode": 29,
+  "applicationId": "com.abbeedo.player",
+  "apk": "/workspace/abbeedo-3.9.4/app/build/outputs/apk/release/app-release.apk",
+  "bytes": 5434630,
+  "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+  "certificate_sha256": "83f5a0402d40e2b3016ad61e1fca3fc1251d3823980c610bb37f683b6d9b906c",
+  "original_certificate_preserved": true,
+  "minSdk": 26,
+  "targetSdk": 35,
+  "owned_origin": "https://www.abbeedo.com",
+  "updates_endpoint": "https://www.abbeedo.com/updates.json",
+  "download_alias": "https://www.abbeedo.com/downloads/android.apk",
+  "runtime_chatgpt_hosts": 0,
+  "assemble_release_passed": true,
+  "focused_tests": {
+    "tests": 9,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint_release_passed": true,
+  "lint_issue_counts": {
+    "Warning": 36
+  },
+  "physical_device_tested": false,
+  "external_publication_performed": false,
+  "customer_provider_tested": false,
+  "built_at_utc": "2026-11-14T17:48:08.203030+00:00",
+  "in_app_update": true,
+  "update_transport": "owned HTTPS alias -> own GitHub release -> official GitHub release CDN",
+  "update_verification": [
+    "SHA-256",
+    "package com.abbeedo.player",
+    "exact newer versionCode/versionName",
+    "original signing certificate"
+  ],
+  "system_installer_confirmation_required": true,
+  "unknown_apps_permission_if_required": true,
+  "file_provider_scope": "cache/updates/ read-grants only",
+  "apk_published_externally": false
+}

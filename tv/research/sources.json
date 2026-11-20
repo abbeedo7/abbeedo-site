@@ -1,0 +1,10 @@
+{
+  "reviewedAt": "2026-11-14",
+  "sources": [
+    {"url":"https://webostv.developer.lge.com/develop/getting-started/web-app-types","finding":"LG supports an official hosted web app with a local loader package and remote frontend updates."},
+    {"url":"https://webostv.developer.lge.com/develop/references/appinfo-json","finding":"Official webOS package metadata and app/store icon requirements."},
+    {"url":"https://developer.samsung.com/smarttv/develop/guides/fundamentals/configuring-tv-applications.html","finding":"Packaged TV applications declare local content, TV profile, access and privileges in config.xml."},
+    {"url":"https://developer.samsung.com/smarttv/develop/getting-started/setting-up-sdk/creating-certificates.html","finding":"Samsung applications require owner author/distributor certificates for installation; preserve the author identity for updates."},
+    {"url":"https://developer.samsung.com/smarttv/develop/getting-started/using-sdk/command-line-interface.html","finding":"Use tizen build-web and tizen package with the owner signing profile."}
+  ]
+}

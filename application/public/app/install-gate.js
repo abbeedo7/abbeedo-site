@@ -1,7 +1,9 @@
+import {nativeTVInfo} from './tv-network.js';
 // Runtime presentation only: an installed launch is detected from the browser,
 // never from a URL flag or a value saved by an earlier visit.
 export function isAppContext(scope = globalThis) {
   try {
+    if (nativeTVInfo(scope)) return true;
     if (scope.webkit?.messageHandlers?.abunasser) return true;
     if (scope.abunasserDesktop?.isDesktop === true && scope.abunasserDesktop.platform === 'win32') return true;
     const platform = detectPlatform(scope);

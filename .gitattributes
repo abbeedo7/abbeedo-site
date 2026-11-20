@@ -1,0 +1,4 @@
+# Preserve original whitespace in generated validation evidence and vendor notices.
+validation/**/*.log -whitespace
+windows/validation*.log -whitespace
+tv/samsung/*-LICENSE.txt -whitespace

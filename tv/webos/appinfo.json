@@ -1,0 +1,14 @@
+{
+  "id": "com.abbeedo.tv.app",
+  "version": "1.2.0",
+  "vendor": "Abbeedo",
+  "type": "web",
+  "main": "index.html",
+  "title": "ابوناصر TV",
+  "appDescription": "قنواتك وأفلامك ومسلسلاتك من اشتراكك في ابوناصر TV.",
+  "icon": "icon.png",
+  "largeIcon": "large-icon.png",
+  "resolution": "1920x1080",
+  "bgColor": "#0a1018",
+  "disableBackHistoryAPI": true
+}

@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=ABBEEDO Test Build, O=ABBEEDO, C=SA
+Signer #1 certificate SHA-256 digest: 83f5a0402d40e2b3016ad61e1fca3fc1251d3823980c610bb37f683b6d9b906c
+Signer #1 certificate SHA-1 digest: 57dc316b0d34bde354e74d13e3677166771fa0f3
+Signer #1 certificate MD5 digest: 604a0de93ec01d674ff97453e39ba466
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: e3d58f52a1b1f5942d0933196a407869ecaefe3c5a83c92739332074338c83f5
+Signer #1 public key SHA-1 digest: 3cd77f816b4925aa79f5ef43f90bbe3d6f8eeabb
+Signer #1 public key MD5 digest: 6e55ea7b5c44ea13012514351cebcc7d

@@ -1,0 +1,40 @@
+{
+  "built": true,
+  "version": "1.2.0",
+  "hosting": {
+    "lg": "Official hosted webOS app at https://www.abbeedo.com/app",
+    "samsung": "Local packaged shared frontend with a narrow cookie-free TV API gateway"
+  },
+  "minimumSharedWebEngine": "Chromium94-class, generally 2023 TV models or newer",
+  "physicalTVTested": false,
+  "samsungCertificateAvailable": false,
+  "artifacts": [
+    {
+      "platform": "LG webOS",
+      "file": "tv/dist/com.abbeedo.tv.app_1.2.0_all.ipk",
+      "bytes": 18776,
+      "sha256": "06c4c01787c0cbfa557818752d25a88528d0fd3b9890ea4dcc4d1aa63541fd94",
+      "packagedBy": "@webos-tools/cli@3.2.6",
+      "metadataValidated": true,
+      "storeUploadReady": false,
+      "requires": [
+        "LG Seller Lounge application registration and review",
+        "Physical-TV QA"
+      ]
+    },
+    {
+      "platform": "Samsung Tizen",
+      "file": "tv/dist/abbeedo-TV-Samsung-UNSIGNED-1.2.0.wgt",
+      "bytes": 2690418,
+      "sha256": "cadbeacf00a05d2c3501e469be008043d28453c4da0a442bde7bc891cd2f8c83",
+      "signed": false,
+      "packagedFrontend": true,
+      "hostedApprovalRequired": false,
+      "storeUploadReady": false,
+      "requires": [
+        "Samsung author and distributor certificate",
+        "Physical-TV QA and Samsung TV Seller Office review"
+      ]
+    }
+  ]
+}

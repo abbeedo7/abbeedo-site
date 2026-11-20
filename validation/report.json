@@ -37,7 +37,11 @@
     },
     {
       "browser": "chromium",
-      "name": "Existing Home Screen context reaches /app on the same origin and can open the demo"
+      "name": "New source revision waits for settings/idle then refreshes the page safely"
+    },
+    {
+      "browser": "chromium",
+      "name": "Website Home Screen stays on website; explicit /app opens app and demo"
     },
     {
       "browser": "chromium",
@@ -82,15 +86,11 @@
     },
     {
       "browser": "webkit",
-      "name": "Existing Home Screen context reaches /app on the same origin and can open the demo"
+      "name": "Website Home Screen stays on website; explicit /app opens app and demo"
     },
     {
       "browser": "webkit",
       "name": "Legacy installed start URL serves app HTML instead of replacing it with storefront"
-    },
-    {
-      "browser": "chromium",
-      "name": "New source revision waits for settings/idle then refreshes the page safely"
     }
   ],
   "failures": [],
@@ -213,19 +213,5 @@
   "limitations": [
     "Headless Linux Chromium/WebKit; not physical iPhone, Windows or television.",
     "Release and revision polling uses owned fixtures; actual release endpoints have separate HTTP tests."
-  ],
-  "initial_retry_note": "Chromium source-revision idle reload exposed overlapping reload callbacks; parent added an idempotent reloading guard, then the exact polling flow passed on Chromium and WebKit.",
-  "resolved_initial_failures": [
-    {
-      "browser": "chromium",
-      "group": "polling",
-      "message": "net::ERR_ABORTED; maybe frame was detached?",
-      "traceback": "Traceback (most recent call last):\n  File \"/workspace/abbeedo-com-vercel/validation/qa.py\", line 116, in <module>\n    try:group(browser,name)\n        ^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/abbeedo-com-vercel/validation/qa.py\", line 100, in polling\n    with p.expect_navigation(wait_until='domcontentloaded',timeout=20000):p.clock.fast_forward(16000)\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 85, in __exit__\n    self._event.value\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 59, in value\n    raise exception\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 266, in continuation\n    raise Error(event[\"error\"])\nplaywright._impl._errors.Error: net::ERR_ABORTED; maybe frame was detached?\n"
-    }
-  ],
-  "targeted_retry": "polling-report.json",
-  "additional_visual_checks": [
-    "Fixed backdrop remains viewport-aligned after scrolling to subscription section.",
-    "Captured final storefront viewport and standalone app demo home."
   ]
 }

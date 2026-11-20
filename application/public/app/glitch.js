@@ -1,7 +1,9 @@
 // Match the native app's moving grid and short RGB logo tearing without
 // snapshots, navigation delays, or a perpetual JavaScript animation loop.
 const controllers = new WeakMap();
-const BURST_MS = 220;
+const BURST_MS = 300;
+const REPEAT_MS = 10000;
+const INITIAL_MS = 180;
 const QUIET_MS = 320;
 const inert = Object.freeze({refresh() {}, trigger() {return false;}, destroy() {}});
 
@@ -9,7 +11,7 @@ export function visualPolicy({background = 'standard', reducedMotion = false, sy
   const speed = background === 'fast' ? 'fast' : 'standard';
   const state = hidden ? 'hidden' : playback ? 'playback' : reducedMotion || systemReducedMotion ? 'reduced' : background === 'off' ? 'off' : 'running';
   return {state, speed, gridPeriod: speed === 'fast' ? 1900 : 3200,
-    backgroundRunning: state === 'running', glitchEnabled: !['hidden', 'playback', 'reduced'].includes(state)};
+    backgroundRunning: state === 'running', automaticGlitchEnabled: state === 'running', glitchEnabled: !['hidden', 'playback', 'reduced'].includes(state)};
 }
 
 export function startVisualEffects(scope = globalThis) {
@@ -39,11 +41,12 @@ export function startVisualEffects(scope = globalThis) {
   const player = doc.getElementById('player-page');
   let preference;
   try { preference = scope.matchMedia?.('(prefers-reduced-motion: reduce)'); } catch {}
+  let systemReducedMotion = !!preference?.matches;
   let suspended = false, closed = false, frame = 0, burst = null, lastBurst = -Infinity, logo = null;
-  let destroyedImage = false;
+  let destroyedImage = false, automaticTimer = 0, initialShown = false, pendingTarget = null, lastInteraction = -Infinity;
   const now = () => scope.performance?.now?.() ?? Date.now();
   const policy = () => visualPolicy({background: doc.body.dataset.background || 'standard',
-    reducedMotion: doc.body.dataset.reducedMotion === 'true', systemReducedMotion: !!preference?.matches,
+    reducedMotion: doc.body.dataset.reducedMotion === 'true', systemReducedMotion,
     hidden: suspended || !!doc.hidden, playback: !!player && !player.hidden});
 
   function clearBurst() {
@@ -62,7 +65,39 @@ export function startVisualEffects(scope = globalThis) {
     background.dataset.state = value.state;
     background.dataset.speed = value.speed;
     root.dataset.visualMotion = value.state;
-    if (!value.glitchEnabled) clearBurst();
+    if (!value.glitchEnabled || doc.querySelector('dialog[open]')) clearBurst();
+    if (!value.automaticGlitchEnabled || doc.querySelector('dialog[open]')) cancelAutomatic();
+    else scheduleAutomatic();
+  }
+
+  function cancelAutomatic() {
+    if (automaticTimer) scope.clearTimeout(automaticTimer);
+    automaticTimer = 0;
+  }
+
+  function visibleBrand(target = doc.body) {
+    const candidates = target?.matches?.('.brand-logo') ? [target] : [...(target?.querySelectorAll?.('.brand-logo') || [])];
+    const width = scope.innerWidth || root.clientWidth, height = scope.innerHeight || root.clientHeight;
+    return candidates.filter(image => {
+      if (image.closest?.('[hidden]') || image.getClientRects?.().length === 0) return false;
+      const rect = image.getBoundingClientRect(), style = scope.getComputedStyle?.(image);
+      return rect.width > 0 && rect.height > 0 && rect.right > 0 && rect.bottom > 0 && rect.left < width && rect.top < height && style?.visibility !== 'hidden' && style?.display !== 'none';
+    }).sort((left, right) => {
+      const area = image => {const r = image.getBoundingClientRect();return Math.max(0, Math.min(width, r.right) - Math.max(0, r.left)) * Math.max(0, Math.min(height, r.bottom) - Math.max(0, r.top));};
+      return area(right) - area(left);
+    })[0] || null;
+  }
+
+  function scheduleAutomatic() {
+    if (closed || automaticTimer || !logo || !context || !policy().automaticGlitchEnabled || doc.querySelector('dialog[open]')) return;
+    automaticTimer = scope.setTimeout(() => {
+      automaticTimer = 0;initialShown = true;refresh();
+      if (closed || !policy().automaticGlitchEnabled || doc.querySelector('dialog[open]')) return;
+      const target = visibleBrand();
+      if (target && now() - lastInteraction >= 1500 && !doc.activeElement?.matches?.('input,textarea,[contenteditable="true"]')) trigger(target);
+      initialShown = true;
+      scheduleAutomatic();
+    }, initialShown ? REPEAT_MS : INITIAL_MS);
   }
 
   function texture(image, color) {
@@ -89,8 +124,13 @@ export function startVisualEffects(scope = globalThis) {
     image.onload = () => {
       if (destroyedImage || closed || !image.naturalWidth) return;
       logo = {white: texture(image), red: texture(image, '#ff164d'), cyan: texture(image, '#00edda')};
+      root.dataset.glitchReady = 'true';
+      // A burst requested during image loading must not disappear silently.
+      const target = pendingTarget;pendingTarget = null;
+      if (target && policy().glitchEnabled && !doc.querySelector('dialog[open]')) trigger(visibleBrand(target) || visibleBrand() || target);
+      refresh();
     };
-    image.onerror = () => {};
+    image.onerror = () => {root.dataset.glitchReady = 'error';};
     image.src = new URL('/brand.png', doc.baseURI).href;
   }
 
@@ -104,7 +144,7 @@ export function startVisualEffects(scope = globalThis) {
   }
 
   function logoBounds(target, bounds) {
-    const candidate = target?.matches?.('.brand-logo') ? target : [...(target?.querySelectorAll?.('.brand-logo') || [])].find(image => !image.closest('[hidden]') && image.getClientRects().length);
+    const candidate = visibleBrand(target);
     if (candidate) return candidate.getBoundingClientRect();
     // Small controls get the native-like panel motion; an extra logo must not
     // obscure a label or appear outside their small hit target.
@@ -129,7 +169,7 @@ export function startVisualEffects(scope = globalThis) {
       context.clearRect(0, 0, width, height);
       const bounds = targetBounds(burst.target), rectangle = logoBounds(burst.target, bounds);
       if (logo && rectangle && bounds.width && bounds.height) {
-        const strength = Math.sin(Math.PI * elapsed / BURST_MS), fringe = Math.max(1, rectangle.width * .025) * strength;
+        const strength = Math.sin(Math.PI * elapsed / BURST_MS), fringe = Math.max(1.5, rectangle.width * .04) * strength;
         const tick = Math.floor(elapsed / 34);
         for (let slice = 0; slice < 11; slice++) {
           const seed = (tick * 17 + slice * 13) & 31;
@@ -151,7 +191,11 @@ export function startVisualEffects(scope = globalThis) {
   }
 
   function trigger(target = doc.getElementById('app-shell')) {
-    if (closed || !policy().glitchEnabled || !target || target.closest?.('[hidden]')) return false;
+    if (closed || !policy().glitchEnabled || !target || target.closest?.('[hidden]') || doc.querySelector('dialog[open]')) return false;
+    const brand = visibleBrand(target) || visibleBrand();
+    if (!brand) return false;
+    target = brand;
+    if (!logo || !context) {pendingTarget = target;return false;}
     const time = now();
     if (burst) {
       // Navigation can promote a small click burst to the arriving page without
@@ -163,13 +207,14 @@ export function startVisualEffects(scope = globalThis) {
     if (time - lastBurst < BURST_MS + QUIET_MS) return false;
     lastBurst = time;
     burst = {target, began: time, motion: null};
-    if (target.animate) {
-      try { burst.motion = target.animate([
-        {translate: '0 0', filter: 'none'},
-        {translate: '3px 0', filter: 'drop-shadow(2px 0 #ff164d88) drop-shadow(-2px 0 #00edda88)', offset: .22},
-        {translate: '-3px 1px', filter: 'drop-shadow(-1px 0 #ff164d66) drop-shadow(1px 0 #00edda66)', offset: .48},
-        {translate: '1px 0', filter: 'none', offset: .76},
-        {translate: '0 0', filter: 'none'},
+    const motionTarget = visibleBrand(target) || visibleBrand();
+    if (motionTarget?.animate) {
+      try { burst.motion = motionTarget.animate([
+        {translate: '0 0'},
+        {translate: '3px 0', offset: .22},
+        {translate: '-3px 1px', offset: .48},
+        {translate: '1px 0', offset: .76},
+        {translate: '0 0'},
       ], {duration: BURST_MS, easing: 'steps(1, end)'}); } catch {}
     }
     root.dataset.glitchActive = 'true';
@@ -179,35 +224,62 @@ export function startVisualEffects(scope = globalThis) {
     return true;
   }
 
+  const onActivity = () => {lastInteraction = now();};
+  const updateViewport = () => {
+    const viewport = scope.visualViewport;
+    background.style.width = Math.ceil(Math.max(scope.innerWidth || root.clientWidth || 1, viewport?.width || 0)) + 'px';
+    background.style.height = Math.ceil(Math.max(scope.innerHeight || root.clientHeight || 1, (viewport?.height || 0) + (viewport?.offsetTop || 0))) + 'px';
+    clearBurst();refresh();
+  };
   const onPointer = event => {
+    onActivity();
     const target = event.target?.closest?.('button, a.download-primary, a.download-secondary');
     if (target && !target.disabled && target.getAttribute('aria-disabled') !== 'true') trigger(target);
   };
   const onHide = event => { suspended = true; refresh(); if (!event.persisted) controller.destroy(); };
   const onShow = () => { suspended = false; refresh(); };
   const observer = scope.MutationObserver ? new scope.MutationObserver(refresh) : null;
+  const dialogs = scope.MutationObserver ? new scope.MutationObserver(records => {if (records.some(record => record.type === 'attributes' || record.target === doc.body)) refresh();}) : null;
+  dialogs?.observe(doc.body, {subtree: true, childList: true, attributes: true, attributeFilter: ['open']});
   observer?.observe(doc.body, {attributes: true, attributeFilter: ['data-background', 'data-reduced-motion']});
   if (player) observer?.observe(player, {attributes: true, attributeFilter: ['hidden']});
   doc.addEventListener('visibilitychange', refresh);
+  doc.addEventListener('close', refresh, true);
+  doc.addEventListener('toggle', refresh, true);
   doc.addEventListener('pointerdown', onPointer, {passive: true});
+  doc.addEventListener('keydown', onActivity, {passive: true});
   scope.addEventListener('pagehide', onHide);
+  scope.addEventListener('resize', updateViewport, {passive: true});
+  scope.addEventListener('focus', refresh);
+  scope.visualViewport?.addEventListener?.('resize', updateViewport, {passive: true});
+  scope.visualViewport?.addEventListener?.('scroll', updateViewport, {passive: true});
   scope.addEventListener('pageshow', onShow);
-  if (preference?.addEventListener) preference.addEventListener('change', refresh);
-  else preference?.addListener?.(refresh);
+  const onPreferenceChange = event => {systemReducedMotion = typeof event?.matches === 'boolean' ? event.matches : !!preference?.matches;refresh();};
+  if (preference) preference.onchange = onPreferenceChange;
+  if (preference?.addEventListener) preference.addEventListener('change', onPreferenceChange);
+  else preference?.addListener?.(onPreferenceChange);
 
   const controller = {
     refresh, trigger,
     destroy() {
       if (closed) return;
       closed = true; destroyedImage = true;
-      clearBurst();
-      observer?.disconnect();
+      clearBurst(); cancelAutomatic(); pendingTarget = null;
+      observer?.disconnect();dialogs?.disconnect();
       doc.removeEventListener('visibilitychange', refresh);
+      doc.removeEventListener('close', refresh, true);
+      doc.removeEventListener('toggle', refresh, true);
       doc.removeEventListener('pointerdown', onPointer);
+      doc.removeEventListener('keydown', onActivity);
       scope.removeEventListener('pagehide', onHide);
+      scope.removeEventListener('resize', updateViewport);
+      scope.removeEventListener('focus', refresh);
+      scope.visualViewport?.removeEventListener?.('resize', updateViewport);
+      scope.visualViewport?.removeEventListener?.('scroll', updateViewport);
       scope.removeEventListener('pageshow', onShow);
-      if (preference?.removeEventListener) preference.removeEventListener('change', refresh);
-      else preference?.removeListener?.(refresh);
+      if (preference?.removeEventListener) preference.removeEventListener('change', onPreferenceChange);
+      else preference?.removeListener?.(onPreferenceChange);
+      if (preference?.onchange === onPreferenceChange) preference.onchange = null;
       background.remove(); canvas.remove();
       doc.body.classList.remove('visual-effects-ready');
       root.dataset.visualMotion = 'destroyed';
@@ -218,7 +290,8 @@ export function startVisualEffects(scope = globalThis) {
   controllers.set(doc, controller);
   root.dataset.visualEffects = 'ready';
   root.dataset.glitchActive = 'false';
-  refresh();
+  root.dataset.glitchReady = 'false';
+  updateViewport();
   return controller;
 }
 

@@ -1,3 +1,4 @@
+import {routeTVAPI} from './tv-api.mjs';
 import {handleClient,handleClientMedia} from '../../worker/client-api.mjs';
 import {watchParty} from '../../worker/watch-party.mjs';
 import {devicePairing} from '../../worker/device-pairing.mjs';
@@ -14,6 +15,7 @@ export function trustedRequest(request,{ip}={}){const next=new Headers(request.h
 export function boundedMediaRequest(request,{maximum=8*1024*1024}={}){if(request.method!=='GET'||!isMediaPath(new URL(request.url).pathname))return request;const range=request.headers.get('range'),match=/^bytes=(\d+)-(\d*)$/.exec(range||'');if(!match)return request;const start=Number(match[1]),end=match[2]?Number(match[2]):Infinity;if(!Number.isSafeInteger(start)||end!==Infinity&&!Number.isSafeInteger(end)||end<start||end-start+1<=maximum)return request;const headers=new Headers(request.headers);headers.set('Range','bytes='+start+'-'+Math.min(end,start+maximum-1));return new Request(request,{headers});}
 export async function routeAPI(request,env){
   const path=new URL(request.url).pathname;
+  if(path.startsWith('/api/tv/'))return await routeTVAPI(request,env,routeAPI);
   try{
     if(path==='/api/health')return Response.json({app:'ابوناصر TV',name:'abbeedo TV',platforms:['web','iOS','Windows'],version,hosting:'vercel',storage:!!env.BUCKET,mediaConfigured:typeof env.CLIENT_SECRET==='string'&&/^[a-f0-9]{64}$/i.test(env.CLIENT_SECRET)},{headers});
     if(path==='/api/client')return await handleClient(request,env);

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.abbeedo.player.UpdateHost394Test" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-14T17:48:23" hostname="04caf7de1fd7" time="0.159">
+  <properties/>
+  <testcase name="ownedServicesUseTheSameHttpsOrigin" classname="com.abbeedo.player.UpdateHost394Test" time="0.057"/>
+  <testcase name="stableOwnedAliasAndNewerVersionAreAccepted" classname="com.abbeedo.player.UpdateHost394Test" time="0.056"/>
+  <testcase name="foreignOriginsAndUnsafeReleaseDestinationsRemainRejected" classname="com.abbeedo.player.UpdateHost394Test" time="0.046"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

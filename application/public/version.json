@@ -1,23 +1,23 @@
 {
   "name": "ابوناصر TV",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "platforms": [
     "iOS",
     "web",
     "Windows"
   ],
   "androidBaseline": "3.9.3",
-  "nativeDistribution": "Xcode project; Apple signing required",
+  "nativeDistribution": "Samsung store package / Windows installer / iPhone Home Screen",
   "webInstallable": true,
   "name_en": "abbeedo TV",
   "windows": {
-    "version": "1.1.0",
-    "setup": "https://abunasser-apple-web.m05871268.chatgpt.site/downloads/windows/setup.exe",
-    "portable": "https://abunasser-apple-web.m05871268.chatgpt.site/downloads/windows/portable.exe"
+    "version": "1.2.0",
+    "setup": "https://www.abbeedo.com/downloads/windows.exe",
+    "portable": "https://www.abbeedo.com/downloads/windows-portable.exe"
   },
   "android": {
-    "version": "3.9.3",
-    "versionCode": 28,
-    "downloadUrl": "https://abbeedo-player.m05871268.chatgpt.site/abbeedo-3.9.3.apk"
+    "version": "3.9.4",
+    "versionCode": 29,
+    "downloadUrl": "https://www.abbeedo.com/downloads/android.apk"
   }
 }

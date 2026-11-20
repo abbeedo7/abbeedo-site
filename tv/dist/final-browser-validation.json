@@ -1,0 +1,54 @@
+{
+  "testContext": {
+    "engine": "Playwright WebKit",
+    "viewport": "1920x1080",
+    "nativeTVIdentity": "Mocked in browser tests only",
+    "apiResponses": "Mocked; no provider playback or physical-TV test"
+  },
+  "tizen": {
+    "initialHomeFocus": "live",
+    "arrowRight": "movie",
+    "arrowLeft": "live",
+    "login": {
+      "overflow": false,
+      "nativeStyleHref": null,
+      "pointerFine": true
+    },
+    "home": {
+      "overflow": false,
+      "cardWidths": [
+        501,
+        501,
+        501
+      ],
+      "cardHeight": 281,
+      "tv": "tizen"
+    },
+    "tvStylesheetLoaded": false,
+    "javascriptErrors": [],
+    "failedRequests": []
+  },
+  "webos": {
+    "initialHomeFocus": "live",
+    "arrowRight": "movie",
+    "arrowLeft": "live",
+    "login": {
+      "overflow": false,
+      "nativeStyleHref": "https://www.abbeedo.com/tv-overrides.css?tv=1.2",
+      "pointerFine": false
+    },
+    "home": {
+      "overflow": false,
+      "cardWidths": [
+        501,
+        501,
+        501
+      ],
+      "cardHeight": 281,
+      "tv": "webos"
+    },
+    "tvStylesheetLoaded": true,
+    "javascriptErrors": [],
+    "failedRequests": []
+  }
+}

@@ -1,0 +1,104 @@
+name: Publish application downloads
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths-ignore:
+      - 'docs/**'
+      - 'validation/**'
+      - 'README_AR.md'
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'MANIFEST_SHA256.txt'
+      - 'BUILD_INFO.json'
+      - 'DELIVERY.json'
+permissions:
+  contents: write
+concurrency:
+  group: application-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: windows/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Choose an immutable release tag
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag="build-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}-${GITHUB_SHA:0:8}"
+          fi
+          if [[ ! "$tag" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$ ]]; then exit 1; fi
+          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
+      - name: Install and test the Windows application
+        working-directory: windows
+        run: |
+          npm ci
+          npm test
+      - name: Build the Windows installer and single portable EXE
+        working-directory: windows
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run build
+      - name: Verify Android and prepare the release manifest
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,re,shutil
+          root=Path.cwd();out=root/'release-output';out.mkdir()
+          version=lambda value: isinstance(value,str) and re.fullmatch(r'\d{1,5}\.\d{1,5}\.\d{1,5}',value)
+          meta=json.loads((root/'release-assets/android.json').read_text(encoding='utf-8'))
+          apk=root/'release-assets/abbeedo-TV-Android.apk'
+          checksum=lambda path:hashlib.file_digest(path.open('rb'),'sha256').hexdigest()
+          assert version(meta['version']) and type(meta['versionCode']) is int and meta['versionCode']>0
+          assert checksum(apk)==meta['sha256'], 'The Android APK does not match its checked manifest.'
+          windows=json.loads((root/'windows/package.json').read_text(encoding='utf-8'))
+          web=json.loads((root/'package.json').read_text(encoding='utf-8'))
+          assert version(windows['version']) and version(web['version'])
+          names={'android':'abbeedo-TV-Android.apk','setup':'abbeedo-TV-Setup.exe','portable':'abbeedo-TV-Portable.exe'}
+          sources={'android':apk,'setup':root/'windows/dist'/names['setup'],'portable':root/'windows/dist'/names['portable']}
+          rows={}
+          for key,source in sources.items():
+              assert source.is_file() and 0<source.stat().st_size<=2147483648
+              shutil.copy2(source,out/names[key])
+              rows[key]={'filename':names[key],'size':source.stat().st_size,'sha256':checksum(source)}
+          manifest={'schemaVersion':1,'tag':os.environ['RELEASE_TAG'],'webVersion':web['version'],
+                    'android':{'version':meta['version'],'versionCode':meta['versionCode'],'notes':str(meta.get('notes',''))[:1500],**rows['android']},
+                    'windows':{'version':windows['version'],'setup':rows['setup'],'portable':rows['portable']}}
+          (out/'releases.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          (out/'notes.md').write_text('abbeedo TV\n\nWindows '+windows['version']+' · Android '+meta['version']+
+                                      '\n\nDownload the installer, one-file portable EXE, or Android APK below.\n',encoding='utf-8')
+          PY
+      - name: Publish all files before making the release visible
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft' > release-state.txt 2>/dev/null; then
+            if [[ "$(cat release-state.txt)" != "true" ]]; then
+              echo "This tag is already published. Published releases are not overwritten."
+              exit 0
+            fi
+          else
+            gh release create "$RELEASE_TAG" --draft --target "$GITHUB_SHA" --title "abbeedo TV · $RELEASE_TAG" --notes-file release-output/notes.md
+          fi
+          gh release upload "$RELEASE_TAG" \
+            release-output/abbeedo-TV-Android.apk \
+            release-output/abbeedo-TV-Setup.exe \
+            release-output/abbeedo-TV-Portable.exe \
+            release-output/releases.json --clobber
+          gh release edit "$RELEASE_TAG" --draft=false --latest

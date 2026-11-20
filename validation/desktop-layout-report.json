@@ -1,0 +1,429 @@
+{
+  "passed": false,
+  "checks": [
+    {
+      "browser": "chromium",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "gate"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "gate"
+    }
+  ],
+  "failures": [
+    {
+      "browser": "chromium",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "app",
+      "message": "Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n",
+      "trace": "Traceback (most recent call last):\n  File \"/tmp/desktop-layout-qa.py\", line 42, in <module>\n    report['measurements'].append({'browser':name,'size':size,'mode':mode,'form':login,'cards':rect(p,'#home-cards'),'card':rect(p,'.home-card'),'logo':rect(p,'.home-page .brand-logo')})\n                                                                                                                            ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/desktop-layout-qa.py\", line 10, in rect\n    def rect(p,selector):return p.locator(selector).evaluate('(n)=>{const r=n.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}}')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/sync_api/_generated.py\", line 18092, in evaluate\n    self._sync(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 195, in evaluate\n    return await self._with_element(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 114, in _with_element\n    handle = await self.element_handle(timeout=timeout)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_locator.py\", line 325, in element_handle\n    handle = await self._frame.wait_for_selector(\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_frame.py\", line 394, in wait_for_selector\n    await self._channel.send(\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 76, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/playwright/_impl/_connection.py\", line 632, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.Error: Locator.evaluate: Error: strict mode violation: locator(\".home-card\") resolved to 3 elements:\n    1) <button type=\"button\" class=\"home-card\" data-kind=\"series\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062a\")\n    2) <button type=\"button\" data-kind=\"live\" class=\"home-card\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0628\u062b \u0627\u0644\u0645\u0628\u0627\u0634\u0631\")\n    3) <button type=\"button\" class=\"home-card\" data-kind=\"movie\">\u2026</button> aka get_by_role(\"button\", name=\"\u0627\u0644\u0623\u0641\u0644\u0627\u0645\")\n\nCall log:\n  - waiting for locator(\".home-card\")\n\n"
+    }
+  ],
+  "measurements": [
+    {
+      "browser": "chromium",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 408,
+        "y": 119.34375,
+        "width": 84,
+        "height": 84,
+        "bottom": 203.34375,
+        "right": 492
+      },
+      "card": {
+        "x": 90,
+        "y": 289.640625,
+        "width": 720,
+        "height": 243,
+        "bottom": 532.640625,
+        "right": 810
+      }
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 456,
+        "y": 113.25,
+        "width": 112,
+        "height": 112,
+        "bottom": 225.25,
+        "right": 568
+      },
+      "card": {
+        "x": 132,
+        "y": 320.75,
+        "width": 760,
+        "height": 386,
+        "bottom": 706.75,
+        "right": 892
+      }
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 627,
+        "y": 113.25,
+        "width": 112,
+        "height": 112,
+        "bottom": 225.25,
+        "right": 739
+      },
+      "card": {
+        "x": 303,
+        "y": 320.75,
+        "width": 760,
+        "height": 386,
+        "bottom": 706.75,
+        "right": 1063
+      }
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 879,
+        "y": 139.078125,
+        "width": 162,
+        "height": 162,
+        "bottom": 301.078125,
+        "right": 1041
+      },
+      "card": {
+        "x": 500,
+        "y": 447.65625,
+        "width": 920,
+        "height": 545.25,
+        "bottom": 992.90625,
+        "right": 1420
+      }
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 1188,
+        "y": 293.921875,
+        "width": 184,
+        "height": 184,
+        "bottom": 477.921875,
+        "right": 1372
+      },
+      "card": {
+        "x": 820,
+        "y": 632.015625,
+        "width": 920,
+        "height": 566.0625,
+        "bottom": 1198.078125,
+        "right": 1740
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 408,
+        "y": 119.34375,
+        "width": 84,
+        "height": 84,
+        "bottom": 203.34375,
+        "right": 492
+      },
+      "card": {
+        "x": 90,
+        "y": 289.640625,
+        "width": 720,
+        "height": 243,
+        "bottom": 532.640625,
+        "right": 810
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 456,
+        "y": 113.25,
+        "width": 112,
+        "height": 112,
+        "bottom": 225.25,
+        "right": 568
+      },
+      "card": {
+        "x": 132,
+        "y": 320.75,
+        "width": 760,
+        "height": 386,
+        "bottom": 706.75,
+        "right": 892
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 627,
+        "y": 113.25,
+        "width": 112,
+        "height": 112,
+        "bottom": 225.25,
+        "right": 739
+      },
+      "card": {
+        "x": 303,
+        "y": 320.75,
+        "width": 760,
+        "height": 386,
+        "bottom": 706.75,
+        "right": 1063
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 879,
+        "y": 139.09375,
+        "width": 162,
+        "height": 162,
+        "bottom": 301.09375,
+        "right": 1041
+      },
+      "card": {
+        "x": 500,
+        "y": 447.640625,
+        "width": 920,
+        "height": 545.25,
+        "bottom": 992.890625,
+        "right": 1420
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "gate",
+      "logo": {
+        "x": 1188,
+        "y": 293.921875,
+        "width": 184,
+        "height": 184,
+        "bottom": 477.921875,
+        "right": 1372
+      },
+      "card": {
+        "x": 820,
+        "y": 632.015625,
+        "width": 920,
+        "height": 566.0625,
+        "bottom": 1198.078125,
+        "right": 1740
+      }
+    }
+  ]
+}

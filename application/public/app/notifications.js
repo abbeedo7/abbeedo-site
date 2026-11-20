@@ -48,6 +48,11 @@ export async function requestNotificationPermission() {
       return {granted, mode: 'native-ios', reason: granted ? 'granted' : 'denied'};
     }
     const bridge = desktopBridge();
+    if (typeof bridge?.setNotificationsEnabled === 'function') {
+      const result=await bridge.setNotificationsEnabled(true);
+      const granted=result?.ok===true&&result?.enabled===true&&result?.supported!==false;
+      return {granted,mode:'native-windows',reason:granted?'granted':result?.supported===false?'unsupported':'denied'};
+    }
     if (typeof bridge?.requestNotifications === 'function') {
       const granted = allowed(await bridge.requestNotifications());
       nativePermission.set('native-windows', granted);

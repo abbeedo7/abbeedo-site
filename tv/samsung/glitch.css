@@ -1,0 +1,19 @@
+/* Full viewport texture, with only compositor animations between brief bursts. */
+body.visual-effects-ready{background-image:none;isolation:isolate}
+body.visual-effects-ready>.app-shell{position:relative;z-index:1}
+#visual-backdrop{position:fixed;left:0;top:0;width:100%;height:100vh;height:100vh;z-index:0;overflow:hidden;pointer-events:none;user-select:none;background:var(--bg);isolation:isolate;contain:strict}
+#visual-backdrop .motion-grid{position:absolute;inset:-42px;pointer-events:none;background-size:42px 42px;will-change:transform;opacity:.95}
+#visual-backdrop .motion-grid-x{background-image:linear-gradient(90deg,color-mix(in srgb,var(--ink) 15%,transparent) .7px,transparent .7px);animation:visual-grid-x 3.2s linear infinite}
+#visual-backdrop .motion-grid-y{background-image:linear-gradient(color-mix(in srgb,var(--ink) 15%,transparent) .7px,transparent .7px);animation:visual-grid-y 4.48s linear infinite}
+#visual-backdrop .motion-glow{position:absolute;inset:-25%;pointer-events:none;background:radial-gradient(ellipse at 72% 22%,color-mix(in srgb,var(--accent) 27%,transparent),transparent 65%),radial-gradient(ellipse at 10% 90%,#10493166,transparent 62%);animation:visual-glow 18s ease-in-out infinite alternate;will-change:transform}
+#visual-backdrop[data-speed=fast] .motion-grid-x{animation-duration:1.9s}
+#visual-backdrop[data-speed=fast] .motion-grid-y{animation-duration:2.66s}
+#visual-backdrop[data-speed=fast] .motion-glow{animation-duration:11s}
+#visual-backdrop:not([data-state=running]) .motion-grid,#visual-backdrop:not([data-state=running]) .motion-glow{animation-play-state:paused;will-change:auto}
+#visual-backdrop[data-state=off] .motion-grid,#visual-backdrop[data-state=off] .motion-glow,#visual-backdrop[data-state=reduced] .motion-grid,#visual-backdrop[data-state=reduced] .motion-glow{animation:none;transform:none}
+#visual-backdrop[data-state=hidden],#visual-backdrop[data-state=playback]{visibility:hidden}
+#visual-glitch{position:fixed;inset:0;width:100vw;height:100vh;z-index:70;pointer-events:none;user-select:none}
+@keyframes visual-grid-x{from{transform:translate3d(0,0,0)}to{transform:translate3d(42px,0,0)}}
+@keyframes visual-grid-y{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,42px,0)}}
+@keyframes visual-glow{0%{transform:translate3d(-8%,-5%,0)}50%{transform:translate3d(5%,7%,0)}100%{transform:translate3d(8%,-3%,0)}}
+@media(prefers-reduced-motion:reduce){#visual-backdrop .motion-grid,#visual-backdrop .motion-glow{animation:none!important;transform:none!important}#visual-glitch{display:none!important}}

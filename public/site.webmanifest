@@ -1,0 +1,20 @@
+{
+  "id": "/website",
+  "name": "ابوناصر",
+  "short_name": "ابوناصر",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#0a1018",
+  "theme_color": "#0a1018",
+  "icons": [
+    {
+      "src": "/assets/app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

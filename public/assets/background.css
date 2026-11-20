@@ -1,6 +1,7 @@
 /* The same single full-viewport moving grid used by the application. */
 body.visual-effects-ready{background-image:none;isolation:isolate}
-#visual-backdrop{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;user-select:none;background:var(--bg,#0a1018);isolation:isolate;contain:strict}
+body.visual-effects-ready>main,body.visual-effects-ready>.site-footer{position:relative;z-index:1}
+#visual-backdrop{position:fixed;left:0;top:0;width:100%;height:100vh;height:100dvh;z-index:0;overflow:hidden;pointer-events:none;user-select:none;background:var(--bg,#0a1018);isolation:isolate;contain:strict}
 #visual-backdrop .motion-grid{position:absolute;inset:-42px;pointer-events:none;background-size:42px 42px;will-change:transform;opacity:.95}
 #visual-backdrop .motion-grid-x{background-image:linear-gradient(90deg,color-mix(in srgb,var(--ink,#f6f4f1) 15%,transparent) .7px,transparent .7px);animation:visual-grid-x 3.2s linear infinite}
 #visual-backdrop .motion-grid-y{background-image:linear-gradient(color-mix(in srgb,var(--ink,#f6f4f1) 15%,transparent) .7px,transparent .7px);animation:visual-grid-y 4.48s linear infinite}

@@ -15,7 +15,7 @@ test('combined application build preserves storefront, PWA identity, required as
     const result=await buildApplication({projectRoot,outputRoot:output});
     assert.equal(await fs.readFile(path.join(output,'static/index.html'),'utf8'),'owned storefront');
     assert.ok((await fs.readFile(path.join(output,'static/app.html'),'utf8')).includes('id="app-shell"'));
-    for(const name of ['manifest.webmanifest','manifest.en.webmanifest']){const manifest=JSON.parse(await fs.readFile(path.join(output,'static',name),'utf8'));assert.equal(manifest.id,'/');assert.equal(manifest.scope,'/');assert.equal(manifest.start_url,'/app?source=installed');}
+    for(const name of ['manifest.webmanifest','manifest.en.webmanifest']){const manifest=JSON.parse(await fs.readFile(path.join(output,'static',name),'utf8'));assert.equal(manifest.id,'/app');assert.equal(manifest.scope,'/app');assert.equal(manifest.start_url,'/app?source=installed');}
     assert.ok(result.shell.includes('/app.html'));assert.ok(!result.shell.includes('/index.html'));assert.ok(!result.shell.includes('/version.json'));
     const sw=await fs.readFile(path.join(output,'static/sw.js'),'utf8');assert.match(sw,/abunasser-offline-v1/);assert.ok(!sw.includes('indexedDB.deleteDatabase'));
     const config=JSON.parse(await fs.readFile(path.join(result.functionDir,'.vc-config.json'),'utf8'));assert.equal(config.maxDuration,300);assert.equal(config.supportsResponseStreaming,true);
@@ -36,4 +36,18 @@ test('storefront pages, live release metadata, APIs and range requests never fal
 });
 test('activation removes obsolete app shell caches while retaining offline media and unrelated site caches',async()=>{
   const listeners=new Map(),removed=[];let done;vm.runInNewContext(applicationServiceWorker({cache:'abunasser-apple-web-1-current',shell:[]}),{self:{addEventListener:(name,listener)=>listeners.set(name,listener),clients:{claim:async()=>{}}},caches:{keys:async()=>['abunasser-apple-web-1-old','abunasser-apple-web-1-current','abunasser-offline-v1','another-site-cache'],delete:async name=>removed.push(name)}});listeners.get('activate')({waitUntil(value){done=value;}});await done;assert.deepEqual(removed,['abunasser-apple-web-1-old']);
+});
+
+test('notification clicks keep website and app windows separate without interrupting app playback',async()=>{
+ const source=await fs.readFile(path.join(projectRoot,'application/scripts/offline-service-worker.js'),'utf8');
+ for(const [target,clients,expected] of [
+  ['/app',[['site','/'],['app','/app']],'app'],
+  ['/apps',[['app','/app'],['site','/']],'site'],
+  ['/app',[['site','/']],'open:/app'],
+  ['https://external.invalid/path',[['site','/'],['app','/app']],'app']
+ ]){
+  const handlers=new Map(),calls=[];let done;
+  vm.runInNewContext(source,{URL,Headers,Response,ReadableStream,self:{location:{origin:'https://www.abbeedo.com'},addEventListener:(name,listener)=>handlers.set(name,listener),clients:{matchAll:async()=>clients.map(([id,url])=>({url:'https://www.abbeedo.com'+url,focus:async()=>calls.push(id)})),openWindow:async href=>calls.push('open:'+new URL(href).pathname)}}});
+  handlers.get('notificationclick')({notification:{data:{url:target},close(){}},waitUntil(value){done=value}});await done;assert.deepEqual(calls,[expected]);
+ }
 });

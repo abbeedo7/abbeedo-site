@@ -1,0 +1,7 @@
+node_modules/
+validation/
+api/tests/
+tests/
+docs/
+README_AR.md
+MANIFEST_SHA256.txt

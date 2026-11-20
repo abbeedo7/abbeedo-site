@@ -1,6 +1,7 @@
 {
   "passed": true,
-  "files_checked": 73,
-  "former_product_refs": [],
-  "background_layers": 1
+  "files_checked": 65,
+  "former_product_or_chat_host_refs": [],
+  "website_background_layers": 1,
+  "review_note": "f7rv.site.preferences.v1 is only a preserved local preference migration key, never a download or request URL."
 }

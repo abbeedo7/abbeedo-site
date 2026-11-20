@@ -1,0 +1,5 @@
+{
+  "provider": "github",
+  "github": {"owner": "abbeedo7", "repository": "abbeedo-site", "tag": "latest"},
+  "blob": {"manifestUrl": null}
+}

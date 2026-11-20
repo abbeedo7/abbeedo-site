@@ -1,0 +1,40 @@
+
+> abunasser-tv-windows@1.2.0 test
+> node --test tests/*.test.cjs
+
+✔ installer chooses one persisted or explicit language before GUI and suppresses mixed-language popup (1.768758ms)
+✔ main process retains the legacy profile and persists locale only from its trusted main frame (41.26443ms)
+✔ locale selection accepts supported languages and prioritizes saved customer choice (1.776359ms)
+✔ branding changes preserve the established profile and write only language metadata (6.564355ms)
+✔ native offline page follows the selected language without displaying an English or Arabic placeholder (2.03385ms)
+✔ both Windows distributions are executable artifacts and installer language choice is enabled (0.54079ms)
+✔ only the configured HTTPS application origin is a trusted navigation (1.193106ms)
+✔ external destinations reject shell protocols, embedded credentials and deceptive domains (0.271893ms)
+✔ camera and playback permissions remain scoped to the application origin (0.152546ms)
+✔ renderer security keeps Node integration and unsafe content disabled (0.139997ms)
+✔ locale bridge is limited to the exact trusted main frame (1.038797ms)
+✔ preload exposes only bounded language and notification preference requests (2.585867ms)
+✔ a non-HTTPS or credential-bearing build configuration cannot start (0.296709ms)
+✔ hover, scrolling and focus alone never authorize an external browser launch (0.172515ms)
+✔ local builds never infer a publisher from inherited GitHub credentials (382.046752ms)
+✔ native release ordering compares numeric versions and rejects malformed display versions (1.320664ms)
+✔ native monitor requires explicit opt-in, reads only fixed own-domain URLs and stores no announcement text (47.143504ms)
+✔ native opt-out persists across restart and prevents duplicate release/announcement delivery (4.981843ms)
+✔ foreign update destinations, expired messages and malformed identifiers cannot trigger native actions (2.394884ms)
+✔ stopping the native monitor aborts pending network operations without a background process (1.005628ms)
+✔ native installer source is pinned to the exact public repository and named setup asset (1.503686ms)
+✔ in-app updater streams verified bytes, emits progress and runs only the verified private installer on explicit install (34.1522ms)
+✔ wrong checksums, incomplete bodies and modified cached installers never execute (6.478918ms)
+✔ an unapproved redirect cannot fetch or run another host (1.910778ms)
+✔ cancel aborts the active transfer and removes partial cache files (1.974853ms)
+✔ unpublished or foreign metadata is clearly unavailable, not falsely up-to-date (0.781476ms)
+✔ desktop window follows available screen instead of a fixed mobile-sized frame (1.441493ms)
+✔ window fits small screens and recovers saved positions after a monitor is removed (0.262498ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 929.243755

@@ -23,7 +23,7 @@ const glyphs={
 };
 function artwork(name){if(glyphs[name])return '<svg class="app-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+glyphs[name]+'</svg>';if(!ICON_NAMES.includes(name))throw Error('Missing icon: '+name);return icon(name);}
 const layout=await fs.readFile(path.join(root,'src/layout.html'),'utf8');
-for(const [name,target,title,page] of [['index.html','index.html','ابوناصر TV · عالمك من الترفيه','home'],['apps.html','apps/index.html','التطبيقات والتحميل · ابوناصر TV','apps']]){
+for(const [name,target,title,page] of [['index.html','index.html','ابوناصر · اشتراكات وتطبيقات','home'],['apps.html','apps/index.html','التطبيقات والتحميل · ابوناصر','apps']]){
  const body=await fs.readFile(path.join(root,'src',name),'utf8');
  let text=layout.replace('{{BODY}}',body);
  const replacements={TITLE:title,PAGE:page,CANONICAL:config.domain+(page==='apps'?'/apps':'/'),DOMAIN:config.domain,HASH:revision,PHONE:config.phone,WHATSAPP:config.whatsapp,PRICE:config.yearly_price_sar,SUBSCRIBE_URL:config.whatsapp+'?text='+encodeURIComponent('أرغب بالاشتراك في ابوناصر TV')};
@@ -32,10 +32,10 @@ for(const [name,target,title,page] of [['index.html','index.html','ابوناص�
  if(/\{\{[A-Z]/.test(text))throw Error('Unresolved page template');
  const destination=path.join(staticDir,target);await fs.mkdir(path.dirname(destination),{recursive:true});await fs.writeFile(destination,text);
 }
-await fs.writeFile(path.join(staticDir,'site-version.json'),JSON.stringify({name:config.name_ar,name_en:config.name_en,version:config.website_version,revision,builtAt:new Date().toISOString()})+'\n');
+await fs.writeFile(path.join(staticDir,'site-version.json'),JSON.stringify({name:config.site_name_ar||config.name_ar,name_en:config.site_name_en||config.name_en,version:config.website_version,revision,builtAt:new Date().toISOString()})+'\n');
 await fs.writeFile(path.join(staticDir,'robots.txt'),'User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: '+config.domain+'/sitemap.xml\n');
 await fs.writeFile(path.join(staticDir,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>'+config.domain+'/</loc></url><url><loc>'+config.domain+'/apps</loc></url></urlset>');
-await fs.writeFile(path.join(staticDir,'404.html'),'<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>ابوناصر TV</title><style>body{background:#0a1018;color:#fff;font:22px sans-serif;text-align:center;padding:15vh 20px}a{color:#ff5260}</style><h1>الصفحة غير موجودة</h1><p>Page not found</p><a href="/">العودة للموقع · Home</a></html>');
+await fs.writeFile(path.join(staticDir,'404.html'),'<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>ابوناصر</title><style>body{background:#0a1018;color:#fff;font:22px sans-serif;text-align:center;padding:15vh 20px}a{color:#ff5260}</style><h1>الصفحة غير موجودة</h1><p>Page not found</p><a href="/">العودة للموقع · Home</a></html>');
 for(const entry of ['releases','download']){
  const fn=path.join(out,'functions',entry+'.func');await fs.mkdir(fn,{recursive:true});
  await build({entryPoints:[path.join(root,'api',entry+'.mjs')],outfile:path.join(fn,'index.mjs'),bundle:true,platform:'node',format:'esm',target:'node22',minify:false});
@@ -47,6 +47,9 @@ const routes=[
  {src:'/(.*)',headers:{'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':csp},continue:true},
  {src:'^/api/releases$',dest:'/releases'},
  {src:'^/api/download$',dest:'/download'},
+ {src:'^/updates\\.json$',headers:noCache,dest:'/releases?format=android'},
+ {src:'^/version\\.json$',headers:{...noCache,'Access-Control-Allow-Origin':'*'},continue:true},
+ {src:'^/watch-demo(?:[0-9]+)?\\.(?:mp4|m3u8|ts|m4s)$',headers:{'Access-Control-Allow-Origin':'*'},continue:true},
  {src:'^/downloads/android\\.apk$',dest:'/download?file=android'},
  {src:'^/downloads/windows\\.exe$',dest:'/download?file=windows'},
  {src:'^/downloads/windows-portable\\.exe$',dest:'/download?file=portable'},
@@ -63,4 +66,4 @@ const routes=[
  {src:'/(.*)',status:404,dest:'/404.html'}
 ];
 await fs.writeFile(path.join(out,'config.json'),JSON.stringify({version:3,routes},null,2)+'\n');
-console.log(JSON.stringify({built:true,name:config.name_ar,version:config.website_version,revision,application:application.version,output:'.vercel/output',domain:config.domain}));
+console.log(JSON.stringify({built:true,name:config.site_name_ar||config.name_ar,version:config.website_version,revision,application:application.version,output:'.vercel/output',domain:config.domain}));

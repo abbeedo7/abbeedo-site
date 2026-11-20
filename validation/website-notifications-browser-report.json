@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "checks": [
+    "No automatic permission prompt or historical release alert",
+    "Explicit permission retains user activation",
+    "Fresh announcement reaches SW notification once",
+    "Turning OS alerts off keeps foreground announcements",
+    "Website brand is abbeedo while app preview remains abbeedo TV"
+  ],
+  "page_errors": [],
+  "physical_os_notification_tested": false
+}

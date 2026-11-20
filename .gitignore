@@ -1,0 +1,17 @@
+node_modules/
+.vercel/
+.env*
+!.env.example
+validation/screenshots/
+*.zip
+*.partial
+.DS_Store
+windows/dist/
+windows/validation/
+release-output/
+tv/tooling/node_modules/
+tv/*/author-signature.xml
+tv/*/signature*.xml
+*.p12
+*.jks
+*.keystore

@@ -1,0 +1,180 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "browser": "chromium",
+      "variant": "application",
+      "check": "Delayed logo texture request produces actual colored pixels on the large visible brand",
+      "pixels": {
+        "count": "1",
+        "alpha": 7938,
+        "colored": 498,
+        "elapsed": 19.700000002980232
+      }
+    },
+    {
+      "browser": "chromium",
+      "variant": "application",
+      "check": "Idle recurrence emits actual RGB pixels without click or navigation",
+      "pixels": {
+        "count": "2",
+        "alpha": 8545,
+        "colored": 1646,
+        "elapsed": 10.099999994039536
+      }
+    },
+    {
+      "browser": "chromium",
+      "variant": "application",
+      "check": "Settings clears logo effect but never filters/hides the content card or backdrop"
+    },
+    {
+      "browser": "chromium",
+      "variant": "application",
+      "check": "Backdrop covers current iPhone-size viewport after scroll and rotation",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      }
+    },
+    {
+      "browser": "chromium",
+      "variant": "application",
+      "check": "Reduced motion, Still, playback and teardown suspend decorative activity"
+    },
+    {
+      "browser": "chromium",
+      "variant": "website",
+      "check": "Delayed logo texture request produces actual colored pixels on the large visible brand",
+      "pixels": {
+        "count": "1",
+        "alpha": 8860,
+        "colored": 2191,
+        "elapsed": 17.69999998807907
+      }
+    },
+    {
+      "browser": "chromium",
+      "variant": "website",
+      "check": "Idle recurrence emits actual RGB pixels without click or navigation",
+      "pixels": {
+        "count": "2",
+        "alpha": 8426,
+        "colored": 1467,
+        "elapsed": 8.599999994039536
+      }
+    },
+    {
+      "browser": "chromium",
+      "variant": "website",
+      "check": "Settings clears logo effect but never filters/hides the content card or backdrop"
+    },
+    {
+      "browser": "chromium",
+      "variant": "website",
+      "check": "Backdrop covers current iPhone-size viewport after scroll and rotation",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      }
+    },
+    {
+      "browser": "chromium",
+      "variant": "website",
+      "check": "Reduced motion, Still, playback and teardown suspend decorative activity"
+    },
+    {
+      "browser": "webkit",
+      "variant": "application",
+      "check": "Delayed logo texture request produces actual colored pixels on the large visible brand",
+      "pixels": {
+        "count": "1",
+        "alpha": 8869,
+        "colored": 2277,
+        "elapsed": 225
+      }
+    },
+    {
+      "browser": "webkit",
+      "variant": "application",
+      "check": "Idle recurrence emits actual RGB pixels without click or navigation",
+      "pixels": {
+        "count": "2",
+        "alpha": 9359,
+        "colored": 3099,
+        "elapsed": 72
+      }
+    },
+    {
+      "browser": "webkit",
+      "variant": "application",
+      "check": "Settings clears logo effect but never filters/hides the content card or backdrop"
+    },
+    {
+      "browser": "webkit",
+      "variant": "application",
+      "check": "Backdrop covers current iPhone-size viewport after scroll and rotation",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      }
+    },
+    {
+      "browser": "webkit",
+      "variant": "application",
+      "check": "Reduced motion, Still, playback and teardown suspend decorative activity"
+    },
+    {
+      "browser": "webkit",
+      "variant": "website",
+      "check": "Delayed logo texture request produces actual colored pixels on the large visible brand",
+      "pixels": {
+        "count": "1",
+        "alpha": 11076,
+        "colored": 6267,
+        "elapsed": 175
+      }
+    },
+    {
+      "browser": "webkit",
+      "variant": "website",
+      "check": "Idle recurrence emits actual RGB pixels without click or navigation",
+      "pixels": {
+        "count": "2",
+        "alpha": 8221,
+        "colored": 1058,
+        "elapsed": 13
+      }
+    },
+    {
+      "browser": "webkit",
+      "variant": "website",
+      "check": "Settings clears logo effect but never filters/hides the content card or backdrop"
+    },
+    {
+      "browser": "webkit",
+      "variant": "website",
+      "check": "Backdrop covers current iPhone-size viewport after scroll and rotation",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 844,
+        "height": 390
+      }
+    },
+    {
+      "browser": "webkit",
+      "variant": "website",
+      "check": "Reduced motion, Still, playback and teardown suspend decorative activity"
+    }
+  ],
+  "failures": [],
+  "physical_windows_tested": false,
+  "scope": "Actual desktop-sized Chromium and WebKit canvas RGB pixels, automatic texture-load retry and periodic idle recurrence"
+}

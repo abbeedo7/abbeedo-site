@@ -1,0 +1,56 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "browser": "chromium",
+      "check": "Website Home Screen stays on website; app has separate identity and real PNG icon"
+    },
+    {
+      "browser": "chromium",
+      "check": "Browser app has a working return-to-website button"
+    },
+    {
+      "browser": "chromium",
+      "check": "Desktop logo stays above download card; large settings button and stable card at 1366/1920"
+    },
+    {
+      "browser": "chromium",
+      "check": "Windows updates download and install inside app through bounded native bridge without website navigation"
+    },
+    {
+      "browser": "chromium",
+      "check": "Native notification opt-in synchronizes with the app setting"
+    },
+    {
+      "browser": "chromium",
+      "check": "Remote Right stays on the adjacent home card rather than jumping to tools"
+    },
+    {
+      "browser": "webkit",
+      "check": "Website Home Screen stays on website; app has separate identity and real PNG icon"
+    },
+    {
+      "browser": "webkit",
+      "check": "Browser app has a working return-to-website button"
+    },
+    {
+      "browser": "webkit",
+      "check": "Desktop logo stays above download card; large settings button and stable card at 1366/1920"
+    },
+    {
+      "browser": "webkit",
+      "check": "Windows updates download and install inside app through bounded native bridge without website navigation"
+    },
+    {
+      "browser": "webkit",
+      "check": "Native notification opt-in synchronizes with the app setting"
+    },
+    {
+      "browser": "webkit",
+      "check": "Remote Right stays on the adjacent home card rather than jumping to tools"
+    }
+  ],
+  "failures": [],
+  "physical_devices_tested": false,
+  "native_install_simulated": true
+}

@@ -1,0 +1,488 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "browser": "chromium",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "app"
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "app"
+    }
+  ],
+  "failures": [],
+  "measurements": [
+    {
+      "browser": "chromium",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "app",
+      "form": {
+        "x": 90,
+        "y": 293.640625,
+        "width": 720,
+        "height": 200,
+        "bottom": 493.640625,
+        "right": 810
+      },
+      "cards": {
+        "x": 28,
+        "y": 269.453125,
+        "width": 844,
+        "height": 138,
+        "bottom": 407.453125,
+        "right": 872
+      },
+      "card": {
+        "x": 28,
+        "y": 269.453125,
+        "width": 270.65625,
+        "height": 138,
+        "bottom": 407.453125,
+        "right": 298.65625
+      },
+      "logo": {
+        "x": 410.015625,
+        "y": 118.15625,
+        "width": 80,
+        "height": 80,
+        "bottom": 198.15625,
+        "right": 490.015625
+      }
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "app",
+      "form": {
+        "x": 152,
+        "y": 386.796875,
+        "width": 720,
+        "height": 242,
+        "bottom": 628.796875,
+        "right": 872
+      },
+      "cards": {
+        "x": 30.71875,
+        "y": 328.765625,
+        "width": 962.5625,
+        "height": 199.671875,
+        "bottom": 528.4375,
+        "right": 993.28125
+      },
+      "card": {
+        "x": 30.71875,
+        "y": 328.765625,
+        "width": 309.9375,
+        "height": 199.671875,
+        "bottom": 528.4375,
+        "right": 340.65625
+      },
+      "logo": {
+        "x": 456,
+        "y": 121.171875,
+        "width": 112,
+        "height": 112,
+        "bottom": 233.171875,
+        "right": 568
+      }
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "app",
+      "form": {
+        "x": 266.375,
+        "y": 386.796875,
+        "width": 833.25,
+        "height": 242,
+        "bottom": 628.796875,
+        "right": 1099.625
+      },
+      "cards": {
+        "x": 40.96875,
+        "y": 328.765625,
+        "width": 1284.0625,
+        "height": 199.671875,
+        "bottom": 528.4375,
+        "right": 1325.03125
+      },
+      "card": {
+        "x": 40.96875,
+        "y": 328.765625,
+        "width": 413.453125,
+        "height": 199.671875,
+        "bottom": 528.4375,
+        "right": 454.421875
+      },
+      "logo": {
+        "x": 627,
+        "y": 121.171875,
+        "width": 112,
+        "height": 112,
+        "bottom": 233.171875,
+        "right": 739
+      }
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "app",
+      "form": {
+        "x": 410,
+        "y": 576.8125,
+        "width": 1100,
+        "height": 280,
+        "bottom": 856.8125,
+        "right": 1510
+      },
+      "cards": {
+        "x": 130,
+        "y": 466.328125,
+        "width": 1660,
+        "height": 291.59375,
+        "bottom": 757.921875,
+        "right": 1790
+      },
+      "card": {
+        "x": 130,
+        "y": 466.328125,
+        "width": 532.84375,
+        "height": 291.59375,
+        "bottom": 757.921875,
+        "right": 662.84375
+      },
+      "logo": {
+        "x": 879,
+        "y": 165.5,
+        "width": 162,
+        "height": 162,
+        "bottom": 327.5,
+        "right": 1041
+      }
+    },
+    {
+      "browser": "chromium",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "app",
+      "form": {
+        "x": 730,
+        "y": 773.59375,
+        "width": 1100,
+        "height": 280,
+        "bottom": 1053.59375,
+        "right": 1830
+      },
+      "cards": {
+        "x": 450,
+        "y": 605.1875,
+        "width": 1660,
+        "height": 388.796875,
+        "bottom": 993.984375,
+        "right": 2110
+      },
+      "card": {
+        "x": 450,
+        "y": 605.1875,
+        "width": 532,
+        "height": 388.796875,
+        "bottom": 993.984375,
+        "right": 982
+      },
+      "logo": {
+        "x": 1188,
+        "y": 272.6875,
+        "width": 184,
+        "height": 184,
+        "bottom": 456.6875,
+        "right": 1372
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        900,
+        600
+      ],
+      "mode": "app",
+      "form": {
+        "x": 90,
+        "y": 293.640625,
+        "width": 720,
+        "height": 200,
+        "bottom": 493.640625,
+        "right": 810
+      },
+      "cards": {
+        "x": 28,
+        "y": 269.453125,
+        "width": 844,
+        "height": 138,
+        "bottom": 407.453125,
+        "right": 872
+      },
+      "card": {
+        "x": 28,
+        "y": 269.453125,
+        "width": 270.671875,
+        "height": 138,
+        "bottom": 407.453125,
+        "right": 298.671875
+      },
+      "logo": {
+        "x": 410.015625,
+        "y": 118.15625,
+        "width": 80,
+        "height": 80,
+        "bottom": 198.15625,
+        "right": 490.015625
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1024,
+        768
+      ],
+      "mode": "app",
+      "form": {
+        "x": 152,
+        "y": 386.796875,
+        "width": 720,
+        "height": 242,
+        "bottom": 628.796875,
+        "right": 872
+      },
+      "cards": {
+        "x": 30.71875,
+        "y": 328.765625,
+        "width": 962.5625,
+        "height": 199.671875,
+        "bottom": 528.4375,
+        "right": 993.28125
+      },
+      "card": {
+        "x": 30.71875,
+        "y": 328.765625,
+        "width": 309.9375,
+        "height": 199.671875,
+        "bottom": 528.4375,
+        "right": 340.65625
+      },
+      "logo": {
+        "x": 456,
+        "y": 121.171875,
+        "width": 112,
+        "height": 112,
+        "bottom": 233.171875,
+        "right": 568
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1366,
+        768
+      ],
+      "mode": "app",
+      "form": {
+        "x": 266.375,
+        "y": 386.796875,
+        "width": 833.25,
+        "height": 242,
+        "bottom": 628.796875,
+        "right": 1099.625
+      },
+      "cards": {
+        "x": 40.96875,
+        "y": 328.765625,
+        "width": 1284.0625,
+        "height": 199.671875,
+        "bottom": 528.4375,
+        "right": 1325.03125
+      },
+      "card": {
+        "x": 40.96875,
+        "y": 328.765625,
+        "width": 413.453125,
+        "height": 199.671875,
+        "bottom": 528.4375,
+        "right": 454.421875
+      },
+      "logo": {
+        "x": 627,
+        "y": 121.171875,
+        "width": 112,
+        "height": 112,
+        "bottom": 233.171875,
+        "right": 739
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        1920,
+        1080
+      ],
+      "mode": "app",
+      "form": {
+        "x": 410,
+        "y": 576.8125,
+        "width": 1100,
+        "height": 280,
+        "bottom": 856.8125,
+        "right": 1510
+      },
+      "cards": {
+        "x": 130,
+        "y": 466.328125,
+        "width": 1660,
+        "height": 291.59375,
+        "bottom": 757.921875,
+        "right": 1790
+      },
+      "card": {
+        "x": 130,
+        "y": 466.328125,
+        "width": 532.859375,
+        "height": 291.59375,
+        "bottom": 757.921875,
+        "right": 662.859375
+      },
+      "logo": {
+        "x": 879.015625,
+        "y": 165.5,
+        "width": 162,
+        "height": 162,
+        "bottom": 327.5,
+        "right": 1041.015625
+      }
+    },
+    {
+      "browser": "webkit",
+      "size": [
+        2560,
+        1440
+      ],
+      "mode": "app",
+      "form": {
+        "x": 730,
+        "y": 773.59375,
+        "width": 1100,
+        "height": 280,
+        "bottom": 1053.59375,
+        "right": 1830
+      },
+      "cards": {
+        "x": 450,
+        "y": 605.1875,
+        "width": 1660,
+        "height": 388.796875,
+        "bottom": 993.984375,
+        "right": 2110
+      },
+      "card": {
+        "x": 450,
+        "y": 605.1875,
+        "width": 532,
+        "height": 388.796875,
+        "bottom": 993.984375,
+        "right": 982
+      },
+      "logo": {
+        "x": 1188.015625,
+        "y": 272.6875,
+        "width": 184,
+        "height": 184,
+        "bottom": 456.6875,
+        "right": 1372.015625
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+PASS chromium Website Home Screen stays on website; app has separate identity and real PNG icon
+PASS chromium Browser app has a working return-to-website button
+PASS chromium Desktop logo stays above download card; large settings button and stable card at 1366/1920
+PASS chromium Windows updates download and install inside app through bounded native bridge without website navigation
+PASS chromium Native notification opt-in synchronizes with the app setting
+PASS chromium Remote Right stays on the adjacent home card rather than jumping to tools
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+PASS webkit Website Home Screen stays on website; app has separate identity and real PNG icon
+PASS webkit Browser app has a working return-to-website button
+PASS webkit Desktop logo stays above download card; large settings button and stable card at 1366/1920
+PASS webkit Windows updates download and install inside app through bounded native bridge without website navigation
+PASS webkit Native notification opt-in synchronizes with the app setting
+PASS webkit Remote Right stays on the adjacent home card rather than jumping to tools
+{"passed": true, "checks": 12, "failures": 0}
