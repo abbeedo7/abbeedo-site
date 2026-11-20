@@ -22,7 +22,8 @@ review_checks = checks(load('validation/review-2.1-report.json'))
 checks(load('validation/brand-audit.json'))
 checks(load('validation/vercel-schema.json'))
 assert load('docs/QR_TARGETS.json')['validated']
-log = (ROOT / 'validation/node-tests-2.1.log').read_text()
+node_log = 'validation/node-tests-2.1.1.log' if (ROOT / 'validation/node-tests-2.1.1.log').exists() else 'validation/node-tests-2.1.log'
+log = (ROOT / node_log).read_text()
 matched = re.search(r'(?m)^ℹ pass (\d+)$', log)
 assert matched and int(matched[1]) >= 56 and re.search(r'(?m)^ℹ fail 0$', log)
 android = load('release-assets/android.json')
@@ -43,7 +44,11 @@ info = {
     'android_version': android['version'], 'android_version_code': android['versionCode'],
     'domain': 'https://abbeedo.com', 'current_primary_domain': 'https://www.abbeedo.com',
     'website_name': 'ابوناصر', 'application_name': 'ابوناصر TV',
-    'live_domain_changed': False, 'vercel_project_access': False, 'github_published_by_agent': False,
+    'live_domain_changed': hosting.get('live_domain_modified', False),
+    'vercel_project_access': hosting.get('vercel_account_access', False),
+    'github_published_by_agent': hosting.get('github_published_by_agent', False),
+    'production_receipt': {key: hosting.get('production_' + key) for key in ['version', 'revision', 'commit', 'deployment_id']},
+    'hosting_status_checked_at_utc': hosting.get('checked_at_utc'),
     'private_backend_configured': hosting['private_backend_configured'],
     'public_github_downloads_ready': hosting['public_downloads_ready'],
     'repository': 'https://github.com/abbeedo7/abbeedo-site',
@@ -58,6 +63,9 @@ info = {
     'owner_setup_guide': 'docs/DEPLOY_2_1_AR.md',
     'native_windows_binaries_in_source_zip': False,
 }
+info['source_revision_published'] = (info['production_receipt']['version'] == VERSION and info['production_receipt']['revision'] == info['revision'])
+if (ROOT / 'validation/hotfix-2.1.1-report.json').exists():
+    info['tests']['hotfix_browser_checks'] = checks(load('validation/hotfix-2.1.1-report.json'))
 (ROOT / 'BUILD_INFO.json').write_text(json.dumps(info, ensure_ascii=False, indent=2) + '\n')
 files = []
 for file in sorted(ROOT.rglob('*')):
@@ -93,7 +101,7 @@ with zipfile.ZipFile(temporary) as archive:
 temporary.replace(OUTPUT)
 result = {'file': str(OUTPUT), 'bytes': OUTPUT.stat().st_size, 'sha256': digest(OUTPUT),
           'source_files': len(manifest), 'domain': info['domain'], 'revision': info['revision'],
-          'live_domain_changed': False, 'vercel_account_setup_required': not hosting['private_backend_configured'],
+          'live_domain_changed': info['live_domain_changed'], 'vercel_account_setup_required': not hosting['private_backend_configured'],
           'github_initial_publication_required': not hosting['public_downloads_ready']}
 OUTPUT.with_suffix('.zip.sha256').write_text(result['sha256'] + '  ' + OUTPUT.name + '\n')
 (ROOT / 'DELIVERY.json').write_text(json.dumps(result, indent=2) + '\n')

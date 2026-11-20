@@ -1,3 +1,4 @@
+import {applyAccentColors} from './accent-colors.js';
 import {startBackground, triggerGlitch} from './background.js?site=2.1';
 
 const PREFERENCES_KEY = 'abbeedo:website:preferences:v2';
@@ -128,6 +129,7 @@ function applyPreferences() {
   document.body.dataset.reducedMotion=String(preferences.reduced);
   document.body.dataset.highContrast=String(preferences.contrast);
   document.body.dataset.theme=preferences.theme;
+  applyAccentColors(document,preferences.accent,{theme:preferences.theme,highContrast:preferences.contrast});
   localize();syncPreferenceControls();
   document.documentElement.dataset.preferencesReady='true';
   window.dispatchEvent(new CustomEvent('abbeedo:website-preferences',{detail:{...preferences}}));
@@ -203,7 +205,7 @@ async function setupWebsiteNotifications() {
 }
 function bindPreferences() {
   const dialog=byID('settings-dialog');let opener=null;
-  for(const button of document.querySelectorAll('[data-settings-open]'))button.addEventListener('click',()=>{if(!dialog)return;opener=button;syncPreferenceControls();if(!dialog.open)dialog.showModal();});
+  for(const button of document.querySelectorAll('[data-settings-open]'))button.addEventListener('click',()=>{if(!dialog)return;opener=button;syncPreferenceControls();if(!dialog.open){dialog.showModal();byID('settings-close')?.focus({preventScroll:true});}});
   byID('settings-close')?.addEventListener('click',()=>dialog?.close());
   dialog?.addEventListener('close',()=>{opener?.focus({preventScroll:true});tryAutomaticReload();});
   const controls=[['language-select','language'],['accent-input','accent'],['motion-select','motion'],['font-select','textScale'],['theme-select','theme'],['contrast-toggle','contrast'],['reduced-toggle','reduced']];

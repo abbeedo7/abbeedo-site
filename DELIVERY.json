@@ -1,0 +1,11 @@
+{
+  "file": "/workspace/artifacts/abbeedo-site-2.1.1-source.zip",
+  "bytes": 17853816,
+  "sha256": "7f29e1c7de07b73849367859c156bf9854b146ca059dd7aff35f0b95246e19cc",
+  "source_files": 282,
+  "domain": "https://abbeedo.com",
+  "revision": "web-e40c06e42337217e",
+  "live_domain_changed": true,
+  "vercel_account_setup_required": false,
+  "github_initial_publication_required": false
+}

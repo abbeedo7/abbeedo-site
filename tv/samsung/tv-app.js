@@ -434,6 +434,83 @@
     }
   });
 
+  // tv/samsung/app/accent-colors.js
+  function channels(color) {
+    const value = String(color || "").trim(), hex2 = value.match(/^#([\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i)?.[1];
+    if (hex2) {
+      const full = hex2.length < 5 ? [...hex2].map((x2) => x2 + x2).join("") : hex2;
+      return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16)).concat(full.length === 8 ? parseInt(full.slice(6, 8), 16) / 255 : 1);
+    }
+    const rgb = value.match(/^rgba?\(([^)]+)\)$/i);
+    if (!rgb) return null;
+    const parts = rgb[1].split(/[,\s/]+/).filter(Boolean);
+    if (parts.length < 3 || parts.length > 4) return null;
+    const result = parts.slice(0, 3).map((x2) => Number.parseFloat(x2) * (x2.endsWith("%") ? 2.55 : 1)), alpha = parts[3] === void 0 ? 1 : Number.parseFloat(parts[3]) / (parts[3].endsWith("%") ? 100 : 1);
+    return result.every((x2) => Number.isFinite(x2) && x2 >= 0 && x2 <= 255) && Number.isFinite(alpha) && alpha >= 0 && alpha <= 1 ? [...result, alpha] : null;
+  }
+  function hex(color) {
+    return "#" + color.slice(0, 3).map((x2) => Math.round(x2).toString(16).padStart(2, "0")).join("");
+  }
+  function composite(foreground, background) {
+    const f = channels(foreground), b = channels(background);
+    return hex(b.slice(0, 3).map((x2, i) => f[i] * f[3] + x2 * (1 - f[3])));
+  }
+  function mix(foreground, background, amount) {
+    const f = channels(foreground), b = channels(background);
+    return hex(b.slice(0, 3).map((x2, i) => f[i] * amount + x2 * (1 - amount)));
+  }
+  function luminance(color) {
+    const rgb = channels(color);
+    if (!rgb) throw new TypeError("Invalid contrast color");
+    const linear = rgb.slice(0, 3).map((x2) => {
+      const v = x2 / 255;
+      return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    });
+    return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722;
+  }
+  function contrastRatio(first, second) {
+    const a = luminance(first), b = luminance(second);
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  }
+  function accentPalette(accent, { theme = "dark", application = false, highContrast = false, background, panel } = {}) {
+    const raw = channels(accent) ? hex(channels(accent)) : "#ff242d", defaults = THEMES[application ? "application" : "website"][theme] || THEMES.website.dark, bg = channels(background) ? composite(background, defaults[0]) : defaults[0], card = highContrast && !application ? bg : composite(channels(panel) ? panel : defaults[1], bg), glow = mix(raw, bg, 0.27), greenGlow = composite("#10493166", bg), surfaces = [bg, card, glow, greenGlow, mix(raw, greenGlow, 0.27), mix(raw, card, 0.22)], worst = (color) => Math.min(...surfaces.map((surface) => contrastRatio(color, surface))), ink = contrastRatio(BLACK, raw) >= contrastRatio(WHITE, raw) ? BLACK : WHITE, target = worst(BLACK) >= worst(WHITE) ? BLACK : WHITE;
+    let readable = raw;
+    if (worst(readable) < 4.6) {
+      let low = 0, high = 1;
+      for (let step = 0; step < 20; step++) {
+        const middle = (low + high) / 2;
+        if (worst(mix(target, raw, middle)) >= 4.6) high = middle;
+        else low = middle;
+      }
+      readable = mix(target, raw, high);
+    }
+    return { accent: raw, ink, readable, surfaces };
+  }
+  function applyAccentColors(doc, accent, options = {}) {
+    const body = doc?.body, root = doc?.documentElement;
+    if (!root) return;
+    let computed;
+    try {
+      computed = doc.defaultView?.getComputedStyle(body || root);
+    } catch {
+    }
+    const palette = accentPalette(accent, { ...options, background: computed?.getPropertyValue("--bg").trim(), panel: computed?.getPropertyValue(options.application ? "--panel" : "--surface").trim() });
+    for (const node2 of [root, body]) if (node2?.style) {
+      node2.style.setProperty("--accent", palette.accent);
+      node2.style.setProperty("--accent-ink", palette.ink);
+      node2.style.setProperty("--accent-readable", palette.readable);
+    }
+    return palette;
+  }
+  var BLACK, WHITE, THEMES;
+  var init_accent_colors = __esm({
+    "tv/samsung/app/accent-colors.js"() {
+      BLACK = "#000000";
+      WHITE = "#ffffff";
+      THEMES = { website: { dark: ["#0a1018", "#101720e8"], light: ["#eef1f3", "#fffffff0"], sport: ["#071e20", "#092a31ed"], cinema: ["#190d13", "#24121aee"] }, application: { dark: ["#0b1017", "#101722"], light: ["#e9edf1", "#f6f8fc"], sport: ["#061b1b", "#09292e"], cinema: ["#170c1b", "#211426"] } };
+    }
+  });
+
   // tv/samsung/app/preferences.js
   function cleanPreferenceValues(input = {}) {
     const values = {};
@@ -516,6 +593,7 @@
       doc.body.dataset.background = p.background_speed;
       doc.body.classList.toggle("large-text", p.text_scale > 1.1);
     }
+    applyAccentColors(doc, p.accent, { theme: p.theme, application: true, highContrast: p.high_contrast });
     doc.title = brandName(p.language);
     doc.querySelector('link[rel="manifest"]')?.setAttribute("href", p.language === "en" ? "/manifest.en.webmanifest" : "/manifest.webmanifest");
     doc.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", brandName(p.language));
@@ -587,6 +665,7 @@
       title.id = "public-preferences-title";
       const close = make(doc, "button", "preferences-close", "\xD7");
       close.type = "button";
+      close.autofocus = true;
       close.setAttribute("aria-label", t("\u0625\u063A\u0644\u0627\u0642", "Close"));
       close.onclick = () => dialog.close();
       header.append(title, close);
@@ -609,7 +688,7 @@
           change({ [key2]: key2 === "text_scale" ? Number(control.value) : control.value });
           if (key2 === "language") {
             draw();
-            dialog.querySelector("#preference-language")?.focus();
+            dialog.querySelector(".preferences-close")?.focus({ preventScroll: true });
           }
         };
         row.append(caption, control);
@@ -650,12 +729,13 @@
     });
     doc.body.append(dialog);
     dialog.showModal();
-    dialog.querySelector("select")?.focus();
+    dialog.querySelector(".preferences-close")?.focus({ preventScroll: true });
     return dialog;
   }
   var PREFERENCES_KEY, LANGUAGES, PREFERENCE_DEFAULTS, fields, memoryRecord, storageFallbacks, lastNativeLanguage, storageOrNull, brandName, text, fixedText, fixedAttributes, make;
   var init_preferences = __esm({
     "tv/samsung/app/preferences.js"() {
+      init_accent_colors();
       PREFERENCES_KEY = "abbeedo:preferences:v1";
       LANGUAGES = Object.freeze([{ code: "ar", name: "\u0627\u0644\u0639\u0631\u0628\u064A\u0629", dir: "rtl" }, { code: "en", name: "English", dir: "ltr" }]);
       PREFERENCE_DEFAULTS = Object.freeze({ language: "ar", accent: "#ff242d", theme: "dark", text_scale: 1, background_speed: "standard", reduced_motion: false, high_contrast: false });
@@ -673,6 +753,7 @@
       brandName = (language = preferenceValues().language) => language === "en" ? "abbeedo TV" : "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV";
       text = (ar, en, language = preferenceValues().language) => language === "en" ? en : ar;
       fixedText = [
+        ["#gate-website-home", "\u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629", "Home"],
         [".install-brand h1, .brand-block h2, [data-brand-name]", "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", "abbeedo TV"],
         [".install-brand > p, .tagline", "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647", "Your world of entertainment"],
         ["#website-settings-button span, #settings-button span", "\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A", "Settings"],
@@ -719,6 +800,7 @@
         ["#windows-portable", "\u062A\u0646\u0632\u064A\u0644 \u0627\u0644\u0646\u0633\u062E\u0629 \u0627\u0644\u0645\u062D\u0645\u0648\u0644\u0629 EXE", "Download portable EXE"]
       ];
       fixedAttributes = [
+        ["#gate-website-home", "aria-label", "\u0627\u0644\u0639\u0648\u062F\u0629 \u0644\u0644\u0635\u0641\u062D\u0629 \u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629", "Back to the website"],
         ["#back-button", "aria-label", "\u0631\u062C\u0648\u0639", "Back"],
         ["#login-page", "aria-label", "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644", "Sign in"],
         ["#source-mode", "aria-label", "\u0637\u0631\u064A\u0642\u0629 \u0625\u0636\u0627\u0641\u0629 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643", "Subscription method"],
@@ -1277,7 +1359,7 @@
     }
   });
 
-  // tv/samsung/app/core.js?release=1.2
+  // tv/samsung/app/core.js?release=1.2.1
   var core_exports = {};
   __export(core_exports, {
     ACCOUNT_MODES: () => ACCOUNT_MODES,
@@ -1622,10 +1704,10 @@
   }
   var BRAND, PROVIDER, ACCOUNT_MODES, DEFAULT_SETTINGS, LIVE_FAMILIES, ADULT, textCache, clamp, ApiError, nativeAPIFetch, providerRequestSerial, ApiClient, UserLibrary;
   var init_core = __esm({
-    "tv/samsung/app/core.js?release=1.2"() {
+    "tv/samsung/app/core.js?release=1.2.1"() {
       init_storage();
       init_native();
-      BRAND = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.0", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
+      BRAND = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.1", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
       PROVIDER = "http://maglobalxx.xyz:2052";
       ACCOUNT_MODES = Object.freeze(["provider", "xtream", "m3u", "m3u-file", "auto", "direct", "stalker"]);
       DEFAULT_SETTINGS = Object.freeze({
@@ -2194,6 +2276,742 @@
     }
   });
 
+  // tv/samsung/app/core.js?release=1.2
+  function normalize2(value) {
+    return String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f\u064b-\u065f\u0670\u06d6-\u06ed]/g, "").replace(/[أإآٱ]/g, "\u0627").replace(/ى/g, "\u064A").replace(/ة/g, "\u0647").toLowerCase().trim();
+  }
+  function keyHash2(value) {
+    let h1 = 3735928559, h2 = 1103547991;
+    for (let n2 = 0; n2 < value.length; n2++) {
+      const code = value.charCodeAt(n2);
+      h1 = Math.imul(h1 ^ code, 2654435761);
+      h2 = Math.imul(h2 ^ code, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ h1 >>> 16, 2246822507) ^ Math.imul(h2 ^ h2 >>> 13, 3266489909);
+    h2 = Math.imul(h2 ^ h2 >>> 16, 2246822507) ^ Math.imul(h1 ^ h1 >>> 13, 3266489909);
+    return (h2 >>> 0).toString(16).padStart(8, "0") + (h1 >>> 0).toString(16).padStart(8, "0");
+  }
+  function accountScope2(account) {
+    return keyHash2([account?.mode || "provider", account?.server || PROVIDER2, account?.username ?? account?.user ?? "", account?.url || account?.playlist || "", account?.mac || ""].join("|"));
+  }
+  function stableKey2(scope2, item) {
+    return keyHash2(`${scope2}|${item?.kind || "live"}|${item?.id ?? item?.providerId ?? item?.url ?? ""}`);
+  }
+  function isAdult2(item) {
+    return ADULT2.test(`${item?.group || ""} ${item?.genre || ""} ${item?.name || ""}`);
+  }
+  function safeURL2(value, base) {
+    if (!(value instanceof URL) && (typeof value !== "string" || !value.trim())) return null;
+    try {
+      const url = new URL(value, base);
+      return ["http:", "https:"].includes(url.protocol) && !url.username && !url.password ? url : null;
+    } catch {
+      return null;
+    }
+  }
+  function classifyLive2(item) {
+    const name = normalize2(item?.name);
+    if (/mbc\s*3|spacetoon|nickelodeon|سبيستون|براعم|طيور الجنه/.test(name)) return "kids";
+    if (/al.?arabiya|al.?jazeera|sky.?news|bbc.?news|العربيه|الجزيره|الميادين|الاخباريه/.test(name)) return "news";
+    if (/be.?in.*sport|alkass|al.?kass|espn|eurosport|\bssc\b|الكاس/.test(name)) return "sports";
+    const text2 = normalize2(`${item?.group || ""} ${item?.name || ""} ${item?.genre || ""}`);
+    if (/kids|children|cartoon|disney|nickelodeon|baby|spacetoon|mbc\s*3|أطفال|اطفال|كرتون|سبيستون|براعم|طيور الجنه/.test(text2)) return "kids";
+    if (/news|\bcnn\b|\bbbc\b|al.?arabiya|al.?jazeera|sky.?news|اخبار|الاخباريه|العربيه|الجزيره|الميادين|الشرق/.test(text2)) return "news";
+    if (/sport|be.?in|alkass|al.?kass|dazn|eurosport|espn|\bssc\b|رياضي|رياضه|الكاس|الكأس/.test(text2)) return "sports";
+    if (/document|discovery|national.?geographic|nat.?geo|history|وثائق|ناشيونال|ديسكفري/.test(text2)) return "documentary";
+    if (/quran|qur.an|islam|relig|sunnah|قران|قرآن|اسلام|ديني|السنه|الحرم|مكه|مكة/.test(text2)) return "religious";
+    if (/music|songs|mtv|rotana.?music|موسيقي|اغاني|اغانى|طرب|روتانا كليب/.test(text2)) return "music";
+    if (/movie|cinema|film|افلام|سينما|فيلم/.test(text2)) return "movies";
+    if (/general|entertain|variety|\bmbc\b|\bsbc\b|rotana|روتانا|عامه|منوع|ترفيه/.test(text2)) return "general";
+    return "other";
+  }
+  function attributes2(value) {
+    const result = {};
+    const expression = /([\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s,]+))/g;
+    for (const match of value.matchAll(expression)) result[match[1].toLowerCase()] = match[2] ?? match[3] ?? match[4] ?? "";
+    return result;
+  }
+  function metaComma2(line2) {
+    let quote = "";
+    for (let n2 = 0; n2 < line2.length; n2++) {
+      if ((line2[n2] === '"' || line2[n2] === "'") && (!quote || line2[n2] === quote)) quote = quote ? "" : line2[n2];
+      if (line2[n2] === "," && !quote) return n2;
+    }
+    return -1;
+  }
+  function detectM3UKind2(meta, url) {
+    const declared = normalize2(meta["tvg-type"] || meta.type);
+    if (["series", "serial", "\u0645\u0633\u0644\u0633\u0644", "\u0645\u0633\u0644\u0633\u0644\u0627\u062A"].includes(declared)) return "series";
+    if (["movie", "vod", "film", "\u0641\u064A\u0644\u0645", "\u0627\u0641\u0644\u0627\u0645"].includes(declared)) return "movie";
+    if (["live", "channel", "\u0642\u0646\u0627\u0629"].includes(declared)) return "live";
+    const path2 = url.pathname.toLowerCase();
+    if (/\/(?:series|serials)\//.test(path2)) return "series";
+    if (/\/(?:movie|movies|vod)\//.test(path2)) return "movie";
+    return /\.(?:mp4|mkv|avi|mov|webm|m4v)$/.test(path2) ? "movie" : "live";
+  }
+  function parseM3U2(text2, base = globalThis.location?.href) {
+    if (typeof text2 !== "string" || text2.length > 64 * 1024 * 1024) throw new Error("\u0645\u0644\u0641 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D \u0623\u0648 \u0623\u0643\u0628\u0631 \u0645\u0646 \u0627\u0644\u062D\u062F \u0627\u0644\u0645\u0633\u0645\u0648\u062D.");
+    if (/#EXT-X-(?:TARGETDURATION|STREAM-INF|MEDIA-SEQUENCE)/i.test(text2)) throw new Error("\u0647\u0630\u0627 \u0631\u0627\u0628\u0637 \u0628\u062B HLS\u061B \u0627\u062E\u062A\u0631 \xAB\u0631\u0627\u0628\u0637 \u0628\u062B \u0645\u0628\u0627\u0634\u0631\xBB \u0644\u062A\u0634\u063A\u064A\u0644\u0647.");
+    const items = [], seen = /* @__PURE__ */ new Set();
+    let meta = {}, name = "", group = "", headers = {}, epgURL = "";
+    for (let line2 of text2.replace(/^\uFEFF/, "").split(/\r?\n/)) {
+      line2 = line2.trim();
+      if (!line2) continue;
+      if (/^#EXTM3U/i.test(line2)) {
+        const attrs = attributes2(line2);
+        epgURL = attrs["x-tvg-url"] || attrs["url-tvg"] || "";
+        continue;
+      }
+      if (/^#EXTINF:/i.test(line2)) {
+        const comma = metaComma2(line2);
+        meta = attributes2(comma < 0 ? line2 : line2.slice(0, comma));
+        name = comma < 0 ? "" : line2.slice(comma + 1).trim().slice(0, 512);
+        group = (meta["group-title"] || "\u063A\u064A\u0631 \u0645\u0635\u0646\u0641").slice(0, 256);
+        headers = {};
+        continue;
+      }
+      if (/^#EXTGRP:/i.test(line2)) {
+        group = line2.slice(8).trim().slice(0, 256);
+        continue;
+      }
+      if (/^#EXTVLCOPT:/i.test(line2)) {
+        const [key2, ...value] = line2.slice(11).split("=");
+        if (key2.toLowerCase() === "http-user-agent") headers["User-Agent"] = value.join("=").slice(0, 512);
+        if (key2.toLowerCase() === "http-referrer") {
+          const referrer = safeURL2(value.join("="));
+          if (referrer) headers.Referer = referrer.href;
+        }
+        continue;
+      }
+      if (line2.startsWith("#")) continue;
+      const url = safeURL2(line2, base);
+      if (!url) {
+        meta = {};
+        name = "";
+        group = "";
+        headers = {};
+        continue;
+      }
+      const kind = detectM3UKind2(meta, url), unique = `${kind}|${url.href}`;
+      if (!seen.has(unique)) {
+        seen.add(unique);
+        const year = /(?:19|20)\d{2}/.exec(meta["tvg-year"] || name)?.[0] || "";
+        items.push({ id: `${kind}:m3u:${keyHash2(url.href)}`, providerId: "", kind, name: name || meta["tvg-name"] || `\u0642\u0646\u0627\u0629 ${items.length + 1}`, group: group || "\u063A\u064A\u0631 \u0645\u0635\u0646\u0641", url: url.href, logo: safeURL2(meta["tvg-logo"], base)?.href || "", epgId: meta["tvg-id"] || "", epgURL: safeURL2(epgURL, base)?.href || "", year, genre: meta["tvg-genre"] || "", language: meta["tvg-language"] || "", catchupSource: meta["catchup-source"] || "", catchupDays: clamp2(meta["catchup-days"], 0, 365), preview: safeURL2(meta["tvg-preview"], base)?.href || "", headers: { ...headers } });
+        if (items.length >= 2e5) break;
+      }
+      meta = {};
+      name = "";
+      group = "";
+      headers = {};
+    }
+    if (!items.length) throw new Error("\u0644\u0645 \u064A\u062A\u0645 \u0627\u0644\u0639\u062B\u0648\u0631 \u0639\u0644\u0649 \u0645\u062D\u062A\u0648\u0649 \u0635\u0627\u0644\u062D \u0641\u064A \u0627\u0644\u0642\u0627\u0626\u0645\u0629.");
+    return items;
+  }
+  function searchable2(item) {
+    let cached = textCache2.get(item);
+    const signature = [item.name, item.group, item.genre, item.cast, item.plot, item.language, item.year].join("\0");
+    if (!cached || cached.signature !== signature) {
+      cached = { signature, text: normalize2(signature) };
+      textCache2.set(item, cached);
+    }
+    return cached.text;
+  }
+  function matchQuery2(item, query) {
+    if (!query) return true;
+    const tokens = query.match(/-?"[^"]+"|\S+/g) || [];
+    for (let token of tokens) {
+      let negate = token.startsWith("-");
+      if (negate) token = token.slice(1);
+      token = token.replace(/^"|"$/g, "");
+      const colon = token.indexOf(":"), field = colon > 0 ? token.slice(0, colon) : "", term = normalize2(colon > 0 ? token.slice(colon + 1) : token);
+      let found;
+      if (!term) continue;
+      if (field === "year") found = String(item.year || item.name || "").includes(term);
+      else if (field === "genre") found = normalize2(item.genre || item.group).includes(term);
+      else if (field === "lang") found = normalize2(item.language).includes(term);
+      else if (field === "actor" || field === "cast") found = normalize2(item.cast).includes(term);
+      else found = searchable2(item).includes(normalize2(token));
+      if (negate ? found : !found) return false;
+    }
+    return true;
+  }
+  function movieKey2(item) {
+    return normalize2(item.name).replace(/(?:\b(?:4k|8k|uhd|fhd|hd|sd|hevc|h264|h265|x264|x265|1080p|2160p|720p|bluray|web.?dl|dubbed|subbed)\b|\([^)]*\))/g, " ").replace(/\s+/g, " ").trim() + "|" + (item.year || /(?:19|20)\d{2}/.exec(item.name || "")?.[0] || "");
+  }
+  function filterItems2(items, options = {}) {
+    const { scope: scope2 = "", group = "", family = "", query = "", year = "", genre = "", language = "", ratingFloor = 0, parental = false, favoritesOnly = false, watchlistOnly = false, historyOnly = false, recentOnly = false, dedupeMovies = true, dedupeChannels = true, sort = "source", order = [], now = Date.now() } = options;
+    const asSet = (value) => value instanceof Set ? value : new Set(value || []), hidden = asSet(options.hidden), favorites = asSet(options.favorites), watchlist = asSet(options.watchlist), history = asSet((options.history || []).map((value) => typeof value === "string" ? value : value.key)), duplicate = /* @__PURE__ */ new Set(), result = [];
+    for (const item of items || []) {
+      if (!item || options.kind && item.kind !== options.kind) continue;
+      let key2;
+      const getKey = () => key2 ??= item.key || stableKey2(scope2, item);
+      if (hidden.size && (hidden.has(getKey()) || hidden.has(item.id))) continue;
+      if (parental && isAdult2(item) || group && group !== item.group || family && !["all", "favorites", "history"].includes(family) && family !== classifyLive2(item)) continue;
+      if ((favoritesOnly || family === "favorites") && !favorites.has(getKey()) || watchlistOnly && !watchlist.has(getKey()) || (historyOnly || family === "history") && !history.has(getKey())) continue;
+      if (item.kind !== "live" && (year && !String(item.year || item.name || "").includes(String(year)) || genre && !normalize2(`${item.genre || ""} ${item.group || ""}`).includes(normalize2(genre)) || language && !normalize2(item.language).includes(normalize2(language)) || ratingFloor > (Number(item.rating) || 0))) continue;
+      const stamp = Number(item.added || 0) * (Number(item.added || 0) > 1e11 ? 1 : 1e3);
+      if (recentOnly && !(stamp > 0 && now - stamp <= 7 * 864e5 && now >= stamp)) continue;
+      if (!matchQuery2(item, query.trim())) continue;
+      if (item.kind === "movie" && dedupeMovies || item.kind === "live" && dedupeChannels) {
+        const duplicateKey = item.kind === "movie" ? movieKey2(item) : item.url || item.id;
+        if (duplicate.has(duplicateKey)) continue;
+        duplicate.add(duplicateKey);
+      }
+      result.push(item);
+    }
+    if (order.length) {
+      const ranks = new Map(order.map((key2, rank) => [key2, rank]));
+      result.sort((left, right) => (ranks.get(left.id) ?? ranks.get(left.key) ?? Infinity) - (ranks.get(right.id) ?? ranks.get(right.key) ?? Infinity));
+    }
+    if (sort === "name" || sort === "az" || sort === 0) result.sort((left, right) => normalize2(left.name).localeCompare(normalize2(right.name)));
+    else if (sort === "za" || sort === 1) result.sort((left, right) => normalize2(right.name).localeCompare(normalize2(left.name)));
+    else if (sort === "recent" || sort === 2) result.sort((left, right) => Number(right.added || 0) - Number(left.added || 0));
+    else if (sort === "rating") result.sort((left, right) => Number(right.rating || 0) - Number(left.rating || 0));
+    return result;
+  }
+  function formatExpiry2(userInfo = {}, { locale = "ar-SA-u-ca-gregory", now = Date.now() } = {}) {
+    const raw = userInfo.exp_date ?? userInfo.expires ?? userInfo.expiry;
+    let end = Number(raw);
+    end = Number.isFinite(end) && end > 0 ? end * (end > 1e11 ? 1 : 1e3) : typeof raw === "string" && raw.trim() && !/^\d+$/.test(raw.trim()) ? Date.parse(raw) : NaN;
+    if (!Number.isFinite(end) || end <= 0) return { known: false, date: "", days: null, expired: false, text: "\u0644\u0645 \u064A\u062D\u062F\u062F \u0627\u0644\u0645\u0632\u0648\u062F \u062A\u0627\u0631\u064A\u062E \u0627\u0644\u0627\u0646\u062A\u0647\u0627\u0621" };
+    const days = Math.max(0, Math.ceil((end - now) / 864e5)), expired = end <= now, date = new Date(end).toLocaleDateString(locale);
+    return { known: true, date, days, expired, timestamp: end, text: `\u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: ${date} \xB7 ${expired ? "\u0627\u0646\u062A\u0647\u0649 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643" : `\u0627\u0644\u0645\u062A\u0628\u0642\u064A: ${days} \u064A\u0648\u0645`}` };
+  }
+  function abortError2() {
+    return new ApiError2("\u0623\u064F\u0644\u063A\u064A \u0627\u0644\u0637\u0644\u0628.", { code: "ABORTED" });
+  }
+  function accountPayload2(account) {
+    const source = account || {};
+    let mode = source.mode || "provider", server = source.server || PROVIDER2, username = source.username ?? source.user ?? "", password = source.password || "", url = source.url || source.playlist || (["m3u", "direct", "auto"].includes(mode) ? source.server || "" : "");
+    if (mode === "auto") {
+      const parsed = safeURL2(url || server);
+      if (parsed?.searchParams.has("username") && parsed.searchParams.has("password")) {
+        username ||= parsed.searchParams.get("username");
+        password ||= parsed.searchParams.get("password");
+        parsed.pathname = parsed.pathname.replace(/\/(?:get|player_api)\.php$/i, "");
+        parsed.search = "";
+        parsed.hash = "";
+        server = parsed.href.replace(/\/$/, "");
+        mode = "xtream";
+      } else mode = username && password ? "xtream" : /\.(?:m3u8|ts|mp4|mkv|webm)(?:[?#]|$)/i.test(url) ? "direct" : "m3u";
+    }
+    return { mode, server, username, password, url, mac: source.mac || (mode === "stalker" ? source.user || source.username || "" : "") };
+  }
+  function deadline2(signal, milliseconds) {
+    const controller2 = new AbortController();
+    let timer, timedOut = false, rejectTimeout;
+    const promise = new Promise((_, reject) => {
+      rejectTimeout = reject;
+    });
+    promise.catch(() => {
+    });
+    const cancel = () => {
+      controller2.abort();
+      rejectTimeout(abortError2());
+    };
+    if (signal?.aborted) cancel();
+    else signal?.addEventListener("abort", cancel, { once: true });
+    const reset = (duration) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        timedOut = true;
+        controller2.abort();
+        rejectTimeout(new ApiError2("\u062A\u0623\u062E\u0631 \u0627\u0644\u0645\u0635\u062F\u0631. \u062D\u0627\u0648\u0644 \u0627\u0644\u062A\u062D\u062F\u064A\u062B \u0644\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629.", { code: "TIMEOUT" }));
+      }, duration);
+    };
+    reset(milliseconds);
+    return { signal: controller2.signal, race: (task) => Promise.race([task, promise]), extend: reset, get timedOut() {
+      return timedOut;
+    }, done() {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", cancel);
+    } };
+  }
+  function nativeProviderFetch2(url, options = {}) {
+    const requestId = `provider-${Date.now()}-${++providerRequestSerial2}`;
+    if (options.signal?.aborted) return Promise.reject(abortError2());
+    const abort = () => {
+      void nativeRequest("apiCancel", { requestId }).catch(() => {
+      });
+    };
+    options.signal?.addEventListener("abort", abort, { once: true });
+    return nativeRequest("providerRequest", { url: String(url), method: options.method || "GET", headers: Object.fromEntries(new Headers(options.headers || {})), requestId, stream: false }).then((data) => {
+      const status = Number(data.status);
+      if (!Number.isInteger(status) || status < 200 || status > 599) throw new ApiError2("\u0631\u062F \u0627\u062A\u0635\u0627\u0644 \u0627\u0644\u0622\u064A\u0641\u0648\u0646 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D.", { code: "INVALID_RESPONSE" });
+      return new Response([204, 205, 304].includes(status) ? null : String(data.body || ""), { status, headers: data.headers || {} });
+    }).finally(() => options.signal?.removeEventListener("abort", abort));
+  }
+  function mimeForURL2(address) {
+    const path2 = safeURL2(address)?.pathname.toLowerCase() || "";
+    return path2.endsWith(".m3u8") ? "application/vnd.apple.mpegurl" : path2.endsWith(".ts") ? "video/mp2t" : path2.endsWith(".webm") ? "video/webm" : "video/mp4";
+  }
+  function decodeProviderText2(value) {
+    const text2 = String(value || "");
+    if (!/^[A-Za-z0-9+/]+={0,2}$/.test(text2) || text2.length % 4 !== 0) return text2;
+    try {
+      return new TextDecoder("utf-8", { fatal: true }).decode(Uint8Array.from(atob(text2), (char) => char.charCodeAt(0)));
+    } catch {
+      return text2;
+    }
+  }
+  async function derivePIN2(pin, salt = null) {
+    if (!/^\d{4,8}$/.test(String(pin))) throw new Error("\u0627\u0633\u062A\u062E\u062F\u0645 \u0631\u0645\u0632\u064B\u0627 \u0645\u0646 4 \u0625\u0644\u0649 8 \u0623\u0631\u0642\u0627\u0645.");
+    if (isNative()) return nativeRequest("derivePIN", { pin: String(pin), ...salt ? { salt: [...salt] } : {}, iterations: 15e4 });
+    salt ||= crypto.getRandomValues(new Uint8Array(16));
+    const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(pin), "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 15e4, hash: "SHA-256" }, material, 256);
+    return { salt: [...salt], hash: [...new Uint8Array(bits)] };
+  }
+  async function verifyPIN2(pin, record2) {
+    if (!record2?.salt || !record2?.hash || !/^\d{4,8}$/.test(String(pin))) return false;
+    const candidate = await derivePIN2(pin, new Uint8Array(record2.salt));
+    if (candidate.hash.length !== record2.hash.length) return false;
+    let difference = 0;
+    for (let n2 = 0; n2 < candidate.hash.length; n2++) difference |= candidate.hash[n2] ^ record2.hash[n2];
+    return difference === 0;
+  }
+  var BRAND2, PROVIDER2, ACCOUNT_MODES2, DEFAULT_SETTINGS2, LIVE_FAMILIES2, ADULT2, textCache2, clamp2, ApiError2, nativeAPIFetch2, providerRequestSerial2, ApiClient2;
+  var init_core2 = __esm({
+    "tv/samsung/app/core.js?release=1.2"() {
+      init_storage();
+      init_native();
+      BRAND2 = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.1", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
+      PROVIDER2 = "http://maglobalxx.xyz:2052";
+      ACCOUNT_MODES2 = Object.freeze(["provider", "xtream", "m3u", "m3u-file", "auto", "direct", "stalker"]);
+      DEFAULT_SETTINGS2 = Object.freeze({
+        language: "ar",
+        accent: "#ff242d",
+        theme: "dark",
+        background_speed: "standard",
+        reduced_motion: false,
+        text_scale: 1,
+        high_contrast: false,
+        home_order: "series,live,movie",
+        start_screen: "home",
+        screensaver_mode: "off",
+        screensaver_minutes: 5,
+        decoder_mode: "auto",
+        aspect_mode: "fit",
+        buffer_mode: 0,
+        seek_step_seconds: 10,
+        auto_next: true,
+        data_saver: false,
+        auto_categories: true,
+        catalog_refresh_hours: 0,
+        epg_timezone: "local",
+        epg_offset_minutes: 0,
+        parental_enabled: false,
+        privacy_mode: false,
+        dedupe_movies: true,
+        deduplicate_channels: true,
+        notifications: false,
+        remember_subscription: true,
+        volume: 1,
+        playback_rate: 1,
+        subtitles: true,
+        audio_language: "",
+        subtitle_language: "",
+        sleep_minutes: 0,
+        skip_intro_seconds: 0
+      });
+      LIVE_FAMILIES2 = Object.freeze([
+        { id: "history", ar: "\u0633\u062C\u0644 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629", en: "Watching history" },
+        { id: "favorites", ar: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629", en: "Favorites" },
+        { id: "all", ar: "\u0643\u0644 \u0627\u0644\u0642\u0646\u0648\u0627\u062A", en: "All channels" },
+        { id: "kids", ar: "\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0623\u0637\u0641\u0627\u0644", en: "Kids" },
+        { id: "news", ar: "\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0623\u062E\u0628\u0627\u0631", en: "News" },
+        { id: "sports", ar: "\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0631\u064A\u0627\u0636\u0629", en: "Sports" },
+        { id: "movies", ar: "\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0623\u0641\u0644\u0627\u0645", en: "Movies" },
+        { id: "documentary", ar: "\u0627\u0644\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0648\u062B\u0627\u0626\u0642\u064A\u0629", en: "Documentary" },
+        { id: "general", ar: "\u0627\u0644\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0639\u0627\u0645\u0629 \u0648\u0627\u0644\u0645\u0646\u0648\u0639\u0629", en: "General" },
+        { id: "religious", ar: "\u0627\u0644\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u062F\u064A\u0646\u064A\u0629", en: "Religious" },
+        { id: "music", ar: "\u0627\u0644\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0645\u0648\u0633\u064A\u0642\u064A\u0629", en: "Music" },
+        { id: "other", ar: "\u0628\u0642\u064A\u0629 \u0627\u0644\u0642\u0646\u0648\u0627\u062A", en: "Other" }
+      ]);
+      ADULT2 = /(?:adult|\bxxx\b|18\+|للكبار|إباح|اباح)/i;
+      textCache2 = /* @__PURE__ */ new WeakMap();
+      clamp2 = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
+      ApiError2 = class extends Error {
+        constructor(message, { code = "API_ERROR", status = 0, cause, partial = false, canDirect = false } = {}) {
+          super(message, { cause });
+          this.name = "ApiError";
+          this.code = code;
+          this.status = status;
+          this.partial = partial;
+          this.canDirect = canDirect;
+        }
+      };
+      nativeAPIFetch2 = nativeFetch;
+      providerRequestSerial2 = 0;
+      ApiClient2 = class {
+        constructor({ base = globalThis.ABUNASSER_CONFIG?.apiBase || (globalThis.ABUNASSER_CONFIG?.apiOrigin ? globalThis.ABUNASSER_CONFIG.apiOrigin.replace(/\/$/, "") + "/api/client" : "/api/client"), fetch: fetchImpl = null, vault: vault2 = null, timeout = 7e3, onStatus = () => {
+        } } = {}) {
+          this.base = base;
+          this.fetch = fetchImpl || (isNative() ? nativeAPIFetch2 : globalThis.fetch?.bind(globalThis));
+          this.vault = vault2 || new Vault({ namespace: "catalog-cache" });
+          this.timeout = timeout;
+          this.onStatus = onStatus;
+          this.memory = /* @__PURE__ */ new Map();
+          this.detailsCache = /* @__PURE__ */ new Map();
+          this.lastStatus = {};
+          this.timings = {};
+        }
+        _status(kind, value) {
+          this.lastStatus[kind] = { ...this.lastStatus[kind], ...value };
+          this.onStatus(kind, this.lastStatus[kind]);
+        }
+        async _response(payload, clock) {
+          if (!this.fetch) throw new ApiError2("\u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u063A\u064A\u0631 \u0645\u062A\u0627\u062D \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u062C\u0647\u0627\u0632.", { code: "FETCH_UNAVAILABLE" });
+          let response;
+          try {
+            response = await clock.race(this.fetch(this.base, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json, application/x-ndjson" }, body: JSON.stringify(payload), signal: clock.signal, credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" }));
+          } catch (error) {
+            if (error instanceof ApiError2) throw error;
+            if (clock.signal.aborted) throw clock.timedOut ? new ApiError2("\u062A\u0623\u062E\u0631 \u0627\u0644\u0645\u0635\u062F\u0631. \u062D\u0627\u0648\u0644 \u0645\u062C\u062F\u062F\u064B\u0627.", { code: "TIMEOUT" }) : abortError2();
+            throw new ApiError2("\u062A\u0639\u0630\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0628\u0627\u0644\u0645\u0635\u062F\u0631. \u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0648\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643.", { code: "NETWORK", cause: error });
+          }
+          if (!response.ok) {
+            let data = {};
+            try {
+              data = await clock.race(response.json());
+            } catch {
+            }
+            if (data.code === "HOST_NOT_ALLOWED" && data.canDirect) return this._directResponse(payload, clock);
+            throw new ApiError2(data.error || data.message || `\u0631\u0641\u0636 \u0627\u0644\u0645\u0635\u062F\u0631 \u0627\u0644\u0637\u0644\u0628 (HTTP ${response.status}).`, { status: response.status, code: data.code || `HTTP_${response.status}`, canDirect: !!data.canDirect });
+          }
+          return response;
+        }
+        async request(op, account, extra = {}, { signal, timeout = this.timeout } = {}) {
+          if (signal?.aborted) throw abortError2();
+          const clock = deadline2(signal, timeout);
+          try {
+            const response = await this._response({ op, account: accountPayload2(account), ...extra }, clock);
+            return await clock.race(response.json());
+          } catch (error) {
+            if (error instanceof ApiError2) throw error;
+            throw new ApiError2("\u0627\u0633\u062A\u062C\u0627\u0628\u0629 \u0627\u0644\u0645\u0635\u062F\u0631 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D\u0629.", { code: "INVALID_RESPONSE", cause: error });
+          } finally {
+            clock.done();
+          }
+        }
+        async _directResponse(payload, clock) {
+          const account = payload.account;
+          const download = async (address, text2 = false, headers = {}) => {
+            const url = safeURL2(address);
+            if (!url || !isNative() && url.protocol !== "https:") throw new ApiError2("\u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u063A\u064A\u0631 \u0645\u0647\u064A\u0623 \u0641\u064A \u0648\u0633\u064A\u0637 \u0627\u0644\u0645\u0648\u0642\u0639. \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 \u0641\u064A \u0627\u0644\u0645\u062A\u0635\u0641\u062D \u064A\u062D\u062A\u0627\u062C HTTPS \u0648\u062F\u0639\u0645 CORS \u0645\u0646 \u0627\u0644\u0645\u0632\u0648\u062F.", { code: "DIRECT_HTTPS_REQUIRED", canDirect: true });
+            const directFetch = isNative() ? nativeProviderFetch2 : this.fetch;
+            let response;
+            try {
+              response = await clock.race(directFetch(url.href, { signal: clock.signal, headers, credentials: "omit", referrerPolicy: "no-referrer", cache: "no-store" }));
+            } catch (error) {
+              if (error instanceof ApiError2) throw error;
+              throw new ApiError2(isNative() ? "\u062A\u0639\u0630\u0631 \u0627\u062A\u0635\u0627\u0644 \u0627\u0644\u0622\u064A\u0641\u0648\u0646 \u0628\u0627\u0644\u0645\u0632\u0648\u062F. \u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0648\u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643." : "\u0644\u0645 \u064A\u0633\u0645\u062D \u0627\u0644\u0645\u0632\u0648\u062F \u0628\u0627\u062A\u0635\u0627\u0644 \u0627\u0644\u0645\u062A\u0635\u0641\u062D \u0627\u0644\u0645\u0628\u0627\u0634\u0631. \u064A\u0644\u0632\u0645 \u062A\u0641\u0639\u064A\u0644 CORS \u0623\u0648 \u062A\u0647\u064A\u0626\u0629 \u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0645\u0632\u0648\u062F \u0641\u064A \u0648\u0633\u064A\u0637 \u0627\u0644\u0645\u0648\u0642\u0639.", { code: isNative() ? "DIRECT_NETWORK" : "DIRECT_CORS", cause: error });
+            }
+            if (!response.ok) throw new ApiError2(`\u0631\u0641\u0636 \u0627\u0644\u0645\u0635\u062F\u0631 \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 (HTTP ${response.status}).`, { code: `HTTP_${response.status}`, status: response.status });
+            return clock.race(text2 ? response.text() : response.json());
+          };
+          const respond = (data) => new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } });
+          const directSource = (address) => {
+            const url = safeURL2(address);
+            if (!url || !isNative() && url.protocol !== "https:") throw new ApiError2("\u062A\u0634\u063A\u064A\u0644 \u0627\u0644\u0645\u0635\u062F\u0631 \u0641\u064A \u0627\u0644\u0645\u062A\u0635\u0641\u062D \u064A\u062D\u062A\u0627\u062C HTTPS \u0623\u0648 \u0648\u0633\u064A\u0637\u064B\u0627 \u0645\u0647\u064A\u0623.", { code: "DIRECT_HTTPS_REQUIRED" });
+            return { url: url.href, sourceUrl: url.href, mime: mimeForURL2(url.href), alternatives: [], nativePreferred: isNative() };
+          };
+          if (account.mode === "stalker") {
+            if (!isNative()) throw new ApiError2("\u064A\u062D\u062A\u0627\u062C \u0627\u0634\u062A\u0631\u0627\u0643 Stalker \u0625\u0644\u0649 \u062A\u0647\u064A\u0626\u0629 \u0639\u0646\u0648\u0627\u0646\u0647 \u0641\u064A \u0648\u0633\u064A\u0637 \u0627\u0644\u0645\u0648\u0642\u0639\u061B \u0644\u0627 \u064A\u062A\u064A\u062D \u0627\u0644\u0645\u062A\u0635\u0641\u062D \u0631\u0624\u0648\u0633 MAC \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629 \u0645\u0628\u0627\u0634\u0631\u0629.", { code: "HOST_NOT_ALLOWED", canDirect: false });
+            if (!/^(?:[0-9a-f]{2}:){5}[0-9a-f]{2}$/i.test(account.mac)) throw new ApiError2("\u0639\u0646\u0648\u0627\u0646 MAC \u063A\u064A\u0631 \u0635\u0627\u0644\u062D.", { code: "INVALID_MAC" });
+            const portal = safeURL2(account.server);
+            if (!portal) throw new ApiError2("\u0639\u0646\u0648\u0627\u0646 \u0627\u0644\u0628\u0648\u0627\u0628\u0629 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D.", { code: "INVALID_URL" });
+            portal.pathname = portal.pathname.replace(/\/server\/load\.php$/, "").replace(/\/c\/?$/, "").replace(/\/+$/, "") + "/server/load.php";
+            portal.search = "";
+            portal.hash = "";
+            const headers = { "User-Agent": "Mozilla/5.0 (QtEmbedded; U; Linux; C) MAG250/0.2.18 Firmware/0.2.18", "X-User-Agent": "Model: MAG250; Link: Ethernet", Cookie: `mac=${account.mac}; stb_lang=en; timezone=GMT`, Referer: portal.origin + portal.pathname.replace("/server/load.php", "/c/") };
+            const call = async (token2, type, action, extra = {}) => {
+              const address = new URL(portal);
+              for (const [key2, value] of Object.entries({ type, action, ...extra, JsHttpRequest: "1-xml" })) address.searchParams.set(key2, String(value));
+              const data = await download(address.href, false, token2 ? { ...headers, Authorization: `Bearer ${token2}` } : headers);
+              return data?.js && typeof data.js === "object" ? data.js : data;
+            };
+            const handshake = await call("", "stb", "handshake"), token = typeof handshake?.token === "string" ? handshake.token : "";
+            if (!token || token.length > 4e3) throw new ApiError2("\u0627\u0644\u0628\u0648\u0627\u0628\u0629 \u0644\u0645 \u062A\u0639\u062F \u0631\u0645\u0632 \u062C\u0644\u0633\u0629 \u0635\u0627\u0644\u062D\u064B\u0627.", { code: "STALKER_TOKEN" });
+            if (payload.op === "auth") {
+              await call(token, "stb", "get_profile");
+              return respond({ userInfo: { auth: 1, status: "Active" } });
+            }
+            if (payload.op === "catalog") {
+              if (payload.kind !== "live") throw new ApiError2("\u0627\u0644\u0645\u062A\u0627\u062D \u0644\u0647\u0630\u0647 \u0627\u0644\u0628\u0648\u0627\u0628\u0629 \u0647\u0646\u0627 \u0647\u0648 \u0627\u0644\u0642\u0646\u0648\u0627\u062A \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629.", { code: "STALKER_KIND" });
+              const data = await call(token, "itv", "get_all_channels"), rows = Array.isArray(data?.data) ? data.data : data?.data?.data;
+              if (!Array.isArray(rows)) throw new ApiError2("\u0627\u0644\u0628\u0648\u0627\u0628\u0629 \u0644\u0645 \u062A\u0639\u062F \u0642\u0627\u0626\u0645\u0629 \u0642\u0646\u0648\u0627\u062A \u0635\u0627\u0644\u062D\u0629.", { code: "INVALID_RESPONSE" });
+              const seen = /* @__PURE__ */ new Set(), items = [];
+              for (const [n2, row] of rows.slice(0, 2e5).entries()) {
+                const id = String(row.id || row.ch_id || n2);
+                if (seen.has(id)) continue;
+                seen.add(id);
+                items.push({ id: `live:${id}`, providerId: id, kind: "live", name: String(row.name || row.title || `\u0642\u0646\u0627\u0629 ${n2 + 1}`).slice(0, 512), group: String(row.category_name || row.tv_genre_title || row.genre || "\u063A\u064A\u0631 \u0645\u0635\u0646\u0641").slice(0, 512), logo: String(row.logo || row.icon || ""), url: "", command: String(row.cmd || row.url || id).slice(0, 8192) });
+              }
+              return respond({ items, categories: [], partial: rows.length > 2e5 });
+            }
+            if (payload.op === "resolve") {
+              const command = String(payload.item?.command || "");
+              if (!command || command.length > 8192) throw new ApiError2("\u0623\u0639\u062F \u0641\u062A\u062D \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0642\u0646\u0648\u0627\u062A \u0644\u062A\u062C\u062F\u064A\u062F \u0631\u0627\u0628\u0637\u0647\u0627.", { code: "STALKER_COMMAND" });
+              const result = await call(token, "itv", "create_link", { cmd: command, series: "0" }), raw = String(result.cmd || result.url || result.data?.cmd || ""), found = /https?:\/\/[^\s"'<>]+/i.exec(raw)?.[0]?.split("|")[0]?.replace(/[,;]+$/, "");
+              const source = directSource(found);
+              return respond({ ...source, headers });
+            }
+            if (payload.op === "details") return respond({ info: payload.item || {}, episodes: {} });
+            if (payload.op === "epg") return respond({ programs: [] });
+          }
+          if (account.mode === "direct") {
+            if (payload.op === "resolve") return respond(directSource(payload.item?.url || account.url));
+            if (payload.op === "details") return respond({ info: payload.item || {}, episodes: {} });
+            if (payload.op === "epg") return respond({ programs: [] });
+          }
+          if (["m3u", "m3u-file"].includes(account.mode) || account.mode === "auto" && account.url) {
+            if (payload.op === "auth") {
+              await download(account.url, true);
+              return respond({ userInfo: { status: "Active", local: false } });
+            }
+            if (payload.op === "catalog") return respond({ items: parseM3U2(await download(account.url, true), account.url).filter((item) => item.kind === payload.kind), categories: [] });
+            if (payload.op === "resolve") return respond(directSource(payload.item?.url));
+            if (payload.op === "details") return respond({ info: payload.item || {}, episodes: {} });
+            if (payload.op === "epg") return respond({ programs: [] });
+          }
+          const server = safeURL2(account.server);
+          if (!server || !isNative() && server.protocol !== "https:") throw new ApiError2("\u0623\u0636\u0641 \u0639\u0646\u0648\u0627\u0646 HTTPS \u0623\u0648 \u0647\u064A\u0626 \u0647\u0630\u0627 \u0627\u0644\u0645\u0632\u0648\u062F \u0641\u064A \u0648\u0633\u064A\u0637 \u0627\u0644\u0645\u0648\u0642\u0639.", { code: "DIRECT_HTTPS_REQUIRED", canDirect: true });
+          const endpoint = (action = "", extra = {}) => {
+            const url = new URL(server);
+            url.pathname = url.pathname.replace(/\/$/, "") + "/player_api.php";
+            url.search = "";
+            url.searchParams.set("username", account.username);
+            url.searchParams.set("password", account.password);
+            if (action) url.searchParams.set("action", action);
+            for (const [key2, value] of Object.entries(extra)) url.searchParams.set(key2, value);
+            return url;
+          };
+          const stream = (kind, id, extension) => {
+            const url = new URL(server);
+            url.pathname = url.pathname.replace(/\/$/, "") + "/" + [kind === "episode" ? "series" : kind, account.username, account.password, `${id}.${extension}`].map(encodeURIComponent).join("/");
+            url.search = "";
+            url.hash = "";
+            return url.href;
+          };
+          if (payload.op === "auth") {
+            const data = await download(endpoint());
+            if (String(data.user_info?.auth) !== "1" || data.user_info.status && !/^active$/i.test(data.user_info.status)) throw new ApiError2("\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u062F\u062E\u0648\u0644 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D\u0629 \u0623\u0648 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u063A\u064A\u0631 \u0646\u0634\u0637.", { code: "ACCOUNT_REJECTED", status: 401 });
+            return respond({ userInfo: data.user_info, serverInfo: data.server_info || {} });
+          }
+          if (payload.op === "catalog") {
+            const kind = payload.kind, name = kind === "movie" ? "vod" : kind, raw = await download(endpoint(`get_${name === "series" ? "series" : name + "_streams"}`));
+            if (!Array.isArray(raw)) throw new ApiError2("\u0635\u064A\u063A\u0629 \u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0645\u0632\u0648\u062F \u063A\u064A\u0631 \u0635\u0627\u0644\u062D\u0629.", { code: "INVALID_RESPONSE" });
+            let categories = [];
+            try {
+              const value = await download(endpoint(`get_${name}_categories`));
+              if (Array.isArray(value)) categories = value;
+            } catch (error) {
+              if (clock.signal.aborted) throw error;
+            }
+            const names = new Map(categories.map((category) => [String(category.category_id), category.category_name]));
+            const items = raw.filter((row) => row[kind === "series" ? "series_id" : "stream_id"] != null).slice(0, 2e5).map((row) => {
+              const id = String(row[kind === "series" ? "series_id" : "stream_id"]), extension = kind === "live" ? ["ts", "m3u8"].includes(String(row.container_extension).toLowerCase()) ? String(row.container_extension).toLowerCase() : "m3u8" : row.container_extension || "mp4";
+              return { id: `${kind}:${id}`, providerId: id, kind, name: row.name || "\u0628\u062F\u0648\u0646 \u0639\u0646\u0648\u0627\u0646", categoryId: String(row.category_id || ""), group: names.get(String(row.category_id)) || "\u063A\u064A\u0631 \u0645\u0635\u0646\u0641", logo: row.stream_icon || row.cover || "", url: kind === "series" ? "" : stream(kind, id, extension), extension, year: row.year || row.releaseDate?.slice(0, 4) || "", genre: row.genre || "", language: row.language || "", rating: row.rating || (Number(row.rating_5based) * 2 || ""), added: row.added || row.last_modified || "", plot: row.plot || "", cast: row.cast || "" };
+            });
+            return respond({ items, categories });
+          }
+          if (payload.op === "details") {
+            const series = payload.kind === "series", data = await download(endpoint(series ? "get_series_info" : "get_vod_info", { [series ? "series_id" : "vod_id"]: payload.id }));
+            return respond({ info: { ...payload.item || {}, ...data.movie_data || {}, ...data.info || {} }, episodes: data.episodes || {} });
+          }
+          if (payload.op === "epg") {
+            const data = await download(endpoint("get_short_epg", { stream_id: payload.id, limit: 50 }));
+            return respond({ programs: (data.epg_listings || []).map((program) => ({ ...program, title: decodeProviderText2(program.title), description: decodeProviderText2(program.description) })) });
+          }
+          if (payload.op === "resolve") {
+            const item = payload.item || {}, kind = payload.kind === "episode" ? "series" : payload.kind, extension = kind === "live" ? item.extension === "ts" || /\.ts(?:\?|$)/i.test(item.url || "") ? "ts" : "m3u8" : item.extension || item.container_extension || "mp4";
+            const generated = ["provider", "xtream", "auto"].includes(account.mode) && /^(?:live|movie|series)$/.test(kind) && /^\d+$/.test(String(payload.id));
+            const source = generated ? stream(kind, payload.id, extension) : item.url, url = safeURL2(source);
+            if (!url || !isNative() && url.protocol !== "https:") throw new ApiError2("\u0631\u0627\u0628\u0637 \u0627\u0644\u0648\u0633\u0627\u0626\u0637 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 \u064A\u062D\u062A\u0627\u062C HTTPS.", { code: "DIRECT_HTTPS_REQUIRED" });
+            return respond({ url: url.href, sourceUrl: url.href, mime: mimeForURL2(url.href), nativePreferred: isNative(), alternatives: generated && kind === "live" ? [stream(kind, payload.id, extension === "ts" ? "m3u8" : "ts")].map((address) => ({ url: address, sourceUrl: address, mime: mimeForURL2(address) })) : [] });
+          }
+          throw new ApiError2("\u0627\u0644\u0639\u0645\u0644\u064A\u0629 \u063A\u064A\u0631 \u0645\u062F\u0639\u0648\u0645\u0629.", { code: "INVALID_OPERATION" });
+        }
+        async authenticate(account, options = {}) {
+          if (["demo", "m3u-file", "direct"].includes(account?.mode)) return { userInfo: { status: "Active", local: true } };
+          return this.request("auth", account, {}, options);
+        }
+        async catalog(account, kind, { signal, onBatch = () => {
+        }, force = false, maxAge = 6 * 36e5 } = {}) {
+          if (signal?.aborted) throw abortError2();
+          if (!["live", "movie", "series"].includes(kind)) throw new ApiError2("\u0642\u0633\u0645 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D.", { code: "INVALID_KIND" });
+          if (account?.mode === "m3u-file") {
+            const rows = (account.items || []).filter((item) => item.kind === kind);
+            onBatch(rows, { kind, cached: true, partial: false });
+            return rows;
+          }
+          if (account?.mode === "direct") {
+            const source = safeURL2(account.url);
+            if (!source) throw new ApiError2("\u0631\u0627\u0628\u0637 \u0627\u0644\u0628\u062B \u0627\u0644\u0645\u0628\u0627\u0634\u0631 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D.", { code: "INVALID_URL" });
+            const rows = kind === "live" ? [{ id: "live:direct", providerId: "direct", kind: "live", name: account.name || "\u0628\u062B \u0645\u0628\u0627\u0634\u0631", group: "\u0631\u0648\u0627\u0628\u0637 \u0645\u0628\u0627\u0634\u0631\u0629", url: source.href }] : [];
+            onBatch(rows, { kind, cached: true, partial: false });
+            return rows;
+          }
+          const began = performance.now(), scope2 = accountScope2(account), key2 = `${scope2}:${kind}`, memory = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
+          this._status(kind, { loading: true, partial: false, error: null });
+          if (!force && memory && Date.now() - memory.savedAt < maxAge) {
+            onBatch(memory.items, { kind, cached: true, partial: false });
+            this._status(kind, { loading: false, cached: true, count: memory.items.length });
+            return memory.items;
+          }
+          let preview, cached;
+          try {
+            preview = await this.vault.get(`preview:${key2}`);
+            if (preview?.items?.length) first(preview.items);
+          } catch (error) {
+            this._status(kind, { storageError: error.code || "STORAGE_ERROR" });
+          }
+          if (!force) {
+            try {
+              cached = await this.vault.get(`full:${key2}`);
+              if (Array.isArray(cached?.items) && cached.complete && Date.now() - cached.savedAt < maxAge) {
+                this.memory.set(key2, cached);
+                onBatch(cached.items, { kind, cached: true, partial: false });
+                this._status(kind, { loading: false, cached: true, count: cached.items.length });
+                return cached.items;
+              }
+            } catch (error) {
+              this._status(kind, { storageError: error.code || "STORAGE_ERROR" });
+            }
+          }
+          if (signal?.aborted) throw abortError2();
+          const clock = deadline2(signal, this.timeout), collected = [];
+          let firstReceived = false, lastPublishedAt = 0, categories = null;
+          const publish = (rows, partial) => {
+            if (!Array.isArray(rows)) return;
+            if (rows.length + collected.length > 2e5) throw new ApiError2("\u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u062A\u062A\u062C\u0627\u0648\u0632 \u062D\u062F \u0627\u0644\u0639\u0646\u0627\u0635\u0631.", { code: "CATALOG_TOO_LARGE" });
+            for (const item of rows) collected.push(item);
+            if (rows.length && !firstReceived) {
+              firstReceived = true;
+              clock.extend(9e4);
+              this.timings[kind] = { firstMs: Math.round(performance.now() - began), rows: collected.length };
+              void this.vault.set(`preview:${key2}`, { items: collected.slice(0, 128), savedAt: Date.now(), complete: false }).catch(() => {
+              });
+            }
+            if (rows.length && (lastPublishedAt === 0 || performance.now() - lastPublishedAt >= 250)) {
+              lastPublishedAt = performance.now();
+              onBatch(collected.slice(), { kind, cached: false, partial });
+            }
+          };
+          try {
+            const response = await this._response({ op: "catalog", account: accountPayload2(account), kind }, clock);
+            if (/application\/(?:x-ndjson|ndjson)/i.test(response.headers.get("content-type") || "") && response.body?.getReader) {
+              const reader = response.body.getReader(), decoder3 = new TextDecoder();
+              let pending2 = "", bytes = 0, done = false;
+              const line2 = (text2) => {
+                if (!text2.trim()) return;
+                let data;
+                try {
+                  data = JSON.parse(text2);
+                } catch {
+                  throw new ApiError2("\u0627\u0633\u062A\u062C\u0627\u0628\u0629 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u063A\u064A\u0631 \u0645\u0643\u062A\u0645\u0644\u0629.", { code: "INVALID_RESPONSE" });
+                }
+                if (data.error) throw new ApiError2(data.error, { code: data.code || "PROVIDER_ERROR" });
+                if (data.categories) categories = data.categories;
+                if (Array.isArray(data.items)) publish(data.items, !data.done);
+                if (data.done) done = true;
+              };
+              try {
+                for (; ; ) {
+                  const chunk = await clock.race(reader.read());
+                  if (chunk.done) break;
+                  bytes += chunk.value.length;
+                  if (bytes > 64 * 1024 * 1024) throw new ApiError2("\u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0623\u0643\u0628\u0631 \u0645\u0646 \u0627\u0644\u062D\u062F \u0627\u0644\u0645\u0633\u0645\u0648\u062D.", { code: "CATALOG_TOO_LARGE" });
+                  pending2 += decoder3.decode(chunk.value, { stream: true });
+                  let split;
+                  while ((split = pending2.indexOf("\n")) >= 0) {
+                    line2(pending2.slice(0, split));
+                    pending2 = pending2.slice(split + 1);
+                  }
+                  if (pending2.length > 16 * 1024 * 1024) throw new ApiError2("\u062F\u0641\u0639\u0629 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0623\u0643\u0628\u0631 \u0645\u0646 \u0627\u0644\u062D\u062F.", { code: "CATALOG_TOO_LARGE" });
+                }
+                pending2 += decoder3.decode();
+                if (pending2.trim()) line2(pending2);
+                if (!done) throw new ApiError2("\u0627\u0646\u0642\u0637\u0639 \u0627\u0644\u0645\u0635\u062F\u0631 \u0642\u0628\u0644 \u0627\u0643\u062A\u0645\u0627\u0644 \u0627\u0644\u0642\u0627\u0626\u0645\u0629.", { code: "INCOMPLETE_CATALOG" });
+              } finally {
+                if (!done) void reader.cancel().catch(() => {
+                });
+                reader.releaseLock();
+              }
+            } else {
+              const data = await clock.race(response.json());
+              const rows = Array.isArray(data) ? data : data.items;
+              if (!Array.isArray(rows)) throw new ApiError2("\u0635\u064A\u063A\u0629 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D\u0629.", { code: "INVALID_RESPONSE" });
+              publish(rows, !!data.partial);
+              if (data.partial) throw new ApiError2("\u0648\u0635\u0644 \u062C\u0632\u0621 \u0645\u0646 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0641\u0642\u0637. \u064A\u0645\u0643\u0646\u0643 \u0627\u0644\u062A\u062D\u062F\u064A\u062B \u0644\u0625\u0643\u0645\u0627\u0644\u0647\u0627.", { code: "INCOMPLETE_CATALOG" });
+            }
+            if (categories) {
+              const names = new Map((Array.isArray(categories) ? categories : Object.entries(categories).map(([id, name]) => ({ category_id: id, category_name: name }))).map((category) => [String(category.category_id ?? category.id), category.category_name ?? category.name]));
+              for (const item of collected) if (names.has(String(item.categoryId))) item.group = names.get(String(item.categoryId));
+            }
+            const entry = { items: collected, complete: true, savedAt: Date.now() };
+            this.memory.set(key2, entry);
+            this.timings[kind] = { ...this.timings[kind], totalMs: Math.round(performance.now() - began), rows: collected.length, state: "ready" };
+            this._status(kind, { loading: false, partial: false, cached: false, count: collected.length });
+            onBatch(collected, { kind, cached: false, partial: false });
+            void this.vault.set(`full:${key2}`, entry).catch((error) => this._status(kind, { storageError: error.code || "STORAGE_ERROR" }));
+            return collected;
+          } catch (error) {
+            const failure = error instanceof ApiError2 ? error : new ApiError2("\u062A\u0639\u0630\u0631 \u062A\u062D\u0645\u064A\u0644 \u0627\u0644\u0642\u0627\u0626\u0645\u0629.", { code: "NETWORK", cause: error });
+            this.timings[kind] = { ...this.timings[kind], totalMs: Math.round(performance.now() - began), state: failure.code };
+            this._status(kind, { loading: false, partial: true, error: failure.message, code: failure.code });
+            if (failure.code === "ABORTED" || signal?.aborted) throw abortError2();
+            const available = collected.length ? collected : cached?.items || preview?.items || memory?.items;
+            if (available?.length) {
+              onBatch(available, { kind, cached: !collected.length, partial: true, error: failure.message });
+              return available;
+            }
+            throw failure;
+          } finally {
+            clock.done();
+          }
+        }
+        async details(account, item, options = {}) {
+          if (options.signal?.aborted) throw abortError2();
+          if (["m3u-file", "m3u", "direct"].includes(account?.mode)) return { info: { ...item }, episodes: {} };
+          const key2 = `${accountScope2(account)}:${item.kind}:${item.providerId || item.id || item.url}`, cached = this.detailsCache.get(key2);
+          if (!options.force && cached && Date.now() - cached.savedAt < 12 * 36e5) {
+            this.detailsCache.delete(key2);
+            this.detailsCache.set(key2, cached);
+            return cached.data;
+          }
+          const data = await this.request("details", account, { kind: item.kind, id: item.providerId || String(item.id || "").replace(/^[^:]+:/, ""), item }, options);
+          if (item.kind === "series") {
+            for (const [oldKey, entry] of this.detailsCache) if (entry.kind === "series" && oldKey !== key2) this.detailsCache.delete(oldKey);
+          }
+          this.detailsCache.set(key2, { kind: item.kind, data, savedAt: Date.now() });
+          while (this.detailsCache.size > 24) this.detailsCache.delete(this.detailsCache.keys().next().value);
+          return data;
+        }
+        async epg(account, item, options = {}) {
+          const data = await this.request("epg", account, { kind: "live", id: item.providerId || String(item.id || "").replace(/^live:/, ""), item }, options);
+          return data.programs || data.epg_listings || [];
+        }
+        async resolve(account, item, options = {}) {
+          if (account?.mode === "m3u-file") account = { mode: "direct", url: item.url };
+          const data = await this.request("resolve", account, { kind: item.kind, id: item.providerId || String(item.id || "").replace(/^[^:]+:/, ""), item }, options);
+          const base = safeURL2(this.base, globalThis.location?.href)?.origin || globalThis.ABUNASSER_CONFIG?.apiOrigin;
+          const address = (value) => typeof value === "string" && value.startsWith("/") && base ? new URL(value, base).href : value;
+          return { ...data, url: address(data.url), alternatives: (data.alternatives || []).map((value) => typeof value === "string" ? address(value) : { ...value, url: address(value.url) }) };
+        }
+        async clearCatalogs(account) {
+          const scope2 = accountScope2(account);
+          for (const kind of ["live", "movie", "series"]) {
+            this.memory.delete(`${scope2}:${kind}`);
+            await this.vault.remove(`preview:${scope2}:${kind}`);
+            await this.vault.remove(`full:${scope2}:${kind}`);
+          }
+        }
+      };
+    }
+  });
+
   // tv/samsung/app/distribution.js?site=2.1
   var RELEASE_ORIGIN2, ANDROID_APK2, WINDOWS_SETUP2, WINDOWS_PORTABLE2, RELEASE_INDEX2;
   var init_distribution = __esm({
@@ -2217,7 +3035,7 @@
     }
     return 0;
   }
-  async function checkForUpdates({ fetcher = globalThis.fetch, registration: registration2, platform = globalThis.ABUNASSER_CONFIG?.tvPackaged ? globalThis.ABUNASSER_CONFIG.tvPlatform : globalThis.abunasserDesktop?.isDesktop ? "windows" : "web", currentVersion = BRAND.version, nativeVersion = globalThis.abunasserDesktop?.version, origin = globalThis.ABUNASSER_CONFIG?.apiOrigin || globalThis.location?.origin } = {}) {
+  async function checkForUpdates({ fetcher = globalThis.fetch, registration: registration2, platform = globalThis.ABUNASSER_CONFIG?.tvPackaged ? globalThis.ABUNASSER_CONFIG.tvPlatform : globalThis.abunasserDesktop?.isDesktop ? "windows" : "web", currentVersion = BRAND2.version, nativeVersion = globalThis.abunasserDesktop?.version, origin = globalThis.ABUNASSER_CONFIG?.apiOrigin || globalThis.location?.origin } = {}) {
     const controller2 = new AbortController(), timer = setTimeout(() => controller2.abort(), 12e3), base = origin || RELEASE_ORIGIN2;
     try {
       const response = await fetcher(new URL("/version.json", base), { cache: "no-store", signal: controller2.signal });
@@ -2321,7 +3139,7 @@
   }
   var init_updates = __esm({
     "tv/samsung/app/updates.js?site=2.1"() {
-      init_core();
+      init_core2();
       init_distribution();
     }
   });
@@ -2339,7 +3157,7 @@
     const raw = cleanText(value, 1024);
     return "abbeedo-" + (raw && /^[a-z\d_.-]{1,110}$/i.test(raw) ? raw : raw ? hash(raw) : `${Date.now().toString(36)}-${++anonymousID}`);
   }
-  function safeURL2(value) {
+  function safeURL3(value) {
     if (typeof value !== "string" || value.length > 2048) return void 0;
     try {
       const base = new URL(globalThis.location?.href || "https://localhost/");
@@ -2355,7 +3173,7 @@
       title: cleanText(input.title, 160) || (globalThis.document?.documentElement?.lang === "ar" ? "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV" : "abbeedo TV"),
       body: cleanText(input.body, 1e3)
     };
-    const url = safeURL2(input.url);
+    const url = safeURL3(input.url);
     if (url) value.url = url;
     return value;
   }
@@ -2418,7 +3236,7 @@
         icon: "app-icon.png",
         badge: "app-icon.png",
         renotify: false,
-        data: { url: value.url || safeURL2("/") }
+        data: { url: value.url || safeURL3("/") }
       };
       const worker = await registration();
       if (typeof worker?.showNotification === "function") {
@@ -2460,7 +3278,7 @@
       title: cleanText(row.title, 160),
       body: cleanText(row.body, 1e3),
       createdAt: Number.isFinite(Number(row.createdAt)) ? Number(row.createdAt) : 0,
-      url: safeURL2(row.url)
+      url: safeURL3(row.url)
     })).filter((row) => row.title || row.body).sort((a, b) => a.createdAt - b.createdAt);
   }
   async function limitedJSON(response) {
@@ -4204,7 +5022,7 @@
     }
   });
 
-  // tv/samsung/app/ui.js?release=1.2
+  // tv/samsung/app/ui.js?release=1.2.1
   var ui_exports = {};
   __export(ui_exports, {
     appReady: () => appReady
@@ -4347,14 +5165,14 @@
     sheet(title, box2);
   }
   function scope() {
-    return accountScope?.(state.account) || `${state.account?.mode || "demo"}|${state.account?.server || ""}|${state.account?.username || ""}`;
+    return accountScope2?.(state.account) || `${state.account?.mode || "demo"}|${state.account?.server || ""}|${state.account?.username || ""}`;
   }
   function collection() {
     const id = scope() + "|" + state.profile;
     return state.collections[id] ??= { favorites: [], hidden: [], watchlist: [], history: [], progress: {}, order: [], saved: {} };
   }
   function key(item) {
-    return stableKey(scope(), item);
+    return stableKey2(scope(), item);
   }
   function inSet(name, item) {
     return collection()[name].includes(key(item));
@@ -4405,13 +5223,13 @@
   function contact(title = x("\u0628\u0631\u0645\u062C\u0629 \u0627\u0628\u0648\u0646\u0627\u0635\u0631", "Developed by Abunasser"), support = false) {
     const box2 = node("div");
     box2.append(node("p", "", support ? x("\u0644\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0623\u0648 \u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A\u060C \u062A\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0628\u0648\u0646\u0627\u0635\u0631.", "Contact Abunasser for subscription or support.") : x(`\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV \xB7 \u0628\u0631\u0645\u062C\u0629 \u0648\u062A\u0637\u0648\u064A\u0631 \u0627\u0628\u0648\u0646\u0627\u0635\u0631 \xB7 \u0627\u0644\u0625\u0635\u062F\u0627\u0631 ${APP_VERSION}`, `abbeedo TV \xB7 Developed by Abunasser \xB7 Version ${APP_VERSION}`)), node("p", "phone-number", "0571514382"));
-    box2.append(actions(btn(x("\u0646\u0633\u062E \u0627\u0644\u0631\u0642\u0645", "Copy number"), () => copyText("0571514382"), "copy"), btn(x("\u0645\u0631\u0627\u0633\u0644\u0629 \u0648\u0627\u062A\u0633\u0627\u0628", "Message on WhatsApp"), () => openExternal(BRAND.whatsapp), "chat", "primary")));
+    box2.append(actions(btn(x("\u0646\u0633\u062E \u0627\u0644\u0631\u0642\u0645", "Copy number"), () => copyText("0571514382"), "copy"), btn(x("\u0645\u0631\u0627\u0633\u0644\u0629 \u0648\u0627\u062A\u0633\u0627\u0628", "Message on WhatsApp"), () => openExternal(BRAND2.whatsapp), "chat", "primary")));
     if (support) box2.append(btn(x("\u0625\u0631\u0633\u0627\u0644 \u062A\u0642\u0631\u064A\u0631 \u062A\u0634\u062E\u064A\u0635 \u0628\u062F\u0648\u0646 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643", "Send a report without subscription details"), () => {
       const summary = `${brandName(state.settings.language)} ${APP_VERSION}
 ${isNative2() ? "iPhone app" : "Web"}
 ${navigator.onLine ? "Online" : "Offline"}
 ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })}`;
-      openExternal(BRAND.whatsapp + "?text=" + encodeURIComponent(summary));
+      openExternal(BRAND2.whatsapp + "?text=" + encodeURIComponent(summary));
     }, "support"));
     sheet(title, box2);
   }
@@ -4440,7 +5258,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     }
   }
   function openExternal(value) {
-    const u = safeURL(value, location.href);
+    const u = safeURL2(value, location.href);
     if (!u) throw Error(x("\u0627\u0644\u0631\u0627\u0628\u0637 \u063A\u064A\u0631 \u0635\u0627\u0644\u062D", "Invalid link"));
     if (isNative2()) nativeRequest2("openURL", { url: u.href }).catch(() => {
       location.href = u.href;
@@ -4476,8 +5294,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       state.demo = false;
       state.catalogs = {};
       if (remember) {
-        const id = accountScope(account);
-        const existing = state.accounts.findIndex((a) => accountScope(a) === id);
+        const id = accountScope2(account);
+        const existing = state.accounts.findIndex((a) => accountScope2(a) === id);
         const saved = { ...account, name: account.name || account.username || x("\u0627\u0634\u062A\u0631\u0627\u0643", "Subscription") };
         if (existing >= 0) state.accounts[existing] = saved;
         else state.accounts.push(saved);
@@ -4502,16 +5320,16 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   function accountFromForm() {
     const mode = $("source-mode").value;
     if (mode === "auto") return detectAccountURL($("playlist-url").value.trim());
-    const account = { mode, server: mode === "provider" ? PROVIDER : ["xtream", "stalker"].includes(mode) ? $("server").value.trim() : "", username: ["provider", "xtream"].includes(mode) ? $("username").value.trim() : "", password: ["provider", "xtream"].includes(mode) ? $("password").value : "", url: ["m3u", "direct"].includes(mode) ? $("playlist-url").value.trim() : "", mac: mode === "stalker" ? $("mac").value.trim() : "" };
+    const account = { mode, server: mode === "provider" ? PROVIDER2 : ["xtream", "stalker"].includes(mode) ? $("server").value.trim() : "", username: ["provider", "xtream"].includes(mode) ? $("username").value.trim() : "", password: ["provider", "xtream"].includes(mode) ? $("password").value : "", url: ["m3u", "direct"].includes(mode) ? $("playlist-url").value.trim() : "", mac: mode === "stalker" ? $("mac").value.trim() : "" };
     if (["provider", "xtream"].includes(mode) && (!account.username || !account.password)) throw Error(x("\u0623\u062F\u062E\u0644 \u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062A\u062E\u062F\u0645 \u0648\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631.", "Enter your username and password."));
-    if (["xtream", "stalker"].includes(mode) && !safeURL(account.server)) throw Error(x("\u0623\u062F\u062E\u0644 \u0639\u0646\u0648\u0627\u0646 \u0633\u064A\u0631\u0641\u0631 \u0635\u062D\u064A\u062D\u064B\u0627 \u064A\u0628\u062F\u0623 \u0628\u0640 HTTP \u0623\u0648 HTTPS.", "Enter a valid HTTP or HTTPS server address."));
-    if (["m3u", "direct"].includes(mode) && !safeURL(account.url)) throw Error(x("\u0623\u062F\u062E\u0644 \u0631\u0627\u0628\u0637\u064B\u0627 \u0635\u0627\u0644\u062D\u064B\u0627 \u0623\u0648 \u0627\u062E\u062A\u0631 \u0645\u0644\u0641 M3U.", "Enter a valid URL or choose an M3U file."));
+    if (["xtream", "stalker"].includes(mode) && !safeURL2(account.server)) throw Error(x("\u0623\u062F\u062E\u0644 \u0639\u0646\u0648\u0627\u0646 \u0633\u064A\u0631\u0641\u0631 \u0635\u062D\u064A\u062D\u064B\u0627 \u064A\u0628\u062F\u0623 \u0628\u0640 HTTP \u0623\u0648 HTTPS.", "Enter a valid HTTP or HTTPS server address."));
+    if (["m3u", "direct"].includes(mode) && !safeURL2(account.url)) throw Error(x("\u0623\u062F\u062E\u0644 \u0631\u0627\u0628\u0637\u064B\u0627 \u0635\u0627\u0644\u062D\u064B\u0627 \u0623\u0648 \u0627\u062E\u062A\u0631 \u0645\u0644\u0641 M3U.", "Enter a valid URL or choose an M3U file."));
     return account;
   }
   function demoItems() {
     const fixture = new URL("/watch-demo.mp4", globalThis.ABUNASSER_CONFIG?.apiOrigin || location.href).href, result = { live: [], movie: [], series: [] };
-    const channels = [[x("\u0642\u0646\u0627\u0629 \u0627\u0644\u062A\u062C\u0631\u0628\u0629 \u0627\u0644\u0623\u0648\u0644\u0649", "First demo channel"), x("\u0631\u064A\u0627\u0636\u0629", "Sports")], [x("\u0623\u062E\u0628\u0627\u0631 \u0627\u0644\u062A\u062C\u0631\u0628\u0629", "Demo news"), x("\u0623\u062E\u0628\u0627\u0631", "News")], [x("\u0639\u0627\u0644\u0645 \u0627\u0644\u0623\u0637\u0641\u0627\u0644 \xB7 \u062A\u062C\u0631\u0628\u0629", "Kids world \xB7 Demo"), x("\u0623\u0637\u0641\u0627\u0644", "Kids")], [x("\u0623\u0641\u0644\u0627\u0645 \u0627\u0644\u062A\u062C\u0631\u0628\u0629", "Demo movies"), x("\u0623\u0641\u0644\u0627\u0645", "Movies")], [x("\u0648\u062B\u0627\u0626\u0642\u064A\u0627\u062A \u0627\u0644\u062A\u062C\u0631\u0628\u0629", "Demo documentaries"), x("\u0648\u062B\u0627\u0626\u0642\u064A", "Documentary")]];
-    channels.forEach(([name, group], i) => result.live.push({ id: "live:demo" + i, kind: "live", name, group, url: fixture + "?channel=" + i, logo: "", demo: true }));
+    const channels2 = [[x("\u0642\u0646\u0627\u0629 \u0627\u0644\u062A\u062C\u0631\u0628\u0629 \u0627\u0644\u0623\u0648\u0644\u0649", "First demo channel"), x("\u0631\u064A\u0627\u0636\u0629", "Sports")], [x("\u0623\u062E\u0628\u0627\u0631 \u0627\u0644\u062A\u062C\u0631\u0628\u0629", "Demo news"), x("\u0623\u062E\u0628\u0627\u0631", "News")], [x("\u0639\u0627\u0644\u0645 \u0627\u0644\u0623\u0637\u0641\u0627\u0644 \xB7 \u062A\u062C\u0631\u0628\u0629", "Kids world \xB7 Demo"), x("\u0623\u0637\u0641\u0627\u0644", "Kids")], [x("\u0623\u0641\u0644\u0627\u0645 \u0627\u0644\u062A\u062C\u0631\u0628\u0629", "Demo movies"), x("\u0623\u0641\u0644\u0627\u0645", "Movies")], [x("\u0648\u062B\u0627\u0626\u0642\u064A\u0627\u062A \u0627\u0644\u062A\u062C\u0631\u0628\u0629", "Demo documentaries"), x("\u0648\u062B\u0627\u0626\u0642\u064A", "Documentary")]];
+    channels2.forEach(([name, group], i) => result.live.push({ id: "live:demo" + i, kind: "live", name, group, url: fixture + "?channel=" + i, logo: "", demo: true }));
     const names = x(["\u0631\u062D\u0644\u0629 \u0627\u0644\u0636\u0648\u0621", "\u0648\u0642\u062A \u0627\u0644\u062D\u0643\u0627\u064A\u0629", "\u0646\u0627\u0641\u0630\u0629 \u0639\u0644\u0649 \u0627\u0644\u0639\u0627\u0644\u0645", "\u0644\u062D\u0638\u0627\u062A \u0647\u0627\u062F\u0626\u0629", "\u062F\u0631\u0648\u0628 \u062C\u062F\u064A\u062F\u0629", "\u062D\u0643\u0627\u064A\u0629 \u0645\u0643\u0627\u0646"], ["A journey of light", "Story time", "A window on the world", "Quiet moments", "New paths", "A place to remember"]);
     for (let n2 = 0; n2 < 6; n2++) result.movie.push({ id: "movie:demo" + n2, kind: "movie", name: names[n2] + x(" \xB7 \u062A\u062C\u0631\u0628\u0629", " \xB7 Demo"), group: n2 % 2 ? x("\u0648\u062B\u0627\u0626\u0642\u064A", "Documentary") : x("\u0645\u0642\u0627\u0637\u0639 \u0645\u0645\u0644\u0648\u0643\u0629", "Owned clips"), url: fixture, year: "2026", rating: "", plot: x("\u0645\u0642\u0637\u0639 \u0627\u062E\u062A\u0628\u0627\u0631 \u0645\u0645\u0644\u0648\u0643 \u0644\u0639\u0631\u0636 \u0627\u0644\u0648\u0627\u062C\u0647\u0629 \u0648\u0623\u062F\u0648\u0627\u062A \u0627\u0644\u062A\u0634\u063A\u064A\u0644\u061B \u0644\u064A\u0633 \u0641\u064A\u0644\u0645\u064B\u0627 \u0645\u0646 \u0627\u0634\u062A\u0631\u0627\u0643 \u062D\u0642\u064A\u0642\u064A.", "An owned test clip showing the interface and playback controls; sample content without a real subscription."), demo: true });
     for (let n2 = 0; n2 < 3; n2++) result.series.push({ id: "series:demo" + n2, kind: "series", name: x(["\u062D\u0643\u0627\u064A\u0627\u062A \u0627\u0644\u062A\u062C\u0631\u0628\u0629", "\u0639\u0627\u0644\u0645 \u0627\u0644\u0648\u0627\u062C\u0647\u0629", "\u062E\u0637\u0648\u0627\u062A \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629"], ["Demo stories", "Interface world", "Watching steps"])[n2], group: x("\u0645\u0633\u0644\u0633\u0644\u0627\u062A \u062A\u062C\u0631\u064A\u0628\u064A\u0629", "Demo series"), year: "2026", plot: x("\u0645\u0633\u0644\u0633\u0644 \u062A\u0648\u0636\u064A\u062D\u064A \u0628\u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0645\u0642\u0627\u0637\u0639 \u0627\u062E\u062A\u0628\u0627\u0631 \u0645\u0645\u0644\u0648\u0643\u0629.", "Sample series using owned test clips."), demo: true });
@@ -4545,7 +5363,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       b.dataset.action = id;
       return b;
     }));
-    const expiry = formatExpiry(state.userInfo, { locale: state.settings.language === "en" ? "en-GB" : "ar-SA-u-ca-gregory" });
+    const expiry = formatExpiry2(state.userInfo, { locale: state.settings.language === "en" ? "en-GB" : "ar-SA-u-ca-gregory" });
     $("subscription-expiry").textContent = state.demo ? x("\u062A\u062C\u0631\u0628\u0629 \u062F\u0648\u0646 \u0627\u0634\u062A\u0631\u0627\u0643 \xB7 \u0628\u064A\u0627\u0646\u0627\u062A \u062A\u0648\u0636\u064A\u062D\u064A\u0629 \u0641\u0642\u0637", "Demo without subscription \xB7 sample data only") : expiry.known ? x(`\u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: ${expiry.date} \xB7 \u0627\u0644\u0645\u062A\u0628\u0642\u064A: ${expiry.days} \u064A\u0648\u0645`, `Subscription ends: ${expiry.date} \xB7 ${expiry.days} days left`) : x("\u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: \u0644\u0645 \u064A\u062D\u062F\u062F\u0647 \u0627\u0644\u0645\u0635\u062F\u0631", "Subscription expiry: not supplied by the provider");
     applyPreferences();
   }
@@ -4624,14 +5442,14 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   function filtered(rows = state.catalogs[state.kind] || [], options = {}) {
     const c = collection();
-    return filterItems(rows, { scope: scope(), kind: state.kind, group: state.group, family: state.kind === "live" ? state.family : "", query: state.query, ...state.filters, parental: state.settings.parental_enabled, hidden: c.hidden, favorites: c.favorites, watchlist: c.watchlist, history: c.history, favoritesOnly: state.view === "favorites" || state.family === "favorites", watchlistOnly: state.view === "watchlist", historyOnly: state.view === "continue" || state.family === "history", recentOnly: state.view === "recent", dedupeMovies: state.settings.dedupe_movies, dedupeChannels: state.settings.deduplicate_channels, sort: state.sort, order: c.order, ...options });
+    return filterItems2(rows, { scope: scope(), kind: state.kind, group: state.group, family: state.kind === "live" ? state.family : "", query: state.query, ...state.filters, parental: state.settings.parental_enabled, hidden: c.hidden, favorites: c.favorites, watchlist: c.watchlist, history: c.history, favoritesOnly: state.view === "favorites" || state.family === "favorites", watchlistOnly: state.view === "watchlist", historyOnly: state.view === "continue" || state.family === "history", recentOnly: state.view === "recent", dedupeMovies: state.settings.dedupe_movies, dedupeChannels: state.settings.deduplicate_channels, sort: state.sort, order: c.order, ...options });
   }
   function categoryButtons(rows, { receiver = false } = {}) {
-    rows = rows.filter((item) => !collection().hidden.includes(key(item)) && (!state.settings.parental_enabled || !isAdult(item)));
+    rows = rows.filter((item) => !collection().hidden.includes(key(item)) && (!state.settings.parental_enabled || !isAdult2(item)));
     const box2 = node("div");
     const counts = /* @__PURE__ */ new Map();
     for (const item of rows) {
-      if (state.settings.parental_enabled && isAdult(item) || collection().hidden.includes(key(item))) continue;
+      if (state.settings.parental_enabled && isAdult2(item) || collection().hidden.includes(key(item))) continue;
       counts.set(item.group || x("\u063A\u064A\u0631 \u0645\u0635\u0646\u0641", "Uncategorized"), (counts.get(item.group || x("\u063A\u064A\u0631 \u0645\u0635\u0646\u0641", "Uncategorized")) || 0) + 1);
     }
     const choose = (family, group) => {
@@ -4641,8 +5459,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       receiver ? renderReceiver() : renderCatalog();
     };
     if ((state.kind === "live" || receiver) && state.settings.auto_categories) {
-      for (const family of LIVE_FAMILIES) {
-        const count = family.id === "all" ? rows.length : family.id === "favorites" ? rows.filter((i) => inSet("favorites", i)).length : family.id === "history" ? rows.filter((i) => collection().history.some((h) => h.key === key(i))).length : rows.filter((i) => classifyLive(i) === family.id).length;
+      for (const family of LIVE_FAMILIES2) {
+        const count = family.id === "all" ? rows.length : family.id === "favorites" ? rows.filter((i) => inSet("favorites", i)).length : family.id === "history" ? rows.filter((i) => collection().history.some((h) => h.key === key(i))).length : rows.filter((i) => classifyLive2(i) === family.id).length;
         if (!count && !["all", "favorites", "history"].includes(family.id)) continue;
         const b = btn(`${String([...box2.children].length + 1).padStart(3, "0")}  ${x(family.ar, family.en)} (${count})`, () => choose(family.id, ""));
         b.classList.toggle("selected", state.family === family.id && !state.group);
@@ -4685,7 +5503,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     $("catalog-more").hidden = rows.length <= state.limit;
   }
   function posterImage(item, className = "") {
-    const url = safeURL(item.logo || item.cover || item.poster, location.href);
+    const url = safeURL2(item.logo || item.cover || item.poster, location.href);
     if (url) {
       const img = node("img", className);
       img.src = url.href;
@@ -4832,7 +5650,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     meta.append(row);
     if (d.loading) meta.append(node("p", "muted", x("\u062C\u0627\u0631\u064D \u062C\u0644\u0628 \u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0641\u0642\u0637\u2026", "Fetching details for this title\u2026")));
     if (d.error) meta.append(node("p", "inline-error", d.error));
-    const versions = (state.catalogs.movie || []).filter((other) => other.id !== item.id && normalize(other.name).replace(/\b(4k|uhd|fhd|hd|sd|hevc|1080p|720p)\b/g, "").trim() === normalize(item.name).replace(/\b(4k|uhd|fhd|hd|sd|hevc|1080p|720p)\b/g, "").trim());
+    const versions = (state.catalogs.movie || []).filter((other) => other.id !== item.id && normalize2(other.name).replace(/\b(4k|uhd|fhd|hd|sd|hevc|1080p|720p)\b/g, "").trim() === normalize2(item.name).replace(/\b(4k|uhd|fhd|hd|sd|hevc|1080p|720p)\b/g, "").trim());
     if (versions.length) {
       meta.append(btn(x(`\u0646\u0633\u062E \u0648\u062C\u0648\u062F\u0627\u062A \u0623\u062E\u0631\u0649 (${versions.length})`, `Other versions (${versions.length})`), () => choices(x("\u0646\u0633\u062E \u0627\u0644\u0645\u0635\u062F\u0631", "Provider versions"), versions.map((v) => ({ label: v.name, value: v.id })), (id) => showDetails(versions.find((v) => v.id === id)))));
     }
@@ -4878,7 +5696,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   function safeTrailer(value) {
     if (!value) return "";
     if (/^[A-Za-z0-9_-]{11}$/.test(value)) return "https://www.youtube.com/watch?v=" + value;
-    const u = safeURL(value);
+    const u = safeURL2(value);
     return u && ["www.youtube.com", "youtube.com", "youtu.be", "vimeo.com", "www.vimeo.com"].includes(u.hostname) ? u.href : "";
   }
   async function playFirstEpisode() {
@@ -4924,7 +5742,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   async function playItem(item, { offlineSource = null } = {}) {
     if (!$("screen-lock").hidden) return toast(x("\u0627\u0641\u062A\u062D \u0642\u0641\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0644\u0628\u062F\u0621 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629.", "Unlock the app to start watching."));
-    if (state.settings.parental_enabled && isAdult(item)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u062C\u0648\u0628 \u0628\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "This content is blocked by parental controls."));
+    if (state.settings.parental_enabled && isAdult2(item)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u062C\u0648\u0628 \u0628\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "This content is blocked by parental controls."));
     if (inSet("hidden", item)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062E\u0641\u064A \u0641\u064A \u0645\u0644\u0641\u0643.", "This content is hidden in this profile."));
     controller?.stop();
     state.playingSource = null;
@@ -4950,7 +5768,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       }, onProgress: (progress) => {
         const played = progress.item, owner = playbackOwner;
         if (!played || !owner || played.id !== owner.itemId || state.settings.privacy_mode || scope() !== owner.scope || state.profile !== owner.profile) return;
-        const collectionId = owner.scope + "|" + owner.profile, c = state.collections[collectionId] ??= { favorites: [], hidden: [], watchlist: [], history: [], progress: {}, order: [], saved: {} }, id = stableKey(owner.scope, played);
+        const collectionId = owner.scope + "|" + owner.profile, c = state.collections[collectionId] ??= { favorites: [], hidden: [], watchlist: [], history: [], progress: {}, order: [], saved: {} }, id = stableKey2(owner.scope, played);
         c.progress[id] = { position: Number(progress.position) || 0, duration: Number(progress.duration) || 0, at: Date.now(), item: played };
         saveSoon();
       }, onEnded: () => {
@@ -5043,7 +5861,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       button.dataset.channelId = item.id;
       button.classList.toggle("selected", item.id === state.current?.id);
       button.replaceChildren(node("small", "", String(sourceIndices.get(item.id)).padStart(3, "0")));
-      const logo = safeURL(item.logo, location.href);
+      const logo = safeURL2(item.logo, location.href);
       if (logo) {
         const image = node("img");
         image.src = logo.href;
@@ -5210,7 +6028,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         const kind = row.kind || (String(row.id).startsWith("episode:") ? "episode" : "movie"), known = Array.from(allKnown().values()).find((item) => item.id === row.id && item.kind === kind), offlineItem = row.item || known || { id: row.id, name: row.name || row.title, kind };
         if (!$("screen-lock").hidden) return toast(x("\u0627\u0641\u062A\u062D \u0642\u0641\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0644\u0628\u062F\u0621 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629.", "Unlock the app to start watching."));
         if (state.settings.parental_enabled && !row.item && !known) throw Error(x("\u062A\u0639\u0630\u0631 \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u062A\u0635\u0646\u064A\u0641 \u0647\u0630\u0627 \u0627\u0644\u062A\u0646\u0632\u064A\u0644 \u0627\u0644\u0642\u062F\u064A\u0645. \u0627\u0641\u062A\u062D \u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0645\u0646 \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \u0648\u0623\u0639\u062F \u062A\u0646\u0632\u064A\u0644\u0647.", "This older download has no verifiable content category. Open its title details from your subscription and download it again."));
-        if (state.settings.parental_enabled && isAdult(offlineItem)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u062C\u0648\u0628 \u0628\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "This content is blocked by parental controls."));
+        if (state.settings.parental_enabled && isAdult2(offlineItem)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u062C\u0648\u0628 \u0628\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "This content is blocked by parental controls."));
         if (inSet("hidden", offlineItem)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062E\u0641\u064A \u0641\u064A \u0645\u0644\u0641\u0643.", "This content is hidden in this profile."));
         if (isNative2() && manager.openNativeDownload) await manager.openNativeDownload(row.id);
         else {
@@ -5253,7 +6071,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     showPage("collection", { title: x(...titles[view] || ["\u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Content"]) });
     const c = collection(), known = allKnown();
     let rows = view === "continue" ? c.history.map((h) => known.get(h.key)).filter(Boolean) : (c[view] || []).map((id) => known.get(id)).filter(Boolean);
-    rows = rows.filter((item) => !c.hidden.includes(key(item)) && (!state.settings.parental_enabled || !isAdult(item)));
+    rows = rows.filter((item) => !c.hidden.includes(key(item)) && (!state.settings.parental_enabled || !isAdult2(item)));
     const root = $("collection-body");
     root.replaceChildren(node("h2", "collection-heading", x(...titles[view] || ["\u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Content"])));
     if (!rows.length) root.append(node("p", "empty-message", x("\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u0641\u0648\u0638 \u0647\u0646\u0627 \u0628\u0639\u062F. \u0627\u0641\u062A\u062D \u0623\u062D\u062F \u0627\u0644\u0623\u0642\u0633\u0627\u0645 \u0648\u0627\u062E\u062A\u0631 \u0645\u0646 \u062E\u064A\u0627\u0631\u0627\u062A \u0627\u0644\u0639\u0646\u0648\u0627\u0646.", "Nothing is saved here yet. Open a section and use title options.")));
@@ -5265,7 +6083,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   function showAccount() {
     if (!state.account) return toast(x("\u0623\u0636\u0641 \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \u0623\u0648\u0644\u064B\u0627.", "Add a subscription first."));
-    const a = state.account, u = state.userInfo || {}, expiry = formatExpiry(u, { locale: state.settings.language === "en" ? "en-GB" : "ar-SA-u-ca-gregory" }), box2 = node("div");
+    const a = state.account, u = state.userInfo || {}, expiry = formatExpiry2(u, { locale: state.settings.language === "en" ? "en-GB" : "ar-SA-u-ca-gregory" }), box2 = node("div");
     box2.append(node("p", "", x("\u0646\u0648\u0639 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: ", "Subscription type: ") + (a.mode || "")), node("p", "", x("\u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062A\u062E\u062F\u0645: ", "Username: ") + (a.username || a.name || x("\u063A\u064A\u0631 \u0645\u0637\u0644\u0648\u0628", "Not required"))), node("p", "", expiry.known ? x(expiry.text, `Subscription ends: ${expiry.date} \xB7 ${expiry.expired ? "Expired" : `${expiry.days} days left`}`) : x("\u0644\u0645 \u064A\u0631\u0633\u0644 \u0627\u0644\u0645\u0635\u062F\u0631 \u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621.", "No expiry date was supplied.")), node("p", "", x("\u0627\u0644\u062D\u0627\u0644\u0629: ", "Status: ") + (u.status || x(state.demo ? "\u062A\u062C\u0631\u0628\u0629" : "\u063A\u064A\u0631 \u0645\u062D\u062F\u062F\u0629", state.demo ? "Demo" : "Not supplied"))));
     let revealed = false;
     const pass = node("p", "", x("\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631: ", "Password: ") + "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022");
@@ -5402,7 +6220,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         words.append(node("h3", "", decodeText(program.title || program.name) || x("\u0628\u0631\u0646\u0627\u0645\u062C", "Program")), node("p", "", `${guideTime(start)} \u2013 ${guideTime(end)}`), node("p", "", decodeText(program.description || program.desc) || ""));
         row.append(words);
         if (start > Date.now()) row.append(btn(x("\u062A\u0630\u0643\u064A\u0631", "Remind"), () => addReminder(channel, program, start), "notifications"));
-        const replay = safeURL(program.catchup_url || program.url || "");
+        const replay = safeURL2(program.catchup_url || program.url || "");
         if (replay && end < Date.now() && ["direct", "m3u", "m3u-file"].includes(state.account?.mode)) row.append(btn(x("\u0625\u0639\u0627\u062F\u0629", "Replay"), () => playItem({ ...channel, id: channel.id + ":catchup:" + start, kind: "movie", url: replay.href }), "history"));
         box2.append(row);
       }
@@ -5727,7 +6545,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     if (state.pin) {
       const check = await fieldsForm(x("\u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u0631\u0645\u0632 \u0627\u0644\u062D\u0627\u0644\u064A", "Verify current PIN"), [{ name: "pin", label: x("\u0631\u0645\u0632 PIN \u0627\u0644\u062D\u0627\u0644\u064A", "Current PIN"), type: "password", inputmode: "numeric" }]);
       if (!check) return;
-      if (!await verifyPIN(check.pin, state.pin)) throw Error(x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D.", "Incorrect PIN."));
+      if (!await verifyPIN2(check.pin, state.pin)) throw Error(x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D.", "Incorrect PIN."));
       choices(x("\u0642\u0641\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642", "App lock"), [{ value: "change", label: x("\u062A\u063A\u064A\u064A\u0631 \u0627\u0644\u0631\u0645\u0632", "Change PIN") }, { value: "remove", label: x("\u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u0642\u0641\u0644", "Remove lock") }], async (value) => {
         if (value === "remove") {
           state.pin = null;
@@ -5741,7 +6559,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     const values = await fieldsForm(x("\u0631\u0645\u0632 PIN \u062C\u062F\u064A\u062F", "New PIN"), [{ name: "pin", label: x("\u0645\u0646 4 \u0625\u0644\u0649 8 \u0623\u0631\u0642\u0627\u0645", "4 to 8 digits"), type: "password", inputmode: "numeric" }, { name: "confirm", label: x("\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0631\u0645\u0632", "Confirm PIN"), type: "password", inputmode: "numeric" }]);
     if (!values) return;
     if (!/^\d{4,8}$/.test(values.pin) || values.pin !== values.confirm) throw Error(x("\u0623\u062F\u062E\u0644 \u0631\u0645\u0632\u064B\u0627 \u0645\u0646 4 \u0625\u0644\u0649 8 \u0623\u0631\u0642\u0627\u0645 \u0648\u0637\u0627\u0628\u0642 \u0627\u0644\u062A\u0623\u0643\u064A\u062F.", "Use matching 4 to 8 digit PINs."));
-    state.pin = await derivePIN(values.pin);
+    state.pin = await derivePIN2(values.pin);
     await persist();
     renderSettings();
     toast(x("\u062A\u0645 \u062D\u0641\u0638 \u0627\u0644\u0642\u0641\u0644", "App lock saved"));
@@ -5750,7 +6568,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     if (state.pin) {
       const values = await fieldsForm(x("\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629", "Parental controls"), [{ name: "pin", label: x("\u0631\u0645\u0632 PIN", "PIN"), type: "password", inputmode: "numeric" }]);
       if (!values) return;
-      if (!await verifyPIN(values.pin, state.pin)) throw Error(x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D.", "Incorrect PIN."));
+      if (!await verifyPIN2(values.pin, state.pin)) throw Error(x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D.", "Incorrect PIN."));
     } else {
       const box2 = node("div");
       box2.append(node("p", "", x("\u0646\u0646\u0635\u062D \u0628\u062A\u0639\u064A\u064A\u0646 \u0631\u0645\u0632 PIN \u0644\u062D\u0645\u0627\u064A\u0629 \u062A\u063A\u064A\u064A\u0631 \u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "Set a PIN to protect parental control changes.")), actions(btn(x("\u062A\u0639\u064A\u064A\u0646 \u0631\u0645\u0632", "Set PIN"), () => setPIN(), "pin"), btn(x("\u062A\u0641\u0639\u064A\u0644 \u0627\u0644\u062D\u062C\u0628 \u0627\u0644\u0622\u0646", "Enable blocking"), async () => {
@@ -5858,7 +6676,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     return isNative2() && nativeFetch ? nativeFetch(String(url), options) : fetch(url, options);
   }
   function detectAccountURL(value) {
-    const url = safeURL(value);
+    const url = safeURL2(value);
     if (!url) throw Error(x("\u0623\u062F\u062E\u0644 \u0631\u0627\u0628\u0637 \u0627\u0634\u062A\u0631\u0627\u0643 \u0635\u0627\u0644\u062D\u064B\u0627.", "Enter a valid subscription link."));
     const username = url.searchParams.get("username"), password = url.searchParams.get("password");
     if (username && password) {
@@ -5953,7 +6771,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     sheet(x("\u0627\u0644\u0623\u062C\u0647\u0632\u0629 \u0648\u0627\u0644\u0631\u064A\u0645\u0648\u062A", "Devices and remote"), box2);
   }
   async function handleScannedQR(value) {
-    const url = safeURL(String(value || "").trim());
+    const url = safeURL2(String(value || "").trim());
     if (!url) throw Error(x("\u0631\u0645\u0632 QR \u0644\u0627 \u064A\u062D\u062A\u0648\u064A \u0631\u0627\u0628\u0637\u064B\u0627 \u0635\u0627\u0644\u062D\u064B\u0627.", "The QR code does not contain a valid link."));
     const trusted = new URL(globalThis.ABUNASSER_CONFIG?.apiOrigin || (/^https?:/.test(location.protocol) ? location.origin : "https://www.abbeedo.com")).origin;
     if (url.origin !== trusted || url.pathname !== "/pair.html" || !url.hash) throw Error(x("\u0647\u0630\u0627 \u0644\u064A\u0633 \u0631\u0645\u0632 \u0631\u0628\u0637 \u0627\u0628\u0648\u0646\u0627\u0635\u0631 \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0648\u0642\u0639.", "This is not an Abunasser pairing code for this site."));
@@ -6042,7 +6860,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   async function importPlaylist(file) {
     if (!file) return;
     if (file.size > 64 * 1024 * 1024) throw Error(x("\u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0623\u0643\u0628\u0631 \u0645\u0646 64 \u0645\u064A\u063A\u0627\u0628\u0627\u064A\u062A.", "Playlist exceeds 64 MB."));
-    const items = parseM3U(await file.text(), globalThis.ABUNASSER_CONFIG?.apiOrigin || location.href);
+    const items = parseM3U2(await file.text(), globalThis.ABUNASSER_CONFIG?.apiOrigin || location.href);
     await doLogin({ mode: "m3u-file", name: file.name, items }, { remember: $("remember-account").checked });
     if (state.account?.mode === "m3u-file") {
       state.catalogs = Object.fromEntries(["live", "movie", "series"].map((kind) => [kind, items.filter((item) => item.kind === kind)]));
@@ -6271,7 +7089,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     $("unlock-form").onsubmit = async (event) => {
       event.preventDefault();
       try {
-        if (await verifyPIN($("unlock-pin").value, state.pin)) {
+        if (await verifyPIN2($("unlock-pin").value, state.pin)) {
           $("screen-lock").hidden = true;
           $("unlock-pin").value = "";
           $("unlock-error").textContent = "";
@@ -6357,7 +7175,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         state.accounts = Array.isArray(data.accounts) ? data.accounts.filter((a) => a && typeof a === "object").slice(0, 100) : [];
         state.profiles = Array.isArray(data.profiles) && data.profiles.length ? data.profiles.filter((value) => typeof value === "string" && value.length < 100).slice(0, 50) : ["Default"];
         state.profile = state.profiles.includes(data.profile) ? data.profile : state.profiles[0] || "Default";
-        state.settings = { ...DEFAULT_SETTINGS, ...data.settings || {} };
+        state.settings = { ...DEFAULT_SETTINGS2, ...data.settings || {} };
         state.collections = data.collections && typeof data.collections === "object" ? data.collections : {};
         state.pin = data.pin || null;
         state.lastChannel = data.lastChannel || null;
@@ -6399,14 +7217,14 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   var isNative2, nativeRequest2, $, x, api, vault, APP_VERSION, state, playbackOwner, updateMonitor, announcementMonitor, controller, downloads, savedTick, toastTick, loadAbort, sleepTick, idleTick, lastActive, watchSession, pairSession, lastPlayerPage, detailGeneration, NAMES, label, node, HOME_TOOLS, qrScript, scanScript, cameraStream, cameraFrame, appReady;
   var init_ui = __esm({
-    "tv/samsung/app/ui.js?release=1.2"() {
+    "tv/samsung/app/ui.js?release=1.2.1"() {
       init_desktop_updates();
       init_tv_network();
       init_glitch();
       init_updates();
       init_notifications();
       init_preferences();
-      init_core();
+      init_core2();
       init_icons();
       init_player();
       init_native();
@@ -6414,10 +7232,10 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       ({ isNative: isNative2, nativeRequest: nativeRequest2 } = native_exports);
       $ = (id) => document.getElementById(id);
       x = (ar, en) => state.settings.language === "en" ? en : ar;
-      api = new ApiClient();
+      api = new ApiClient2();
       vault = new Vault({ namespace: "interface-v1" });
       APP_VERSION = $("app-version")?.textContent || "\u2014";
-      state = { page: "login", previous: "home", account: null, userInfo: null, accounts: [], profile: "Default", profiles: ["Default"], settings: { ...DEFAULT_SETTINGS, ...preferenceValues() }, collections: {}, catalogs: {}, kind: "movie", group: "", family: "all", query: "", view: "all", sort: "source", filters: {}, limit: 60, demo: false, current: null, lastChannel: null, playingSource: null, detail: null, episodes: [], generation: 0, loading: false, errorLog: [], timings: {}, pin: null, pair: null, watch: null };
+      state = { page: "login", previous: "home", account: null, userInfo: null, accounts: [], profile: "Default", profiles: ["Default"], settings: { ...DEFAULT_SETTINGS2, ...preferenceValues() }, collections: {}, catalogs: {}, kind: "movie", group: "", family: "all", query: "", view: "all", sort: "source", filters: {}, limit: 60, demo: false, current: null, lastChannel: null, playingSource: null, detail: null, episodes: [], generation: 0, loading: false, errorLog: [], timings: {}, pin: null, pair: null, watch: null };
       playbackOwner = null;
       updateMonitor = null;
       announcementMonitor = null;

@@ -349,3 +349,9 @@
 }
 
 .website-home{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:8px 13px;border:1px solid var(--border);border-radius:12px;color:var(--ink);background:var(--panel);font:inherit;text-decoration:none;line-height:1.4;white-space:nowrap}.website-home[hidden]{display:none!important}.gate-website-home{position:fixed;top:max(16px,env(safe-area-inset-top));inset-inline-end:max(16px,env(safe-area-inset-right));z-index:12;font-size:14px}.desktop-updater progress{width:100%;height:20px;accent-color:var(--accent)}@media(min-width:900px) and(pointer:fine){.gate-website-home{top:28px;inset-inline-end:32px;min-height:54px;font-size:18px}}
+
+/* Keep these destinations on physical sides through language changes. */
+#install-gate > #website-settings-button,#gate-website-home{position:fixed;z-index:12;inset-inline-start:auto;inset-inline-end:auto;top:max(16px,env(safe-area-inset-top));min-height:44px;max-width:calc(50vw - 24px)}
+#install-gate > #website-settings-button{left:max(16px,env(safe-area-inset-left));right:auto}
+#gate-website-home{left:auto;right:max(16px,env(safe-area-inset-right));font-size:14px}
+@media(min-width:900px) and (pointer:fine){#install-gate > #website-settings-button,#gate-website-home{top:max(20px,env(safe-area-inset-top));min-height:56px}#install-gate > #website-settings-button{left:max(24px,env(safe-area-inset-left))}#gate-website-home{right:max(24px,env(safe-area-inset-right));font-size:18px}}

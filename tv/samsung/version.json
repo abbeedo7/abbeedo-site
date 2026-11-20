@@ -1,12 +1,12 @@
 {
   "name": "ابوناصر TV",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "platforms": [
     "iOS",
     "web",
     "Windows"
   ],
-  "androidBaseline": "3.9.3",
+  "androidBaseline": "3.9.4",
   "nativeDistribution": "Samsung store package / Windows installer / iPhone Home Screen",
   "webInstallable": true,
   "name_en": "abbeedo TV",

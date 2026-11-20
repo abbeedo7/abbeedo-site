@@ -1,4 +1,12 @@
 /* Appearance controls work before a subscription or encrypted account is opened. */
+html{--accent-ink:#000;--accent-readable:#ff696f}
+/* Preserve chosen fills while keeping text/icons readable on page surfaces. */
+button,a{color:var(--accent-readable)}
+.home-card svg,.home-card>.app-icon,.setting-tile svg,.setting-tile>.app-icon,.poster-button,.episode-list summary,.settings-group h2{color:var(--accent-readable)}
+.install-steps li::before{color:var(--accent-readable)}
+.download-primary{background:var(--accent);color:var(--accent-ink)}
+.download-primary:hover{filter:none;box-shadow:0 0 0 2px var(--accent-readable)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline-color:var(--accent-readable)}
 .website-settings-button{position:fixed;z-index:12;inset-block-start:max(10px,env(safe-area-inset-top));inset-inline-end:max(12px,env(safe-area-inset-right));min-height:38px;padding:6px 10px;gap:6px;border-radius:14px;font-size:.8rem;background:var(--panel);color:var(--ink)}
 .website-settings-button svg{width:19px;height:19px}.website-settings-button:focus-visible{outline-offset:2px}
 .language-choice,.public-preferences{color:var(--ink);background:var(--panel);border:1px solid var(--border);border-radius:24px;box-shadow:0 24px 80px #0008;padding:24px;width:min(92vw,580px);max-height:calc(100dvh - 32px);overflow:auto;font:inherit}

@@ -1,19 +1,20 @@
 {
-  "checked_at_utc": "2026-11-14T17:44:18.842811+00:00",
+  "checked_at_utc": "2026-11-20T22:51:15.753137+00:00",
   "checks": [
     {
       "url": "https://api.github.com/repos/abbeedo7/abbeedo-site",
-      "status": 404,
-      "message": "Not Found"
+      "status": 200,
+      "final_url": "https://api.github.com/repos/abbeedo7/abbeedo-site"
     },
     {
       "url": "https://github.com/abbeedo7/abbeedo-site/releases/latest/download/releases.json",
-      "status": 404
+      "status": 200,
+      "final_url": "https://release-assets.githubusercontent.com/github-production-release-asset/1457415368/e551d285-4eb1-4dfc-ad62-3ccd4a801f7b"
     },
     {
       "url": "https://www.abbeedo.com/api/health",
-      "status": 503,
-      "code": "HOSTING_CONFIG"
+      "status": 200,
+      "final_url": "https://www.abbeedo.com/api/health"
     },
     {
       "url": "https://www.abbeedo.com/api/releases",
@@ -23,14 +24,17 @@
     {
       "url": "https://www.abbeedo.com/site-version.json",
       "status": 200,
-      "final_url": "https://www.abbeedo.com/site-version.json",
-      "version": "2.0.0",
-      "revision": "web-19a5cc19e10312da"
+      "final_url": "https://www.abbeedo.com/site-version.json"
     }
   ],
-  "live_domain_modified": false,
-  "github_published_by_agent": false,
-  "vercel_account_access": false,
-  "public_downloads_ready": false,
-  "private_backend_configured": false
+  "live_domain_modified": true,
+  "github_published_by_agent": true,
+  "vercel_account_access": true,
+  "public_downloads_ready": true,
+  "private_backend_configured": true,
+  "production_origin": "https://www.abbeedo.com",
+  "production_version": "2.1.0",
+  "production_revision": "web-c4d68d97eb2c7944",
+  "production_deployment_id": "dpl_8yb5jdnqUEdtjYSQzBTXYY6GXqoK",
+  "production_commit": "cdf83058433a7928eeebcd4868507da2a2533638"
 }

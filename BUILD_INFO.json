@@ -1,7 +1,7 @@
 {
-  "prepared_at_utc": "2026-11-14T17:57:33.885788+00:00",
-  "version": "2.1.0",
-  "application_version": "1.2.0",
+  "prepared_at_utc": "2026-11-20T23:02:45.961727+00:00",
+  "version": "2.1.1",
+  "application_version": "1.2.1",
   "android_version": "3.9.4",
   "android_version_code": 29,
   "domain": "https://abbeedo.com",
@@ -10,26 +10,30 @@
   "application_name": "ابوناصر TV",
   "live_domain_changed": true,
   "vercel_project_access": true,
+  "github_published_by_agent": true,
+  "production_receipt": {
+    "version": "2.1.0",
+    "revision": "web-c4d68d97eb2c7944",
+    "commit": "cdf83058433a7928eeebcd4868507da2a2533638",
+    "deployment_id": "dpl_8yb5jdnqUEdtjYSQzBTXYY6GXqoK"
+  },
+  "hosting_status_checked_at_utc": "2026-11-20T22:51:15.753137+00:00",
   "private_backend_configured": true,
+  "public_github_downloads_ready": true,
   "repository": "https://github.com/abbeedo7/abbeedo-site",
   "source_build_passed": true,
-  "revision": "web-c4d68d97eb2c7944",
+  "revision": "web-e40c06e42337217e",
   "tests": {
-    "source_node_tests": 56,
+    "source_node_tests": 61,
     "storefront_browser_checks": 22,
     "desktop_pwa_updater_browser_checks": 12,
     "windows_tests": 28,
     "android_focused_tests": 9,
-    "physical_devices_tested": false
+    "physical_devices_tested": false,
+    "hotfix_browser_checks": 580
   },
   "samsung_package_signed": false,
   "owner_setup_guide": "docs/DEPLOY_2_1_AR.md",
   "native_windows_binaries_in_source_zip": false,
-  "repository_prepared_at_utc": "2026-11-20T13:00:07.657439+00:00",
-  "github_repository_public": true,
-  "production_deployment_id": "dpl_8AW7R1JojqHoZUJqL2QVWtNYVvuJ",
-  "production_source_revision": "web-c4d68d97eb2c7944",
-  "live_health_status": 200,
-  "native_download_provider": "GitHub Releases",
-  "native_release_workflow": ".github/workflows/publish-release.yml"
+  "source_revision_published": false
 }

@@ -2,7 +2,7 @@ import {Vault, VaultError} from './storage.js';
 import {isNative, nativeRequest, nativeFetch} from './native.js';
 export {Vault, VaultError};
 
-export const BRAND = Object.freeze({name: 'ابوناصر TV', name_ar: 'ابوناصر TV', name_en: 'abbeedo TV', phone: '0571514382', whatsapp: 'https://wa.me/966571514382', version: '1.2.0', tagline: 'عالمك من الترفيه'});
+export const BRAND = Object.freeze({name: 'ابوناصر TV', name_ar: 'ابوناصر TV', name_en: 'abbeedo TV', phone: '0571514382', whatsapp: 'https://wa.me/966571514382', version: '1.2.1', tagline: 'عالمك من الترفيه'});
 export function brandName(language = 'ar') { return language === 'ar' ? BRAND.name_ar : BRAND.name_en; }
 export const PROVIDER = 'http://maglobalxx.xyz:2052';
 export const ACCOUNT_MODES = Object.freeze(['provider', 'xtream', 'm3u', 'm3u-file', 'auto', 'direct', 'stalker']);
