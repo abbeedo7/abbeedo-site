@@ -1,6 +1,6 @@
 {
   "name": "abbeedo-tv-platform-packages",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "private": true,
   "type": "module",
   "description": "Hosted LG webOS package and unsigned Samsung Tizen preparation package."

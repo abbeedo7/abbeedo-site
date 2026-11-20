@@ -1,7 +1,7 @@
 {
-  "prepared_at_utc": "2026-11-20T23:02:45.961727+00:00",
-  "version": "2.1.1",
-  "application_version": "1.2.1",
+  "prepared_at_utc": "2026-11-20T23:24:23.666986+00:00",
+  "version": "2.1.2",
+  "application_version": "1.2.2",
   "android_version": "3.9.4",
   "android_version_code": 29,
   "domain": "https://abbeedo.com",
@@ -12,25 +12,25 @@
   "vercel_project_access": true,
   "github_published_by_agent": true,
   "production_receipt": {
-    "version": "2.1.0",
-    "revision": "web-c4d68d97eb2c7944",
-    "commit": "cdf83058433a7928eeebcd4868507da2a2533638",
-    "deployment_id": "dpl_8yb5jdnqUEdtjYSQzBTXYY6GXqoK"
+    "version": "2.1.1",
+    "revision": "web-e40c06e42337217e",
+    "commit": "b3ddabc3c944d18db7b1f802a8801ff0b4f84ddb",
+    "deployment_id": "dpl_bpqcexkKBk6DYGZNvFGn1LiWCPWt"
   },
-  "hosting_status_checked_at_utc": "2026-11-20T22:51:15.753137+00:00",
+  "hosting_status_checked_at_utc": "2026-11-20T23:23:09.912333+00:00",
   "private_backend_configured": true,
   "public_github_downloads_ready": true,
   "repository": "https://github.com/abbeedo7/abbeedo-site",
   "source_build_passed": true,
-  "revision": "web-e40c06e42337217e",
+  "revision": "web-33dcbd689ec6d193",
   "tests": {
-    "source_node_tests": 61,
+    "source_node_tests": 68,
     "storefront_browser_checks": 22,
     "desktop_pwa_updater_browser_checks": 12,
     "windows_tests": 28,
     "android_focused_tests": 9,
     "physical_devices_tested": false,
-    "hotfix_browser_checks": 580
+    "hotfix_browser_checks": 160
   },
   "samsung_package_signed": false,
   "owner_setup_guide": "docs/DEPLOY_2_1_AR.md",

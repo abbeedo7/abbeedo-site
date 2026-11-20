@@ -22,7 +22,7 @@ review_checks = checks(load('validation/review-2.1-report.json'))
 checks(load('validation/brand-audit.json'))
 checks(load('validation/vercel-schema.json'))
 assert load('docs/QR_TARGETS.json')['validated']
-node_log = 'validation/node-tests-2.1.1.log' if (ROOT / 'validation/node-tests-2.1.1.log').exists() else 'validation/node-tests-2.1.log'
+node_log = f'validation/node-tests-{VERSION}.log' if (ROOT / f'validation/node-tests-{VERSION}.log').exists() else 'validation/node-tests-2.1.log'
 log = (ROOT / node_log).read_text()
 matched = re.search(r'(?m)^ℹ pass (\d+)$', log)
 assert matched and int(matched[1]) >= 56 and re.search(r'(?m)^ℹ fail 0$', log)
@@ -64,8 +64,8 @@ info = {
     'native_windows_binaries_in_source_zip': False,
 }
 info['source_revision_published'] = (info['production_receipt']['version'] == VERSION and info['production_receipt']['revision'] == info['revision'])
-if (ROOT / 'validation/hotfix-2.1.1-report.json').exists():
-    info['tests']['hotfix_browser_checks'] = checks(load('validation/hotfix-2.1.1-report.json'))
+if (ROOT / f'validation/hotfix-{VERSION}-report.json').exists():
+    info['tests']['hotfix_browser_checks'] = checks(load(f'validation/hotfix-{VERSION}-report.json'))
 (ROOT / 'BUILD_INFO.json').write_text(json.dumps(info, ensure_ascii=False, indent=2) + '\n')
 files = []
 for file in sorted(ROOT.rglob('*')):

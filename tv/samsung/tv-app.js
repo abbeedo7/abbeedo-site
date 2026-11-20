@@ -197,7 +197,7 @@
         scheduleAutomatic();
       }, initialShown ? REPEAT_MS : INITIAL_MS);
     }
-    function texture(image, color) {
+    function texture(image, color2) {
       const result = doc.createElement("canvas");
       const ratio = Math.min(1, 256 / Math.max(image.naturalWidth, image.naturalHeight));
       result.width = Math.max(1, Math.round(image.naturalWidth * ratio));
@@ -210,9 +210,9 @@
       }
       if (!paint) return image;
       paint.drawImage(image, 0, 0, result.width, result.height);
-      if (color) {
+      if (color2) {
         paint.globalCompositeOperation = "source-in";
-        paint.fillStyle = color;
+        paint.fillStyle = color2;
         paint.fillRect(0, 0, result.width, result.height);
       }
       return result;
@@ -434,9 +434,71 @@
     }
   });
 
+  // tv/samsung/app/shared-accent.js
+  function stored(storage, key2) {
+    try {
+      return JSON.parse(storage?.getItem(key2) || "null");
+    } catch {
+      return null;
+    }
+  }
+  function valid(record2) {
+    return record2?.version === 1 && color(record2.accent) ? { version: 1, accent: color(record2.accent), updatedAt: Number(record2.updatedAt) || 0 } : null;
+  }
+  function current(storage) {
+    const persisted = valid(stored(storage, SHARED_ACCENT_KEY)), pending2 = storage ? fallbacks.get(storage) : memory;
+    if (persisted && (!pending2 || persisted.updatedAt >= pending2.updatedAt)) {
+      if (storage) fallbacks.delete(storage);
+      return persisted;
+    }
+    return pending2 || persisted;
+  }
+  function setSharedAccent(value, storage = appearanceStorage()) {
+    const accent = color(value);
+    if (!accent) return null;
+    const old = current(storage);
+    if (old?.accent === accent) return old;
+    const record2 = { version: 1, accent, updatedAt: Math.max(Date.now(), (old?.updatedAt || 0) + 1) };
+    if (!storage) memory = record2;
+    else try {
+      storage.setItem(SHARED_ACCENT_KEY, JSON.stringify(record2));
+      fallbacks.delete(storage);
+    } catch {
+      fallbacks.set(storage, record2);
+    }
+    return record2;
+  }
+  function getSharedAccent(fallback = null, storage = appearanceStorage()) {
+    const saved = current(storage);
+    if (saved) return saved.accent;
+    const website = color(stored(storage, WEBSITE_KEY)?.accent) || color(stored(storage, "f7rv.site.preferences.v1")?.accent), app = color(stored(storage, APP_KEY)?.values?.accent);
+    const migrated = website && website !== DEFAULT_ACCENT ? website : app || website;
+    if (migrated) return setSharedAccent(migrated, storage).accent;
+    return color(fallback);
+  }
+  var SHARED_ACCENT_KEY, WEBSITE_KEY, APP_KEY, DEFAULT_ACCENT, fallbacks, memory, appearanceStorage, color;
+  var init_shared_accent = __esm({
+    "tv/samsung/app/shared-accent.js"() {
+      SHARED_ACCENT_KEY = "abbeedo:appearance:v1";
+      WEBSITE_KEY = "abbeedo:website:preferences:v2";
+      APP_KEY = "abbeedo:preferences:v1";
+      DEFAULT_ACCENT = "#ff242d";
+      fallbacks = /* @__PURE__ */ new WeakMap();
+      memory = null;
+      appearanceStorage = () => {
+        try {
+          return globalThis.localStorage || null;
+        } catch {
+          return null;
+        }
+      };
+      color = (value) => typeof value === "string" && /^#[a-f\d]{6}$/i.test(value) ? value.toLowerCase() : null;
+    }
+  });
+
   // tv/samsung/app/accent-colors.js
-  function channels(color) {
-    const value = String(color || "").trim(), hex2 = value.match(/^#([\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i)?.[1];
+  function channels(color2) {
+    const value = String(color2 || "").trim(), hex2 = value.match(/^#([\da-f]{3,4}|[\da-f]{6}|[\da-f]{8})$/i)?.[1];
     if (hex2) {
       const full = hex2.length < 5 ? [...hex2].map((x2) => x2 + x2).join("") : hex2;
       return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16)).concat(full.length === 8 ? parseInt(full.slice(6, 8), 16) / 255 : 1);
@@ -448,8 +510,8 @@
     const result = parts.slice(0, 3).map((x2) => Number.parseFloat(x2) * (x2.endsWith("%") ? 2.55 : 1)), alpha = parts[3] === void 0 ? 1 : Number.parseFloat(parts[3]) / (parts[3].endsWith("%") ? 100 : 1);
     return result.every((x2) => Number.isFinite(x2) && x2 >= 0 && x2 <= 255) && Number.isFinite(alpha) && alpha >= 0 && alpha <= 1 ? [...result, alpha] : null;
   }
-  function hex(color) {
-    return "#" + color.slice(0, 3).map((x2) => Math.round(x2).toString(16).padStart(2, "0")).join("");
+  function hex(color2) {
+    return "#" + color2.slice(0, 3).map((x2) => Math.round(x2).toString(16).padStart(2, "0")).join("");
   }
   function composite(foreground, background) {
     const f = channels(foreground), b = channels(background);
@@ -459,8 +521,8 @@
     const f = channels(foreground), b = channels(background);
     return hex(b.slice(0, 3).map((x2, i) => f[i] * amount + x2 * (1 - amount)));
   }
-  function luminance(color) {
-    const rgb = channels(color);
+  function luminance(color2) {
+    const rgb = channels(color2);
     if (!rgb) throw new TypeError("Invalid contrast color");
     const linear = rgb.slice(0, 3).map((x2) => {
       const v = x2 / 255;
@@ -473,7 +535,7 @@
     return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
   }
   function accentPalette(accent, { theme = "dark", application = false, highContrast = false, background, panel } = {}) {
-    const raw = channels(accent) ? hex(channels(accent)) : "#ff242d", defaults = THEMES[application ? "application" : "website"][theme] || THEMES.website.dark, bg = channels(background) ? composite(background, defaults[0]) : defaults[0], card = highContrast && !application ? bg : composite(channels(panel) ? panel : defaults[1], bg), glow = mix(raw, bg, 0.27), greenGlow = composite("#10493166", bg), surfaces = [bg, card, glow, greenGlow, mix(raw, greenGlow, 0.27), mix(raw, card, 0.22)], worst = (color) => Math.min(...surfaces.map((surface) => contrastRatio(color, surface))), ink = contrastRatio(BLACK, raw) >= contrastRatio(WHITE, raw) ? BLACK : WHITE, target = worst(BLACK) >= worst(WHITE) ? BLACK : WHITE;
+    const raw = channels(accent) ? hex(channels(accent)) : "#ff242d", defaults = THEMES[application ? "application" : "website"][theme] || THEMES.website.dark, bg = channels(background) ? composite(background, defaults[0]) : defaults[0], card = highContrast && !application ? bg : composite(channels(panel) ? panel : defaults[1], bg), glow = mix(raw, bg, 0.27), greenGlow = composite("#10493166", bg), surfaces = [bg, card, glow, greenGlow, mix(raw, greenGlow, 0.27), mix(raw, card, 0.22)], worst = (color2) => Math.min(...surfaces.map((surface) => contrastRatio(color2, surface))), ink = contrastRatio(BLACK, raw) >= contrastRatio(WHITE, raw) ? BLACK : WHITE, target = worst(BLACK) >= worst(WHITE) ? BLACK : WHITE;
     let readable = raw;
     if (worst(readable) < 4.6) {
       let low = 0, high = 1;
@@ -526,7 +588,7 @@
     }
     return values;
   }
-  function readPreferences(storage = storageOrNull()) {
+  function readOwnPreferences(storage = storageOrNull()) {
     if (storage && storageFallbacks.has(storage)) return storageFallbacks.get(storage);
     try {
       const parsed = JSON.parse(storage?.getItem(PREFERENCES_KEY) || "null");
@@ -536,8 +598,13 @@
     }
     return !storage && memoryRecord || { version: 1, values: {}, chosenLanguage: false, updatedAt: 0 };
   }
+  function readPreferences(storage = storageOrNull()) {
+    const record2 = readOwnPreferences(storage), accent = getSharedAccent(null, storage);
+    return accent ? { ...record2, values: { ...record2.values, accent } } : record2;
+  }
   function clearPreferences(storage = storageOrNull()) {
     memoryRecord = null;
+    setSharedAccent(PREFERENCE_DEFAULTS.accent, storage);
     if (storage) {
       storageFallbacks.delete(storage);
       try {
@@ -553,7 +620,8 @@
     return { ...settings, ...cleanPreferenceValues(record2.values) };
   }
   function writePreferences(patch, { chooseLanguage = false, storage = storageOrNull(), notify = true } = {}) {
-    const old = readPreferences(storage), values = { ...old.values, ...cleanPreferenceValues(patch) }, chosenLanguage = old.chosenLanguage || chooseLanguage && LANGUAGES.some((row) => row.code === values.language);
+    const old = readPreferences(storage), clean = cleanPreferenceValues(patch), values = { ...old.values, ...clean }, chosenLanguage = old.chosenLanguage || chooseLanguage && LANGUAGES.some((row) => row.code === values.language);
+    if (Object.hasOwn(clean, "accent")) setSharedAccent(clean.accent, storage);
     if (JSON.stringify(values) === JSON.stringify(old.values) && chosenLanguage === old.chosenLanguage) return old;
     const record2 = { version: 1, values, chosenLanguage, updatedAt: Date.now() };
     if (!storage) memoryRecord = record2;
@@ -657,7 +725,12 @@
     dialog = make(doc, "dialog", "public-preferences");
     dialog.id = "public-preferences";
     dialog.setAttribute("aria-labelledby", "public-preferences-title");
-    let previousFocus = doc.activeElement;
+    const previousFocus = doc.activeElement;
+    const focusClose = () => dialog.querySelector(".preferences-close")?.focus({ preventScroll: true });
+    const closeLanguagePicker = () => {
+      const picker = dialog.querySelector("#preference-language");
+      if (picker) picker.open = false;
+    };
     const draw = () => {
       const p = preferenceValues(), t = (ar, en) => text(ar, en, p.language);
       dialog.replaceChildren();
@@ -675,6 +748,44 @@
         const record2 = writePreferences(patch, { chooseLanguage: Object.hasOwn(patch, "language") });
         applyClientPreferences(record2, doc);
       };
+      const languageRow = make(doc, "div", "preferences-field"), languageCaption = make(doc, "span", "", t("\u0627\u0644\u0644\u063A\u0629", "Language"));
+      languageCaption.id = "preference-language-label";
+      const languagePicker = make(doc, "details", "language-picker");
+      languagePicker.id = "preference-language";
+      languagePicker.open = false;
+      const languageName = LANGUAGES.find((row) => row.code === p.language)?.name || LANGUAGES[0].name;
+      const languageSummary = make(doc, "summary", "", languageName);
+      languageSummary.id = "preference-language-summary";
+      languageSummary.setAttribute("aria-label", t("\u0627\u0644\u0644\u063A\u0629: ", "Language: ") + languageName);
+      const languageOptions = make(doc, "div", "language-picker-options");
+      languageOptions.setAttribute("role", "group");
+      languageOptions.setAttribute("aria-labelledby", languageCaption.id);
+      for (const language of LANGUAGES) {
+        const option = make(doc, "button", "", language.name);
+        option.type = "button";
+        option.lang = language.code;
+        option.dir = language.dir;
+        option.dataset.preferenceLanguage = language.code;
+        option.setAttribute("aria-pressed", String(p.language === language.code));
+        option.onclick = () => {
+          languagePicker.open = false;
+          change({ language: language.code });
+          draw();
+          focusClose();
+        };
+        languageOptions.append(option);
+      }
+      languagePicker.append(languageSummary, languageOptions);
+      languagePicker.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && languagePicker.open) {
+          event.preventDefault();
+          event.stopPropagation();
+          languagePicker.open = false;
+          languageSummary.focus({ preventScroll: true });
+        }
+      });
+      languageRow.append(languageCaption, languagePicker);
+      form.append(languageRow);
       const select = (label2, key2, options) => {
         const row = make(doc, "label", "preferences-field"), caption = make(doc, "span", "", label2), control = make(doc, "select");
         control.id = "preference-" + key2;
@@ -684,26 +795,19 @@
           control.append(option);
         }
         control.value = String(p[key2]);
-        control.onchange = () => {
-          change({ [key2]: key2 === "text_scale" ? Number(control.value) : control.value });
-          if (key2 === "language") {
-            draw();
-            dialog.querySelector(".preferences-close")?.focus({ preventScroll: true });
-          }
-        };
+        control.onchange = () => change({ [key2]: key2 === "text_scale" ? Number(control.value) : control.value });
         row.append(caption, control);
         form.append(row);
       };
-      select(t("\u0627\u0644\u0644\u063A\u0629", "Language"), "language", LANGUAGES.map((row) => [row.code, row.name]));
       select(t("\u0627\u0644\u062B\u064A\u0645", "Theme"), "theme", [["dark", t("\u062F\u0627\u0643\u0646", "Dark")], ["light", t("\u0641\u0627\u062A\u062D", "Light")], ["sport", t("\u0631\u064A\u0627\u0636\u064A", "Sport")], ["cinema", t("\u0633\u064A\u0646\u0645\u0627\u0626\u064A", "Cinema")]]);
       select(t("\u062D\u062C\u0645 \u0627\u0644\u0646\u0635", "Text size"), "text_scale", [[1, "100%"], [1.15, "115%"], [1.3, "130%"], [1.5, "150%"]]);
       select(t("\u062D\u0631\u0643\u0629 \u0627\u0644\u062E\u0644\u0641\u064A\u0629", "Background motion"), "background_speed", [["standard", t("\u0648\u0627\u0636\u062D\u0629", "Visible")], ["fast", t("\u0633\u0631\u064A\u0639\u0629", "Fast")], ["off", t("\u062B\u0627\u0628\u062A\u0629", "Still")]]);
-      const colorRow = make(doc, "label", "preferences-field"), color = make(doc, "input");
-      color.type = "color";
-      color.id = "preference-accent";
-      color.value = p.accent;
-      color.oninput = () => change({ accent: color.value });
-      colorRow.append(make(doc, "span", "", t("\u0644\u0648\u0646 \u0627\u0644\u062A\u0645\u064A\u064A\u0632", "Accent color")), color);
+      const colorRow = make(doc, "label", "preferences-field"), color2 = make(doc, "input");
+      color2.type = "color";
+      color2.id = "preference-accent";
+      color2.value = p.accent;
+      color2.oninput = () => change({ accent: color2.value });
+      colorRow.append(make(doc, "span", "", t("\u0644\u0648\u0646 \u0627\u0644\u062A\u0645\u064A\u064A\u0632", "Accent color")), color2);
       form.append(colorRow);
       for (const [key2, label2] of [["high_contrast", t("\u062A\u0628\u0627\u064A\u0646 \u0645\u0631\u062A\u0641\u0639 \u0648\u062A\u062D\u062F\u064A\u062F \u0623\u0648\u0636\u062D", "High contrast and clearer focus")], ["reduced_motion", t("\u062A\u0642\u0644\u064A\u0644 \u0627\u0644\u062D\u0631\u0643\u0629", "Reduce motion")]]) {
         const row = make(doc, "label", "preferences-toggle"), input = make(doc, "input");
@@ -717,7 +821,15 @@
       dialog.append(form);
     };
     draw();
+    dialog.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" || event.key === "BrowserBack") {
+        event.preventDefault();
+        event.stopPropagation();
+        dialog.close();
+      }
+    });
     dialog.addEventListener("close", () => {
+      closeLanguagePicker();
       dialog.remove();
       previousFocus?.focus?.({ preventScroll: true });
     });
@@ -728,13 +840,15 @@
       }
     });
     doc.body.append(dialog);
+    closeLanguagePicker();
     dialog.showModal();
-    dialog.querySelector(".preferences-close")?.focus({ preventScroll: true });
+    focusClose();
     return dialog;
   }
   var PREFERENCES_KEY, LANGUAGES, PREFERENCE_DEFAULTS, fields, memoryRecord, storageFallbacks, lastNativeLanguage, storageOrNull, brandName, text, fixedText, fixedAttributes, make;
   var init_preferences = __esm({
     "tv/samsung/app/preferences.js"() {
+      init_shared_accent();
       init_accent_colors();
       PREFERENCES_KEY = "abbeedo:preferences:v1";
       LANGUAGES = Object.freeze([{ code: "ar", name: "\u0627\u0644\u0639\u0631\u0628\u064A\u0629", dir: "rtl" }, { code: "en", name: "English", dir: "ltr" }]);
@@ -1192,29 +1306,29 @@
         }
       };
       Vault = class _Vault {
-        constructor({ name = "abunasser-apple-web", namespace = "default", memory = false, driver = null } = {}) {
+        constructor({ name = "abunasser-apple-web", namespace = "default", memory: memory2 = false, driver = null } = {}) {
           if (typeof namespace !== "string" || !namespace || namespace.length > 256) throw new VaultError("Invalid namespace", "INVALID_KEY");
           this.name = name;
           this.namespace = namespace;
           this.durable = false;
           this.fallbackReason = null;
-          this.ready = driver ? Promise.resolve(driver) : this._open(memory);
+          this.ready = driver ? Promise.resolve(driver) : this._open(memory2);
           this.ready.then((value) => {
             this.durable = value.durable;
           }, () => {
           });
         }
-        async _open(memory) {
-          if (!memory && isNative()) return new NativeDriver(this.name);
+        async _open(memory2) {
+          if (!memory2 && isNative()) return new NativeDriver(this.name);
           cryptoAPI();
-          if (!memory && typeof indexedDB !== "undefined") {
+          if (!memory2 && typeof indexedDB !== "undefined") {
             try {
               return new IDBDriver(await openDatabase(this.name));
             } catch (error) {
               if (error?.code === "STORAGE_BLOCKED") throw error;
               this.fallbackReason = "STORAGE_UNAVAILABLE";
             }
-          } else this.fallbackReason = memory ? "MEMORY_REQUESTED" : "STORAGE_UNAVAILABLE";
+          } else this.fallbackReason = memory2 ? "MEMORY_REQUESTED" : "STORAGE_UNAVAILABLE";
           return new MemoryDriver(this.name);
         }
         _id(key2) {
@@ -1359,7 +1473,7 @@
     }
   });
 
-  // tv/samsung/app/core.js?release=1.2.1
+  // tv/samsung/app/core.js?release=1.2.2
   var core_exports = {};
   __export(core_exports, {
     ACCOUNT_MODES: () => ACCOUNT_MODES,
@@ -1704,10 +1818,10 @@
   }
   var BRAND, PROVIDER, ACCOUNT_MODES, DEFAULT_SETTINGS, LIVE_FAMILIES, ADULT, textCache, clamp, ApiError, nativeAPIFetch, providerRequestSerial, ApiClient, UserLibrary;
   var init_core = __esm({
-    "tv/samsung/app/core.js?release=1.2.1"() {
+    "tv/samsung/app/core.js?release=1.2.2"() {
       init_storage();
       init_native();
-      BRAND = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.1", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
+      BRAND = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.2", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
       PROVIDER = "http://maglobalxx.xyz:2052";
       ACCOUNT_MODES = Object.freeze(["provider", "xtream", "m3u", "m3u-file", "auto", "direct", "stalker"]);
       DEFAULT_SETTINGS = Object.freeze({
@@ -1985,12 +2099,12 @@
             onBatch(rows, { kind, cached: true, partial: false });
             return rows;
           }
-          const began = performance.now(), scope2 = accountScope(account), key2 = `${scope2}:${kind}`, memory = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
+          const began = performance.now(), scope2 = accountScope(account), key2 = `${scope2}:${kind}`, memory2 = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
           this._status(kind, { loading: true, partial: false, error: null });
-          if (!force && memory && Date.now() - memory.savedAt < maxAge) {
-            onBatch(memory.items, { kind, cached: true, partial: false });
-            this._status(kind, { loading: false, cached: true, count: memory.items.length });
-            return memory.items;
+          if (!force && memory2 && Date.now() - memory2.savedAt < maxAge) {
+            onBatch(memory2.items, { kind, cached: true, partial: false });
+            this._status(kind, { loading: false, cached: true, count: memory2.items.length });
+            return memory2.items;
           }
           let preview, cached;
           try {
@@ -2094,7 +2208,7 @@
             this.timings[kind] = { ...this.timings[kind], totalMs: Math.round(performance.now() - began), state: failure.code };
             this._status(kind, { loading: false, partial: true, error: failure.message, code: failure.code });
             if (failure.code === "ABORTED" || signal?.aborted) throw abortError();
-            const available = collected.length ? collected : cached?.items || preview?.items || memory?.items;
+            const available = collected.length ? collected : cached?.items || preview?.items || memory2?.items;
             if (available?.length) {
               onBatch(available, { kind, cached: !collected.length, partial: true, error: failure.message });
               return available;
@@ -2575,7 +2689,7 @@
     "tv/samsung/app/core.js?release=1.2"() {
       init_storage();
       init_native();
-      BRAND2 = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.1", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
+      BRAND2 = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.2", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
       PROVIDER2 = "http://maglobalxx.xyz:2052";
       ACCOUNT_MODES2 = Object.freeze(["provider", "xtream", "m3u", "m3u-file", "auto", "direct", "stalker"]);
       DEFAULT_SETTINGS2 = Object.freeze({
@@ -2853,12 +2967,12 @@
             onBatch(rows, { kind, cached: true, partial: false });
             return rows;
           }
-          const began = performance.now(), scope2 = accountScope2(account), key2 = `${scope2}:${kind}`, memory = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
+          const began = performance.now(), scope2 = accountScope2(account), key2 = `${scope2}:${kind}`, memory2 = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
           this._status(kind, { loading: true, partial: false, error: null });
-          if (!force && memory && Date.now() - memory.savedAt < maxAge) {
-            onBatch(memory.items, { kind, cached: true, partial: false });
-            this._status(kind, { loading: false, cached: true, count: memory.items.length });
-            return memory.items;
+          if (!force && memory2 && Date.now() - memory2.savedAt < maxAge) {
+            onBatch(memory2.items, { kind, cached: true, partial: false });
+            this._status(kind, { loading: false, cached: true, count: memory2.items.length });
+            return memory2.items;
           }
           let preview, cached;
           try {
@@ -2962,7 +3076,7 @@
             this.timings[kind] = { ...this.timings[kind], totalMs: Math.round(performance.now() - began), state: failure.code };
             this._status(kind, { loading: false, partial: true, error: failure.message, code: failure.code });
             if (failure.code === "ABORTED" || signal?.aborted) throw abortError2();
-            const available = collected.length ? collected : cached?.items || preview?.items || memory?.items;
+            const available = collected.length ? collected : cached?.items || preview?.items || memory2?.items;
             if (available?.length) {
               onBatch(available, { kind, cached: !collected.length, partial: true, error: failure.message });
               return available;
@@ -3799,14 +3913,14 @@
     }
     async function useNative() {
       if (!item || !nativeAvailable()) return false;
-      const token = generation, current = candidates[attempt] || source, seek = item.kind === "live" ? 0 : Number(video.currentTime) || position;
+      const token = generation, current2 = candidates[attempt] || source, seek = item.kind === "live" ? 0 : Number(video.currentTime) || position;
       cleanupEngine();
       rate = Math.min(2, Math.max(0.5, rate));
       nativeMode = true;
       engineKind = "native";
       nativeAttempted = true;
       try {
-        await native("play", { id: item.id, url: current.url, title: item.name || "", kind: item.kind, position: seek, rate, playlist: (context.playlist || []).map((row) => ({ id: row.id, name: row.name || row.title || "", title: row.name || row.title || "", group: row.group || "", kind: row.kind })) });
+        await native("play", { id: item.id, url: current2.url, title: item.name || "", kind: item.kind, position: seek, rate, playlist: (context.playlist || []).map((row) => ({ id: row.id, name: row.name || row.title || "", title: row.name || row.title || "", group: row.group || "", kind: row.kind })) });
         if (token !== generation) return false;
         status(configuration.language === "en" ? "Opened in the iPhone player" : "\u0641\u064F\u062A\u062D \u0641\u064A \u0645\u0634\u063A\u0651\u0644 \u0627\u0644\u0622\u064A\u0641\u0648\u0646");
         return true;
@@ -3842,7 +3956,7 @@
       cleanupEngine();
       if (token !== generation) return;
       const transport = transportGeneration;
-      const current = () => token === generation && transport === transportGeneration;
+      const current2 = () => token === generation && transport === transportGeneration;
       nativeMode = false;
       const candidate = candidates[attempt], kind = mediaType(candidate);
       let resumed = false;
@@ -3853,7 +3967,7 @@
       video.setAttribute?.("webkit-playsinline", "");
       video.preload = "metadata";
       const active2 = (fn) => (...args) => {
-        if (current() && item && !nativeMode) fn(...args);
+        if (current2() && item && !nativeMode) fn(...args);
       };
       listen("loadedmetadata", active2(() => {
         if (!resumed && item.kind !== "live" && position > 0 && Number.isFinite(video.duration) && position < video.duration - 3) {
@@ -3902,11 +4016,11 @@
         if (token === generation && !playing) status(configuration.language === "en" ? "The source is taking longer. You can retry or change the channel." : "\u0627\u0644\u0645\u0635\u062F\u0631 \u064A\u062A\u0623\u062E\u0631 \u0641\u064A \u0627\u0644\u0627\u0633\u062A\u062C\u0627\u0628\u0629. \u064A\u0645\u0643\u0646\u0643 \u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629 \u0623\u0648 \u062A\u063A\u064A\u064A\u0631 \u0627\u0644\u0642\u0646\u0627\u0629.");
       }, 7e3);
       const start = async () => {
-        if (!current()) return;
+        if (!current2()) return;
         try {
           await video.play();
         } catch (error) {
-          if (!current() || error?.name === "AbortError") return;
+          if (!current2() || error?.name === "AbortError") return;
           if (error?.name === "NotAllowedError") status(configuration.language === "en" ? "Press play to begin." : "\u0627\u0636\u063A\u0637 \u0627\u0644\u062A\u0634\u063A\u064A\u0644 \u0644\u0628\u062F\u0621 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629.");
           else await failed(error?.name === "NotSupportedError" ? "UNSUPPORTED" : "NETWORK", 0, token, transport);
         }
@@ -3918,7 +4032,7 @@
           await start();
         } else if (kind === "hls") {
           const Hls = await loadScript("hls");
-          if (!current()) return;
+          if (!current2()) return;
           if (!Hls.isSupported()) {
             await failed("UNSUPPORTED", 0, token, transport);
             return;
@@ -3931,22 +4045,22 @@
           engineKind = "hls";
           hls.attachMedia(video);
           hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-            if (current()) hls.loadSource(candidate.url);
+            if (current2()) hls.loadSource(candidate.url);
           });
           hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            if (current()) {
+            if (current2()) {
               applySettings();
               start();
             }
           });
           hls.on(Hls.Events.ERROR, (_, data) => {
-            if (!current() || !data.fatal) return;
+            if (!current2() || !data.fatal) return;
             const http = Number(data.response?.code || data.networkDetails?.status) || 0;
             failed(http ? "HTTP" : data.type === Hls.ErrorTypes.MEDIA_ERROR ? "FORMAT" : "MANIFEST", http, token, transport);
           });
         } else if (kind === "ts" || kind === "flv") {
           const mpegts = await loadScript("ts");
-          if (!current()) return;
+          if (!current2()) return;
           if (!mpegts.isSupported?.()) {
             await failed("UNSUPPORTED", 0, token, transport);
             return;
@@ -3966,7 +4080,7 @@
           await start();
         }
       } catch (error) {
-        if (current()) await failed("UNSUPPORTED", 0, token, transport);
+        if (current2()) await failed("UNSUPPORTED", 0, token, transport);
       }
     }
     const nativeEvent = (event) => {
@@ -4608,8 +4722,8 @@
           this.paused = !!this.document?.hidden;
           this.epoch = 0;
           const browserOrigin = globalThis.location?.origin, configured = globalThis.ABUNASSER_CONFIG?.apiOrigin;
-          const current = options.origin || configured || (/^https?:\/\//.test(browserOrigin || "") ? browserOrigin : DEFAULT_ORIGIN);
-          this.origin = new URL(current).origin;
+          const current2 = options.origin || configured || (/^https?:\/\//.test(browserOrigin || "") ? browserOrigin : DEFAULT_ORIGIN);
+          this.origin = new URL(current2).origin;
           if (!/^https?:$/.test(new URL(this.origin).protocol)) throw new ConnectError("INPUT");
           this.visibility = () => this.document?.hidden ? this.pause() : this.resume();
           this.leaving = () => {
@@ -4919,8 +5033,8 @@
             await this.close();
             const media = watchMedia(item, resolved, this.origin), epoch = ++this.epoch;
             const data = await this.request(WATCH_ROOT, "POST", null, { ...media, ...watchState(snapshot, media.kind) });
-            const valid = ROOM_ID.test(data.id) && ROOM_TOKEN.test(data.hostToken) && ROOM_TOKEN.test(data.inviteToken) && data.hostToken !== data.inviteToken && Number.isFinite(data.expiresAt) && data.expiresAt > this.now();
-            if (!valid || data.watchUrl !== this.origin + "/watch.html#id=" + data.id + "&token=" + data.inviteToken) {
+            const valid2 = ROOM_ID.test(data.id) && ROOM_TOKEN.test(data.hostToken) && ROOM_TOKEN.test(data.inviteToken) && data.hostToken !== data.inviteToken && Number.isFinite(data.expiresAt) && data.expiresAt > this.now();
+            if (!valid2 || data.watchUrl !== this.origin + "/watch.html#id=" + data.id + "&token=" + data.inviteToken) {
               if (ROOM_ID.test(data.id) && ROOM_TOKEN.test(data.hostToken)) await this.request(WATCH_ROOT + "/" + data.id, "DELETE", data.hostToken, void 0, { independent: true }).catch(() => {
               });
               throw new ConnectError("PROTOCOL");
@@ -5022,7 +5136,7 @@
     }
   });
 
-  // tv/samsung/app/ui.js?release=1.2.1
+  // tv/samsung/app/ui.js?release=1.2.2
   var ui_exports = {};
   __export(ui_exports, {
     appReady: () => appReady
@@ -6435,15 +6549,15 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       case "palette": {
         const box2 = node("div");
         box2.append(node("p", "", x("\u0627\u062E\u062A\u0631 \u0644\u0648\u0646 \u0627\u0644\u0623\u064A\u0642\u0648\u0646\u0627\u062A \u0648\u0627\u0644\u062A\u0645\u064A\u064A\u0632.", "Choose icon and focus color.")));
-        const color = node("input");
-        color.type = "color";
-        color.value = state.settings.accent;
-        color.oninput = () => {
-          state.settings.accent = color.value;
+        const color2 = node("input");
+        color2.type = "color";
+        color2.value = state.settings.accent;
+        color2.oninput = () => {
+          state.settings.accent = color2.value;
           applyPreferences();
           saveSoon();
         };
-        box2.append(color);
+        box2.append(color2);
         return sheet(x("\u0644\u0648\u0646 \u0627\u0644\u062A\u0645\u064A\u064A\u0632", "Accent color"), box2);
       }
       case "theme":
@@ -6902,17 +7016,17 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   function moveFocus(direction) {
     const active2 = document.activeElement;
     if (/INPUT|TEXTAREA|SELECT/.test(active2?.tagName)) return false;
-    const container = $("sheet").open ? $("sheet") : !$("receiver-panel").hidden ? $("receiver-panel") : !$("player-page").hidden ? $("player-page") : document.querySelector(".page:not([hidden])");
-    const current = active2?.getBoundingClientRect();
-    let candidates = [...container.querySelectorAll("button,a,input,select")].filter((el) => !el.disabled && el.getClientRects().length && !el.closest("[hidden]"));
+    const container = document.querySelector("dialog[open]") || ($("sheet").open ? $("sheet") : !$("receiver-panel").hidden ? $("receiver-panel") : !$("player-page").hidden ? $("player-page") : document.querySelector(".page:not([hidden])"));
+    const current2 = active2?.getBoundingClientRect();
+    let candidates = [...container.querySelectorAll("button,a,input,select,summary")].filter((el) => !el.disabled && el.getClientRects().length && !el.closest("[hidden]"));
     const rowOnly = ["left", "right"].includes(direction) && active2?.classList.contains("home-card");
     if (rowOnly) candidates = candidates.filter((el) => el.classList.contains("home-card"));
     if (!candidates.length) return false;
-    if (!current || !container.contains(active2)) {
+    if (!current2 || !container.contains(active2)) {
       candidates[0].focus();
       return true;
     }
-    const cx = current.x + current.width / 2, cy = current.y + current.height / 2;
+    const cx = current2.x + current2.width / 2, cy = current2.y + current2.height / 2;
     let best = null, bestScore = Infinity;
     for (const candidate of candidates) {
       if (candidate === active2) continue;
@@ -7217,7 +7331,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   var isNative2, nativeRequest2, $, x, api, vault, APP_VERSION, state, playbackOwner, updateMonitor, announcementMonitor, controller, downloads, savedTick, toastTick, loadAbort, sleepTick, idleTick, lastActive, watchSession, pairSession, lastPlayerPage, detailGeneration, NAMES, label, node, HOME_TOOLS, qrScript, scanScript, cameraStream, cameraFrame, appReady;
   var init_ui = __esm({
-    "tv/samsung/app/ui.js?release=1.2.1"() {
+    "tv/samsung/app/ui.js?release=1.2.2"() {
       init_desktop_updates();
       init_tv_network();
       init_glitch();
@@ -7259,6 +7373,9 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         if (text2 !== void 0) el.textContent = text2;
         return el;
       };
+      globalThis.addEventListener("abbeedo:preferences", () => {
+        state.settings.accent = preferenceValues().accent;
+      });
       HOME_TOOLS = [["refresh", "\u062A\u062D\u062F\u064A\u062B", "Refresh", "refresh"], ["notifications", "\u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A", "Notifications", "notifications"], ["account", "\u062D\u0633\u0627\u0628\u064A", "My account", "account"], ["accounts", "\u0627\u0644\u062D\u0633\u0627\u0628\u0627\u062A", "Accounts", "accounts"], ["downloads", "\u0627\u0644\u062A\u0646\u0632\u064A\u0644\u0627\u062A", "Downloads", "download"], ["favorites", "\u0627\u0644\u0645\u0641\u0636\u0644\u0629", "Favorites", "heart"], ["watchlist", "\u0623\u0631\u064A\u062F \u0645\u0634\u0627\u0647\u062F\u062A\u0647", "Watchlist", "bookmark"], ["continue", "\u0645\u062A\u0627\u0628\u0639\u0629 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629", "Continue watching", "history"], ["last", "\u0622\u062E\u0631 \u0642\u0646\u0627\u0629", "Last channel", "live"], ["recent", "\u0627\u0644\u0645\u0636\u0627\u0641 \u062D\u062F\u064A\u062B\u064B\u0627", "Recently added", "calendar"], ["recommend", "\u0645\u0642\u062A\u0631\u062D\u0627\u062A \u0645\u062D\u0644\u064A\u0629", "Local suggestions", "star"], ["epg", "\u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C", "Program guide", "calendar"]];
       qrScript = null;
       scanScript = null;
@@ -7301,10 +7418,10 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       if (doc.documentElement.dataset.appReady === "true" || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
       const dialog = doc.querySelector("dialog[open]");
       if (!dialog) return;
-      const buttons = [...dialog.querySelectorAll("button:not([disabled]),select,input")].filter((el) => el.getClientRects().length);
+      const buttons = [...dialog.querySelectorAll("button:not([disabled]),select,input,summary")].filter((el) => el.getClientRects().length);
       if (!buttons.length) return;
-      const current = buttons.indexOf(doc.activeElement), step = ["ArrowRight", "ArrowDown"].includes(event.key) ? 1 : -1;
-      buttons[(Math.max(0, current) + step + buttons.length) % buttons.length].focus();
+      const current2 = buttons.indexOf(doc.activeElement), step = ["ArrowRight", "ArrowDown"].includes(event.key) ? 1 : -1;
+      buttons[(Math.max(0, current2) + step + buttons.length) % buttons.length].focus();
       event.preventDefault();
     };
     doc.addEventListener("keydown", key2, true);
@@ -7357,6 +7474,9 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     if (/Windows\s+NT/i.test(userAgent) || /^Win(?:32|64|CE)$/i.test(String(navigator2.platform || "")) || navigator2.userAgentData?.platform === "Windows") return "windows";
     return "other";
   }
+
+  // tv/samsung/app/tv-entry.mjs
+  init_shared_accent();
 
   // tv/samsung/app/distribution.js?site=2.0
   var RELEASE_ORIGIN = globalThis.ABUNASSER_CONFIG?.apiOrigin || globalThis.location?.origin || "https://abbeedo.com";
@@ -7419,8 +7539,21 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     renderGate();
     document.getElementById("website-settings-button").onclick = () => openPublicPreferences();
     window.addEventListener("abbeedo:preferences", () => {
-      applyClientPreferences();
+      const p = applyClientPreferences(), color2 = document.getElementById("preference-accent");
+      if (color2) color2.value = p.accent;
       renderGate();
+    });
+    function refreshSharedAccent() {
+      const accent = getSharedAccent();
+      if (accent && accent !== document.documentElement.style.getPropertyValue("--accent").trim()) window.dispatchEvent(new CustomEvent("abbeedo:preferences", { detail: readPreferences() }));
+    }
+    window.addEventListener("storage", (event) => {
+      if (event.key === SHARED_ACCENT_KEY || event.key === null) refreshSharedAccent();
+    });
+    window.addEventListener("pageshow", refreshSharedAccent);
+    window.addEventListener("focus", refreshSharedAccent);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) refreshSharedAccent();
     });
     if (!readPreferences().chosenLanguage && isAppContext()) {
       gate.hidden = true;

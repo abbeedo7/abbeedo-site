@@ -1,6 +1,7 @@
 import {configureTVPresentation} from './tv-presentation.js';
 import {startVisualEffects} from './glitch.js?site=2.1';
 import {isAppContext, installationPlatform} from './install-gate.js?site=2.1';
+import {SHARED_ACCENT_KEY,getSharedAccent} from './shared-accent.js';
 import {RELEASE_INDEX} from './distribution.js?site=2.0';
 import {applyClientPreferences,readPreferences,migrateVaultPreferences,chooseInitialLanguage,openPublicPreferences,text} from './preferences.js';
 
@@ -37,12 +38,15 @@ gate.dataset.platform=platform;
 for(const element of document.querySelectorAll('[data-install-platforms]'))element.hidden=!element.dataset.installPlatforms.split(' ').includes(platform);
 renderGate();
 document.getElementById('website-settings-button').onclick=()=>openPublicPreferences();
-window.addEventListener('abbeedo:preferences',()=>{applyClientPreferences();renderGate();});
+window.addEventListener('abbeedo:preferences',()=>{const p=applyClientPreferences(),color=document.getElementById('preference-accent');if(color)color.value=p.accent;renderGate();});
+function refreshSharedAccent(){const accent=getSharedAccent();if(accent&&accent!==document.documentElement.style.getPropertyValue('--accent').trim())window.dispatchEvent(new CustomEvent('abbeedo:preferences',{detail:readPreferences()}));}
+window.addEventListener('storage',event=>{if(event.key===SHARED_ACCENT_KEY||event.key===null)refreshSharedAccent();});
+window.addEventListener('pageshow',refreshSharedAccent);window.addEventListener('focus',refreshSharedAccent);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshSharedAccent();});
 
 // Migrate only public settings from an existing encrypted installation. Never expose account data.
 if(!readPreferences().chosenLanguage&&isAppContext()){
   gate.hidden=true;
-  try{const {Vault}=await import('./core.js?release=1.2.1');const vault=new Vault({namespace:'interface-v1'});const saved=await vault.get('ui',null);migrateVaultPreferences(saved?.settings);}catch{}
+  try{const {Vault}=await import('./core.js?release=1.2.2');const vault=new Vault({namespace:'interface-v1'});const saved=await vault.get('ui',null);migrateVaultPreferences(saved?.settings);}catch{}
   applyClientPreferences();
 }
 if(!readPreferences().chosenLanguage)await chooseInitialLanguage();
@@ -52,7 +56,7 @@ function openIfInstalled(){
   if(starting)return true;
   starting=true;gate.hidden=true;shell.hidden=false;shell.inert=true;
   document.documentElement.dataset.launchContext='app';
-  import('./ui.js?release=1.2.1').then(async module=>{await module.appReady;shell.inert=false;}).catch(()=>{
+  import('./ui.js?release=1.2.2').then(async module=>{await module.appReady;shell.inert=false;}).catch(()=>{
     starting=false;loadFailed=true;gate.hidden=false;shell.hidden=true;shell.inert=true;
     document.getElementById('install-instructions').hidden=true;document.getElementById('install-note').hidden=true;renderGate();
   });

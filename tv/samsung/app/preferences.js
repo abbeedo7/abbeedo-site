@@ -1,4 +1,5 @@
 /** Public appearance preferences. Subscription credentials remain in the encrypted Vault. */
+import {getSharedAccent,setSharedAccent} from './shared-accent.js';
 import {applyAccentColors} from './accent-colors.js';
 export const PREFERENCES_KEY = 'abbeedo:preferences:v1';
 export const LANGUAGES = Object.freeze([{code:'ar',name:'العربية',dir:'rtl'},{code:'en',name:'English',dir:'ltr'}]);
@@ -9,11 +10,12 @@ const storageFallbacks=new WeakMap();
 let lastNativeLanguage=null;
 const storageOrNull=()=>{try{return globalThis.localStorage||null;}catch{return null;}};
 export function cleanPreferenceValues(input={}){const values={};if(!input||typeof input!=='object')return values;for(const key of fields){const value=input[key];if(key==='language'&&LANGUAGES.some(row=>row.code===value))values[key]=value;else if(key==='accent'&&/^#[a-f\d]{6}$/i.test(value||''))values[key]=value.toLowerCase();else if(key==='theme'&&['dark','light','sport','cinema'].includes(value))values[key]=value;else if(key==='background_speed'&&['standard','fast','off'].includes(value))values[key]=value;else if(key==='text_scale'&&Number.isFinite(Number(value))&&Number(value)>=1&&Number(value)<=1.5)values[key]=Number(value);else if(['reduced_motion','high_contrast'].includes(key)&&typeof value==='boolean')values[key]=value;}return values;}
-export function readPreferences(storage=storageOrNull()){if(storage&&storageFallbacks.has(storage))return storageFallbacks.get(storage);try{const parsed=JSON.parse(storage?.getItem(PREFERENCES_KEY)||'null');if(parsed&&parsed.version===1)return{version:1,values:cleanPreferenceValues(parsed.values),chosenLanguage:parsed.chosenLanguage===true&&LANGUAGES.some(row=>row.code===parsed.values?.language),updatedAt:Number(parsed.updatedAt)||0};}catch{return storage?storageFallbacks.get(storage)||{version:1,values:{},chosenLanguage:false,updatedAt:0}:memoryRecord||{version:1,values:{},chosenLanguage:false,updatedAt:0};}return(!storage&&memoryRecord)||{version:1,values:{},chosenLanguage:false,updatedAt:0};}
-export function clearPreferences(storage=storageOrNull()){memoryRecord=null;if(storage){storageFallbacks.delete(storage);try{storage.removeItem(PREFERENCES_KEY);}catch{}}}
+function readOwnPreferences(storage=storageOrNull()){if(storage&&storageFallbacks.has(storage))return storageFallbacks.get(storage);try{const parsed=JSON.parse(storage?.getItem(PREFERENCES_KEY)||'null');if(parsed&&parsed.version===1)return{version:1,values:cleanPreferenceValues(parsed.values),chosenLanguage:parsed.chosenLanguage===true&&LANGUAGES.some(row=>row.code===parsed.values?.language),updatedAt:Number(parsed.updatedAt)||0};}catch{return storage?storageFallbacks.get(storage)||{version:1,values:{},chosenLanguage:false,updatedAt:0}:memoryRecord||{version:1,values:{},chosenLanguage:false,updatedAt:0};}return(!storage&&memoryRecord)||{version:1,values:{},chosenLanguage:false,updatedAt:0};}
+export function readPreferences(storage=storageOrNull()){const record=readOwnPreferences(storage),accent=getSharedAccent(null,storage);return accent?{...record,values:{...record.values,accent}}:record;}
+export function clearPreferences(storage=storageOrNull()){memoryRecord=null;setSharedAccent(PREFERENCE_DEFAULTS.accent,storage);if(storage){storageFallbacks.delete(storage);try{storage.removeItem(PREFERENCES_KEY);}catch{}}}
 export function preferenceValues(record=readPreferences()){return{...PREFERENCE_DEFAULTS,...cleanPreferenceValues(record.values)};}
 export function mergeVaultPreferences(settings={},record=readPreferences()){return{...settings,...cleanPreferenceValues(record.values)};}
-export function writePreferences(patch,{chooseLanguage=false,storage=storageOrNull(),notify=true}={}){const old=readPreferences(storage),values={...old.values,...cleanPreferenceValues(patch)},chosenLanguage=old.chosenLanguage||(chooseLanguage&&LANGUAGES.some(row=>row.code===values.language));if(JSON.stringify(values)===JSON.stringify(old.values)&&chosenLanguage===old.chosenLanguage)return old;const record={version:1,values,chosenLanguage,updatedAt:Date.now()};if(!storage)memoryRecord=record;else try{storage.setItem(PREFERENCES_KEY,JSON.stringify(record));storageFallbacks.delete(storage);}catch{storageFallbacks.set(storage,record);}if(notify&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function')globalThis.dispatchEvent(new CustomEvent('abbeedo:preferences',{detail:record}));return record;}
+export function writePreferences(patch,{chooseLanguage=false,storage=storageOrNull(),notify=true}={}){const old=readPreferences(storage),clean=cleanPreferenceValues(patch),values={...old.values,...clean},chosenLanguage=old.chosenLanguage||(chooseLanguage&&LANGUAGES.some(row=>row.code===values.language));if(Object.hasOwn(clean,'accent'))setSharedAccent(clean.accent,storage);if(JSON.stringify(values)===JSON.stringify(old.values)&&chosenLanguage===old.chosenLanguage)return old;const record={version:1,values,chosenLanguage,updatedAt:Date.now()};if(!storage)memoryRecord=record;else try{storage.setItem(PREFERENCES_KEY,JSON.stringify(record));storageFallbacks.delete(storage);}catch{storageFallbacks.set(storage,record);}if(notify&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function')globalThis.dispatchEvent(new CustomEvent('abbeedo:preferences',{detail:record}));return record;}
 export function migrateVaultPreferences(settings,storage=storageOrNull()){const record=readPreferences(storage);if(record.chosenLanguage)return record;return writePreferences({...cleanPreferenceValues(settings),...record.values},{chooseLanguage:LANGUAGES.some(row=>row.code===settings?.language),storage,notify:false});}
 export const brandName=(language=preferenceValues().language)=>language==='en'?'abbeedo TV':'ابوناصر TV';
 export const text=(ar,en,language=preferenceValues().language)=>language==='en'?en:ar;
@@ -34,4 +36,62 @@ const fixedAttributes=[
 export function localizeDocument(doc=globalThis.document,language=preferenceValues().language){if(!doc)return;for(const [selector,ar,en]of fixedText)doc.querySelectorAll(selector).forEach(el=>el.textContent=text(ar,en,language));for(const [selector,attribute,ar,en]of fixedAttributes)doc.querySelectorAll(selector).forEach(el=>el.setAttribute(attribute,text(ar,en,language)));}
 const make=(doc,tag,cls,value)=>{const el=doc.createElement(tag);if(cls)el.className=cls;if(value!==undefined)el.textContent=value;return el;};
 export function chooseInitialLanguage({doc=globalThis.document}={}){if(readPreferences().chosenLanguage)return Promise.resolve(preferenceValues().language);return new Promise(resolve=>{const dialog=make(doc,'dialog','language-choice');dialog.id='language-choice';dialog.setAttribute('aria-labelledby','language-choice-title');const title=make(doc,'h2','','اختر لغتك · Choose your language');title.id='language-choice-title';const logo=make(doc,'img','preferences-logo');logo.src='brand.png';logo.alt='abbeedo TV';const choices=make(doc,'div','language-options');for(const language of LANGUAGES){const button=make(doc,'button','',language.name);button.type='button';button.dataset.languageChoice=language.code;button.lang=language.code;button.dir=language.dir;button.onclick=()=>{const record=writePreferences({language:language.code},{chooseLanguage:true});applyClientPreferences(record,doc);dialog.close();dialog.remove();resolve(language.code);};choices.append(button);}dialog.append(logo,title,choices);dialog.addEventListener('cancel',event=>event.preventDefault());doc.body.append(dialog);dialog.showModal();choices.firstElementChild?.focus();});}
-export function openPublicPreferences({doc=globalThis.document}={}){let dialog=doc.getElementById('public-preferences');if(dialog?.open)return;dialog=make(doc,'dialog','public-preferences');dialog.id='public-preferences';dialog.setAttribute('aria-labelledby','public-preferences-title');let previousFocus=doc.activeElement;const draw=()=>{const p=preferenceValues(),t=(ar,en)=>text(ar,en,p.language);dialog.replaceChildren();const header=make(doc,'div','preferences-heading'),title=make(doc,'h2','',t('الإعدادات','Settings'));title.id='public-preferences-title';const close=make(doc,'button','preferences-close','×');close.type='button';close.autofocus=true;close.setAttribute('aria-label',t('إغلاق','Close'));close.onclick=()=>dialog.close();header.append(title,close);dialog.append(header,make(doc,'p','preferences-intro',t('خصص المظهر واللغة دون اشتراك. تحفظ الخيارات على هذا الجهاز.','Choose your appearance and language without a subscription. Preferences stay on this device.')));const form=make(doc,'div','preferences-grid');const change=patch=>{const record=writePreferences(patch,{chooseLanguage:Object.hasOwn(patch,'language')});applyClientPreferences(record,doc);};const select=(label,key,options)=>{const row=make(doc,'label','preferences-field'),caption=make(doc,'span','',label),control=make(doc,'select');control.id='preference-'+key;for(const [value,name]of options){const option=make(doc,'option','',name);option.value=String(value);control.append(option);}control.value=String(p[key]);control.onchange=()=>{change({[key]:key==='text_scale'?Number(control.value):control.value});if(key==='language'){draw();dialog.querySelector('.preferences-close')?.focus({preventScroll:true});}};row.append(caption,control);form.append(row);};select(t('اللغة','Language'),'language',LANGUAGES.map(row=>[row.code,row.name]));select(t('الثيم','Theme'),'theme',[['dark',t('داكن','Dark')],['light',t('فاتح','Light')],['sport',t('رياضي','Sport')],['cinema',t('سينمائي','Cinema')]]);select(t('حجم النص','Text size'),'text_scale',[[1,'100%'],[1.15,'115%'],[1.3,'130%'],[1.5,'150%']]);select(t('حركة الخلفية','Background motion'),'background_speed',[['standard',t('واضحة','Visible')],['fast',t('سريعة','Fast')],['off',t('ثابتة','Still')]]);const colorRow=make(doc,'label','preferences-field'),color=make(doc,'input');color.type='color';color.id='preference-accent';color.value=p.accent;color.oninput=()=>change({accent:color.value});colorRow.append(make(doc,'span','',t('لون التمييز','Accent color')),color);form.append(colorRow);for(const [key,label]of [['high_contrast',t('تباين مرتفع وتحديد أوضح','High contrast and clearer focus')],['reduced_motion',t('تقليل الحركة','Reduce motion')]]){const row=make(doc,'label','preferences-toggle'),input=make(doc,'input');input.type='checkbox';input.id='preference-'+key;input.checked=p[key];input.onchange=()=>change({[key]:input.checked});row.append(input,make(doc,'span','',label));form.append(row);}dialog.append(form);};draw();dialog.addEventListener('close',()=>{dialog.remove();previousFocus?.focus?.({preventScroll:true});});dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});doc.body.append(dialog);dialog.showModal();dialog.querySelector('.preferences-close')?.focus({preventScroll:true});return dialog;}
+export function openPublicPreferences({doc=globalThis.document}={}){
+  let dialog=doc.getElementById('public-preferences');
+  if(dialog?.open)return;
+  dialog=make(doc,'dialog','public-preferences');dialog.id='public-preferences';
+  dialog.setAttribute('aria-labelledby','public-preferences-title');
+  const previousFocus=doc.activeElement;
+  const focusClose=()=>dialog.querySelector('.preferences-close')?.focus({preventScroll:true});
+  const closeLanguagePicker=()=>{const picker=dialog.querySelector('#preference-language');if(picker)picker.open=false;};
+  const draw=()=>{
+    const p=preferenceValues(),t=(ar,en)=>text(ar,en,p.language);
+    dialog.replaceChildren();
+    const header=make(doc,'div','preferences-heading'),title=make(doc,'h2','',t('الإعدادات','Settings'));
+    title.id='public-preferences-title';
+    const close=make(doc,'button','preferences-close','×');close.type='button';close.autofocus=true;
+    close.setAttribute('aria-label',t('إغلاق','Close'));close.onclick=()=>dialog.close();
+    header.append(title,close);
+    dialog.append(header,make(doc,'p','preferences-intro',t('خصص المظهر واللغة دون اشتراك. تحفظ الخيارات على هذا الجهاز.','Choose your appearance and language without a subscription. Preferences stay on this device.')));
+    const form=make(doc,'div','preferences-grid');
+    const change=patch=>{const record=writePreferences(patch,{chooseLanguage:Object.hasOwn(patch,'language')});applyClientPreferences(record,doc);};
+    // A disclosure stays closed on focus; iOS cannot launch a native select picker.
+    const languageRow=make(doc,'div','preferences-field'),languageCaption=make(doc,'span','',t('اللغة','Language'));
+    languageCaption.id='preference-language-label';
+    const languagePicker=make(doc,'details','language-picker');languagePicker.id='preference-language';languagePicker.open=false;
+    const languageName=LANGUAGES.find(row=>row.code===p.language)?.name||LANGUAGES[0].name;
+    const languageSummary=make(doc,'summary','',languageName);languageSummary.id='preference-language-summary';
+    languageSummary.setAttribute('aria-label',t('اللغة: ','Language: ')+languageName);
+    const languageOptions=make(doc,'div','language-picker-options');languageOptions.setAttribute('role','group');languageOptions.setAttribute('aria-labelledby',languageCaption.id);
+    for(const language of LANGUAGES){
+      const option=make(doc,'button','',language.name);option.type='button';option.lang=language.code;option.dir=language.dir;
+      option.dataset.preferenceLanguage=language.code;option.setAttribute('aria-pressed',String(p.language===language.code));
+      option.onclick=()=>{languagePicker.open=false;change({language:language.code});draw();focusClose();};languageOptions.append(option);
+    }
+    languagePicker.append(languageSummary,languageOptions);
+    languagePicker.addEventListener('keydown',event=>{if(event.key==='Escape'&&languagePicker.open){event.preventDefault();event.stopPropagation();languagePicker.open=false;languageSummary.focus({preventScroll:true});}});
+    languageRow.append(languageCaption,languagePicker);form.append(languageRow);
+    const select=(label,key,options)=>{
+      const row=make(doc,'label','preferences-field'),caption=make(doc,'span','',label),control=make(doc,'select');control.id='preference-'+key;
+      for(const [value,name]of options){const option=make(doc,'option','',name);option.value=String(value);control.append(option);}
+      control.value=String(p[key]);control.onchange=()=>change({[key]:key==='text_scale'?Number(control.value):control.value});
+      row.append(caption,control);form.append(row);
+    };
+    select(t('الثيم','Theme'),'theme',[['dark',t('داكن','Dark')],['light',t('فاتح','Light')],['sport',t('رياضي','Sport')],['cinema',t('سينمائي','Cinema')]]);
+    select(t('حجم النص','Text size'),'text_scale',[[1,'100%'],[1.15,'115%'],[1.3,'130%'],[1.5,'150%']]);
+    select(t('حركة الخلفية','Background motion'),'background_speed',[['standard',t('واضحة','Visible')],['fast',t('سريعة','Fast')],['off',t('ثابتة','Still')]]);
+    const colorRow=make(doc,'label','preferences-field'),color=make(doc,'input');color.type='color';color.id='preference-accent';color.value=p.accent;
+    color.oninput=()=>change({accent:color.value});colorRow.append(make(doc,'span','',t('لون التمييز','Accent color')),color);form.append(colorRow);
+    for(const [key,label]of [['high_contrast',t('تباين مرتفع وتحديد أوضح','High contrast and clearer focus')],['reduced_motion',t('تقليل الحركة','Reduce motion')]]){
+      const row=make(doc,'label','preferences-toggle'),input=make(doc,'input');input.type='checkbox';input.id='preference-'+key;input.checked=p[key];
+      input.onchange=()=>change({[key]:input.checked});row.append(input,make(doc,'span','',label));form.append(row);
+    }
+    dialog.append(form);
+  };
+  draw();
+  dialog.addEventListener('keydown',event=>{if(event.key==='Escape'||event.key==='BrowserBack'){event.preventDefault();event.stopPropagation();dialog.close();}});
+  dialog.addEventListener('close',()=>{closeLanguagePicker();dialog.remove();previousFocus?.focus?.({preventScroll:true});});
+  dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
+  doc.body.append(dialog);closeLanguagePicker();dialog.showModal();focusClose();
+  return dialog;
+}

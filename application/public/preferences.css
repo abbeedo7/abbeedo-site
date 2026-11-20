@@ -16,3 +16,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 html[dir=ltr] .credentials-row input{text-align:left}body[data-theme=light][data-high-contrast=true]{--muted:#1f2937;--border:#485467}
 @media(max-height:430px){.website-settings-button{inset-block-start:max(6px,env(safe-area-inset-top));min-height:32px;padding:4px 8px;font-size:.72rem}.language-choice,.public-preferences{padding:18px;max-height:calc(100dvh - 16px)}.preferences-logo{width:56px;height:56px;margin-bottom:8px}.language-choice h2{margin-bottom:12px;font-size:1.1rem}.preferences-grid{gap:10px}.preferences-intro{margin-bottom:12px}.preferences-heading{margin-bottom:8px}}
 @media(max-width:390px){.public-preferences{padding:18px}.preferences-grid{grid-template-columns:1fr}.preferences-heading h2{font-size:1.2rem}.website-settings-button{font-size:.72rem;gap:4px}}
+
+/* Language choices open only after activating their disclosure. */
+.language-picker{width:100%;min-width:0;font:inherit}
+.language-picker>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px;padding:8px 12px;list-style:none;cursor:pointer;border:1px solid var(--line,var(--border));border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;line-height:1.5}
+.language-picker>summary::-webkit-details-marker{display:none}
+.language-picker>summary::after{content:'⌄';font-family:system-ui,sans-serif}
+.language-picker[open]>summary{border-color:var(--accent-readable,var(--accent))}
+.language-picker-options{display:grid;gap:6px;padding:8px;margin-top:6px;border:1px solid var(--line,var(--border));border-radius:12px;background:var(--panel,var(--bg))}
+.language-picker:not([open])>.language-picker-options{display:none}
+.language-picker-options>button{width:100%;min-height:44px;margin:0;padding:8px 12px;border:1px solid var(--line,var(--border));border-radius:9px;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer;text-align:center;line-height:1.5}
+.language-picker-options>button[aria-pressed=true]{border-color:var(--accent-readable,var(--accent));color:var(--accent-readable,var(--accent))}

@@ -1,21 +1,30 @@
 {
-  "checkedAt": "2026-11-20T22:53:26.593Z",
-  "version": "1.2.1",
+  "checkedAt": "2026-11-20T23:22:35.087Z",
+  "version": "1.2.2",
   "packageTests": {
     "command": "node --test tests/tv-package.test.mjs",
     "passed": 8,
     "failed": 0
   },
   "packagedSourceChecks": {
-    "samsungEntries": 45,
+    "version": "1.2.2",
+    "wgtEntries": 46,
+    "sharedAccentSourceMatches": true,
+    "sharedAccentBundled": true,
+    "sharedAccentSha256": "528b5625191ce84f02a374a7d48e29000ab22f94b15b7d9483fdd90685c6d2dd",
     "accentHelperSourceMatches": true,
     "accentHelperBundled": true,
     "accentHelperSha256": "680e69c2f9c73d4725b09cdf6e317f14b85143b8eb373e0dc6837b8ff1d0b362",
-    "readableTVFocusOverride": true,
-    "metadataAndPackagedAppVersion": "1.2.1",
-    "allArtifactHashesAndByteCountsMatch": true
+    "closedLanguageDisclosureIncluded": true,
+    "summaryTVFocusTargetIncluded": true,
+    "readableTVFocus": true,
+    "packagedAppVersion": "1.2.2",
+    "samsungSigned": false
   },
   "browserSmokePerformedForThisVersion": false,
+  "historicalPackageReports": [
+    "tv/dist/validation-report-1.2.1.json"
+  ],
   "historicalBrowserSmoke": {
     "version": "1.2.0",
     "checkedAt": "2026-11-14",

@@ -1,3 +1,4 @@
+import {SHARED_ACCENT_KEY,getSharedAccent,setSharedAccent} from './shared-accent.js';
 import {applyAccentColors} from './accent-colors.js';
 import {startBackground, triggerGlitch} from './background.js?site=2.1';
 
@@ -19,7 +20,7 @@ export function cleanPreferences(input={}) {
     notifications:value.notifications===true};
 }
 
-function readPreferences() {
+function readLocalPreferences() {
   if(memoryPreferences)return {...memoryPreferences};
   try {
     const stored=localStorage.getItem(PREFERENCES_KEY);
@@ -29,6 +30,9 @@ function readPreferences() {
   } catch {}
   return {...DEFAULTS};
 }
+function readPreferences(){const local=readLocalPreferences();return {...local,accent:getSharedAccent(local.accent)};}
+function refreshSharedAccent(){const accent=getSharedAccent(preferences.accent);if(accent&&accent!==preferences.accent){preferences={...preferences,accent};memoryPreferences={...preferences};applyPreferences();}}
+function bindSharedAccent(){window.addEventListener('storage',event=>{if(event.key===SHARED_ACCENT_KEY||event.key===null)refreshSharedAccent();});window.addEventListener('pageshow',refreshSharedAccent);window.addEventListener('focus',refreshSharedAccent);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshSharedAccent();});}
 function savePreferences() {
   memoryPreferences={...preferences};
   try {localStorage.setItem(PREFERENCES_KEY,JSON.stringify(preferences));return true;} catch {return false;}
@@ -118,6 +122,9 @@ function localize() {
 function syncPreferenceControls() {
   const values={'language-select':preferences.language,'accent-input':preferences.accent,'motion-select':preferences.motion,'font-select':String(preferences.textScale),'theme-select':preferences.theme};
   for(const [id,value]of Object.entries(values)){const control=byID(id);if(control)control.value=value;}
+  const languageName=preferences.language==='en'?'English':'العربية',languageSummary=byID('site-language-summary');
+  if(languageSummary){languageSummary.textContent=languageName;languageSummary.setAttribute('aria-label',words('اللغة: ','Language: ')+languageName);}
+  for(const button of document.querySelectorAll('[data-site-language]'))button.setAttribute('aria-pressed',String(button.dataset.siteLanguage===preferences.language));
   if(byID('contrast-toggle'))byID('contrast-toggle').checked=preferences.contrast;
   if(byID('reduced-toggle'))byID('reduced-toggle').checked=preferences.reduced;
   const alerts=byID('website-notifications-toggle');if(alerts){alerts.checked=preferences.notifications;alerts.disabled=!notificationReady||permissionBusy;}
@@ -135,7 +142,7 @@ function applyPreferences() {
   window.dispatchEvent(new CustomEvent('abbeedo:website-preferences',{detail:{...preferences}}));
 }
 function updatePreference(patch) {
-  preferences=cleanPreferences({...preferences,...patch});const saved=savePreferences();applyPreferences();
+  preferences=cleanPreferences({...preferences,...patch});if(Object.hasOwn(patch,'accent'))setSharedAccent(preferences.accent);else preferences.accent=getSharedAccent(preferences.accent);const saved=savePreferences();applyPreferences();
   const notice=byID('settings-storage-status');if(notice)notice.textContent=saved?words('تُحفظ اختياراتك تلقائيًا على هذا الجهاز.','Preferences are saved automatically on this device.'):words('تعمل اختياراتك خلال هذه الزيارة. التخزين غير متاح في هذا المتصفح.','Preferences work for this visit. Storage is unavailable in this browser.');
   if(!saved&&!storageExplained){storageExplained=true;toast(words('تعمل الإعدادات لهذه الزيارة؛ لم يسمح المتصفح بحفظها.','Preferences work for this visit; this browser did not allow saving.'));}
 }
@@ -204,10 +211,13 @@ async function setupWebsiteNotifications() {
   }
 }
 function bindPreferences() {
-  const dialog=byID('settings-dialog');let opener=null;
-  for(const button of document.querySelectorAll('[data-settings-open]'))button.addEventListener('click',()=>{if(!dialog)return;opener=button;syncPreferenceControls();if(!dialog.open){dialog.showModal();byID('settings-close')?.focus({preventScroll:true});}});
+  const dialog=byID('settings-dialog'),languagePicker=byID('site-language-picker');let opener=null;
+  const closeLanguagePicker=()=>{if(languagePicker)languagePicker.open=false;};
+  languagePicker?.addEventListener('keydown',event=>{if(event.key==='Escape'&&languagePicker.open){event.preventDefault();event.stopPropagation();closeLanguagePicker();byID('site-language-summary')?.focus({preventScroll:true});}});
+  for(const button of document.querySelectorAll('[data-site-language]'))button.addEventListener('click',()=>{const control=byID('language-select');if(!control)return;control.value=button.dataset.siteLanguage;closeLanguagePicker();control.dispatchEvent(new Event('change',{bubbles:true}));byID('settings-close')?.focus({preventScroll:true});});
+  for(const button of document.querySelectorAll('[data-settings-open]'))button.addEventListener('click',()=>{if(!dialog)return;opener=button;syncPreferenceControls();closeLanguagePicker();if(!dialog.open){dialog.showModal();byID('settings-close')?.focus({preventScroll:true});}});
   byID('settings-close')?.addEventListener('click',()=>dialog?.close());
-  dialog?.addEventListener('close',()=>{opener?.focus({preventScroll:true});tryAutomaticReload();});
+  dialog?.addEventListener('close',()=>{closeLanguagePicker();opener?.focus({preventScroll:true});tryAutomaticReload();});
   const controls=[['language-select','language'],['accent-input','accent'],['motion-select','motion'],['font-select','textScale'],['theme-select','theme'],['contrast-toggle','contrast'],['reduced-toggle','reduced']];
   for(const [id,key]of controls){const control=byID(id);control?.addEventListener(id==='accent-input'?'input':'change',()=>updatePreference({[key]:control.type==='checkbox'?control.checked:key==='textScale'?Number(control.value):control.value}));}
   document.querySelector('[data-reset-preferences]')?.addEventListener('click',()=>updatePreference({...DEFAULTS,language:preferences.language}));
@@ -329,7 +339,7 @@ function bindPolling() {
 function boot() {
   preferences=readPreferences();applyPreferences();
   const background=startBackground();
-  bindPreferences();bindMenu();bindCopies();bindTabs();bindPolling();restoreScroll();
+  bindPreferences();bindSharedAccent();bindMenu();bindCopies();bindTabs();bindPolling();restoreScroll();
   void setupWebsiteNotifications();
   let lastGlitch=0;
   document.addEventListener('click',event=>{const target=event.target.closest?.('a,button');if(!target||Date.now()-lastGlitch<2000)return;lastGlitch=Date.now();triggerGlitch(target.closest('section')||document.body);});

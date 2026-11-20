@@ -1,0 +1,3121 @@
+{
+  "at": "2026-11-20T23:20:56.338Z",
+  "base": "http://127.0.0.1:9021",
+  "checks": [
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "website open",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "settings-close-focused",
+      "label": "website",
+      "focused": {
+        "id": "settings-close",
+        "cls": "icon-button"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-summary-opens",
+      "label": "website",
+      "key": "Enter",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "escape-closes-disclosure-only",
+      "label": "website",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "site-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-summary-opens",
+      "label": "website",
+      "key": "Space",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "escape-closes-disclosure-only",
+      "label": "website",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "site-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-language-selection",
+      "label": "website",
+      "language": "en",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "en",
+        "dir": "ltr"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-language-selection",
+      "label": "website",
+      "language": "ar",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "ar",
+        "dir": "rtl"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "touch-language-selection",
+      "label": "website",
+      "language": "en",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "touch-language-selection",
+      "label": "website",
+      "language": "ar",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "website reopen after expanded close",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "website reopen after modal Escape",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "app public open",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "settings-close-focused",
+      "label": "app public",
+      "focused": {
+        "id": "",
+        "cls": "preferences-close"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-summary-opens",
+      "label": "app public",
+      "key": "Enter",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "escape-closes-disclosure-only",
+      "label": "app public",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "preference-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-summary-opens",
+      "label": "app public",
+      "key": "Space",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "escape-closes-disclosure-only",
+      "label": "app public",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "preference-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-language-selection",
+      "label": "app public",
+      "language": "en",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "en",
+        "dir": "ltr"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-language-selection",
+      "label": "app public",
+      "language": "ar",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "ar",
+        "dir": "rtl"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "touch-language-selection",
+      "label": "app public",
+      "language": "en",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "touch-language-selection",
+      "label": "app public",
+      "language": "ar",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "app public reopen after expanded close",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "app public reopen after modal Escape",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "website to app cross-tab",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "website to Apps cross-tab",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "cross-tab-open-controls-sync",
+      "gateColor": "#ffffff",
+      "appsColor": "#ffffff",
+      "latencyMs": 37,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "app to website cross-tab",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "app to Apps cross-tab",
+      "expected": "#000000",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "cross-tab-latency",
+      "latencyMs": 73,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "independent-preferences-preserved",
+      "webBefore": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#ff242d",
+        "chosenLanguage": true
+      },
+      "webAfter": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "gateBefore": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ff242d",
+        "chosenLanguage": true
+      },
+      "gateAfter": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "website reload",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "app reload",
+      "expected": "#000000",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "website navigation to app",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "browser history return",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "history-return-keeps-website-preferences",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "app Home navigation to website",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "four-tabs-still-fit",
+      "accent": "#ffffff",
+      "bounds": {
+        "width": 358,
+        "scrollWidth": 358,
+        "tabs": [
+          {
+            "text": "التطبيقات",
+            "left": 199,
+            "right": 374
+          },
+          {
+            "text": "روابط مباشرة",
+            "left": 16,
+            "right": 191
+          },
+          {
+            "text": "باركود",
+            "left": 199,
+            "right": 374
+          },
+          {
+            "text": "طريقة التثبيت",
+            "left": 16,
+            "right": 191
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "white-black-contrast-retained",
+      "accent": "#ffffff",
+      "rows": [
+        {
+          "selector": ".button-primary",
+          "text": "تحميل أندرويد APK",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل نسخة التثبيت",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "فتح تطبيق الآيفون والويب",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        }
+      ],
+      "minimum": 18.122604664920992,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "four-tabs-still-fit",
+      "accent": "#000000",
+      "bounds": {
+        "width": 358,
+        "scrollWidth": 358,
+        "tabs": [
+          {
+            "text": "التطبيقات",
+            "left": 199,
+            "right": 374
+          },
+          {
+            "text": "روابط مباشرة",
+            "left": 16,
+            "right": 191
+          },
+          {
+            "text": "باركود",
+            "left": 199,
+            "right": 374
+          },
+          {
+            "text": "طريقة التثبيت",
+            "left": 16,
+            "right": 191
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "white-black-contrast-retained",
+      "accent": "#000000",
+      "rows": [
+        {
+          "selector": ".button-primary",
+          "text": "تحميل أندرويد APK",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل نسخة التثبيت",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "فتح تطبيق الآيفون والويب",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        }
+      ],
+      "minimum": 5.319120007624354,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "installed login live storage update",
+      "expected": "#123456",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#123456",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "kind": "unsent-login-form-preserved",
+      "username": true,
+      "password": true,
+      "page": true,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "website open",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "settings-close-focused",
+      "label": "website",
+      "focused": {
+        "id": "settings-close",
+        "cls": "icon-button"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "keyboard-summary-opens",
+      "label": "website",
+      "key": "Enter",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "escape-closes-disclosure-only",
+      "label": "website",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "site-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "keyboard-summary-opens",
+      "label": "website",
+      "key": "Space",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "escape-closes-disclosure-only",
+      "label": "website",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "site-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "keyboard-language-selection",
+      "label": "website",
+      "language": "en",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "en",
+        "dir": "ltr"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "keyboard-language-selection",
+      "label": "website",
+      "language": "ar",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "ar",
+        "dir": "rtl"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "website reopen after expanded close",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "website reopen after modal Escape",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "app public open",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "settings-close-focused",
+      "label": "app public",
+      "focused": {
+        "id": "",
+        "cls": "preferences-close"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "keyboard-summary-opens",
+      "label": "app public",
+      "key": "Enter",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "escape-closes-disclosure-only",
+      "label": "app public",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "preference-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "keyboard-summary-opens",
+      "label": "app public",
+      "key": "Space",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "escape-closes-disclosure-only",
+      "label": "app public",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "preference-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "keyboard-language-selection",
+      "label": "app public",
+      "language": "en",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "en",
+        "dir": "ltr"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "keyboard-language-selection",
+      "label": "app public",
+      "language": "ar",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "ar",
+        "dir": "rtl"
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "app public reopen after expanded close",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "app public reopen after modal Escape",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "website to app cross-tab",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "website to Apps cross-tab",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "cross-tab-open-controls-sync",
+      "gateColor": "#ffffff",
+      "appsColor": "#ffffff",
+      "latencyMs": 37,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "app to website cross-tab",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "app to Apps cross-tab",
+      "expected": "#000000",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "cross-tab-latency",
+      "latencyMs": 95,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "independent-preferences-preserved",
+      "webBefore": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#ff242d",
+        "chosenLanguage": true
+      },
+      "webAfter": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "gateBefore": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ff242d",
+        "chosenLanguage": true
+      },
+      "gateAfter": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "website reload",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "app reload",
+      "expected": "#000000",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "website navigation to app",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "browser history return",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "history-return-keeps-website-preferences",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "app Home navigation to website",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "white-black-contrast-retained",
+      "accent": "#ffffff",
+      "rows": [
+        {
+          "selector": ".button-primary",
+          "text": "الدخول للتطبيق",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل أندرويد APK",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل نسخة التثبيت",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "فتح تطبيق الآيفون والويب",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        }
+      ],
+      "minimum": 18.122604664920992,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "white-black-contrast-retained",
+      "accent": "#000000",
+      "rows": [
+        {
+          "selector": ".button-primary",
+          "text": "الدخول للتطبيق",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل أندرويد APK",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل نسخة التثبيت",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "فتح تطبيق الآيفون والويب",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        }
+      ],
+      "minimum": 5.319120007624354,
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "installed login live storage update",
+      "expected": "#123456",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#123456",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "kind": "unsent-login-form-preserved",
+      "username": true,
+      "password": true,
+      "page": true,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "website open",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "settings-close-focused",
+      "label": "website",
+      "focused": {
+        "id": "settings-close",
+        "cls": "icon-button"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-summary-opens",
+      "label": "website",
+      "key": "Enter",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "escape-closes-disclosure-only",
+      "label": "website",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "site-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-summary-opens",
+      "label": "website",
+      "key": "Space",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "escape-closes-disclosure-only",
+      "label": "website",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "site-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-language-selection",
+      "label": "website",
+      "language": "en",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "en",
+        "dir": "ltr"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-language-selection",
+      "label": "website",
+      "language": "ar",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "ar",
+        "dir": "rtl"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "touch-language-selection",
+      "label": "website",
+      "language": "en",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "touch-language-selection",
+      "label": "website",
+      "language": "ar",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "website reopen after expanded close",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "website reopen after modal Escape",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "app public open",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "settings-close-focused",
+      "label": "app public",
+      "focused": {
+        "id": "",
+        "cls": "preferences-close"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-summary-opens",
+      "label": "app public",
+      "key": "Enter",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "escape-closes-disclosure-only",
+      "label": "app public",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "preference-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-summary-opens",
+      "label": "app public",
+      "key": "Space",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "escape-closes-disclosure-only",
+      "label": "app public",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "preference-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-language-selection",
+      "label": "app public",
+      "language": "en",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "en",
+        "dir": "ltr"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "keyboard-language-selection",
+      "label": "app public",
+      "language": "ar",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "ar",
+        "dir": "rtl"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "touch-language-selection",
+      "label": "app public",
+      "language": "en",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "touch-language-selection",
+      "label": "app public",
+      "language": "ar",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "app public reopen after expanded close",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "language-disclosure-closed",
+      "label": "app public reopen after modal Escape",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "website to app cross-tab",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "website to Apps cross-tab",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "cross-tab-open-controls-sync",
+      "gateColor": "#ffffff",
+      "appsColor": "#ffffff",
+      "latencyMs": 119,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "app to website cross-tab",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "app to Apps cross-tab",
+      "expected": "#000000",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "cross-tab-latency",
+      "latencyMs": 110,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "independent-preferences-preserved",
+      "webBefore": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#ff242d",
+        "chosenLanguage": true
+      },
+      "webAfter": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "gateBefore": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ff242d",
+        "chosenLanguage": true
+      },
+      "gateAfter": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "website reload",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "app reload",
+      "expected": "#000000",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "website navigation to app",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "browser history return",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "history-return-keeps-website-preferences",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "app Home navigation to website",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "four-tabs-still-fit",
+      "accent": "#ffffff",
+      "bounds": {
+        "width": 358,
+        "scrollWidth": 358,
+        "tabs": [
+          {
+            "text": "التطبيقات",
+            "left": 199,
+            "right": 374
+          },
+          {
+            "text": "روابط مباشرة",
+            "left": 16,
+            "right": 191
+          },
+          {
+            "text": "باركود",
+            "left": 199,
+            "right": 374
+          },
+          {
+            "text": "طريقة التثبيت",
+            "left": 16,
+            "right": 191
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "white-black-contrast-retained",
+      "accent": "#ffffff",
+      "rows": [
+        {
+          "selector": ".button-primary",
+          "text": "تحميل أندرويد APK",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل نسخة التثبيت",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "فتح تطبيق الآيفون والويب",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        }
+      ],
+      "minimum": 18.122604664920992,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "four-tabs-still-fit",
+      "accent": "#000000",
+      "bounds": {
+        "width": 358,
+        "scrollWidth": 358,
+        "tabs": [
+          {
+            "text": "التطبيقات",
+            "left": 199,
+            "right": 374
+          },
+          {
+            "text": "روابط مباشرة",
+            "left": 16,
+            "right": 191
+          },
+          {
+            "text": "باركود",
+            "left": 199,
+            "right": 374
+          },
+          {
+            "text": "طريقة التثبيت",
+            "left": 16,
+            "right": 191
+          }
+        ]
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "white-black-contrast-retained",
+      "accent": "#000000",
+      "rows": [
+        {
+          "selector": ".button-primary",
+          "text": "تحميل أندرويد APK",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل نسخة التثبيت",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "فتح تطبيق الآيفون والويب",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        }
+      ],
+      "minimum": 5.319120007624354,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "accent-applied",
+      "label": "installed login live storage update",
+      "expected": "#123456",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#123456",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "kind": "unsent-login-form-preserved",
+      "username": true,
+      "password": true,
+      "page": true,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "website open",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "settings-close-focused",
+      "label": "website",
+      "focused": {
+        "id": "settings-close",
+        "cls": "icon-button"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "keyboard-summary-opens",
+      "label": "website",
+      "key": "Enter",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "escape-closes-disclosure-only",
+      "label": "website",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "site-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "keyboard-summary-opens",
+      "label": "website",
+      "key": "Space",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "escape-closes-disclosure-only",
+      "label": "website",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "site-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "keyboard-language-selection",
+      "label": "website",
+      "language": "en",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "en",
+        "dir": "ltr"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "keyboard-language-selection",
+      "label": "website",
+      "language": "ar",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "ar",
+        "dir": "rtl"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "website reopen after expanded close",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "website reopen after modal Escape",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "settings-close",
+        "focusedClass": "icon-button",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "app public open",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "settings-close-focused",
+      "label": "app public",
+      "focused": {
+        "id": "",
+        "cls": "preferences-close"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "keyboard-summary-opens",
+      "label": "app public",
+      "key": "Enter",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "escape-closes-disclosure-only",
+      "label": "app public",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "preference-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "keyboard-summary-opens",
+      "label": "app public",
+      "key": "Space",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "escape-closes-disclosure-only",
+      "label": "app public",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "preference-language-summary",
+        "focusedClass": "",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "keyboard-language-selection",
+      "label": "app public",
+      "language": "en",
+      "key": "Enter",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "en",
+        "dir": "ltr"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "keyboard-language-selection",
+      "label": "app public",
+      "language": "ar",
+      "key": "Space",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "actual": {
+        "language": "ar",
+        "dir": "rtl"
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "app public reopen after expanded close",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "language-disclosure-closed",
+      "label": "app public reopen after modal Escape",
+      "state": {
+        "pickerTag": "DETAILS",
+        "open": false,
+        "dialogOpen": true,
+        "focusedId": "",
+        "focusedClass": "preferences-close",
+        "visibleNativeLanguageSelects": 0,
+        "visibleChoices": 0
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "website to app cross-tab",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "website to Apps cross-tab",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "cross-tab-open-controls-sync",
+      "gateColor": "#ffffff",
+      "appsColor": "#ffffff",
+      "latencyMs": 204,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "app to website cross-tab",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "app to Apps cross-tab",
+      "expected": "#000000",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "cross-tab-latency",
+      "latencyMs": 163,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "independent-preferences-preserved",
+      "webBefore": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#ff242d",
+        "chosenLanguage": true
+      },
+      "webAfter": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "gateBefore": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ff242d",
+        "chosenLanguage": true
+      },
+      "gateAfter": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "website reload",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "app reload",
+      "expected": "#000000",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "website navigation to app",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "browser history return",
+      "expected": "#000000",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "history-return-keeps-website-preferences",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#000000",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "app Home navigation to website",
+      "expected": "#ffffff",
+      "actual": {
+        "language": "en",
+        "theme": "light",
+        "scale": "1.3",
+        "accent": "#ffffff",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "white-black-contrast-retained",
+      "accent": "#ffffff",
+      "rows": [
+        {
+          "selector": ".button-primary",
+          "text": "الدخول للتطبيق",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل أندرويد APK",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل نسخة التثبيت",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "فتح تطبيق الآيفون والويب",
+          "color": "rgb(0, 0, 0)",
+          "background": [
+            255,
+            255,
+            255
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 18.122604664920992,
+          "opacity": "1"
+        }
+      ],
+      "minimum": 18.122604664920992,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "white-black-contrast-retained",
+      "accent": "#000000",
+      "rows": [
+        {
+          "selector": ".button-primary",
+          "text": "الدخول للتطبيق",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل أندرويد APK",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "تحميل نسخة التثبيت",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".button-primary",
+          "text": "فتح تطبيق الآيفون والويب",
+          "color": "rgb(255, 255, 255)",
+          "background": [
+            0,
+            0,
+            0
+          ],
+          "ratio": 21,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        },
+        {
+          "selector": ".device-symbol .app-icon",
+          "text": "",
+          "color": "rgb(139, 139, 139)",
+          "background": [
+            15,
+            22,
+            31
+          ],
+          "ratio": 5.319120007624354,
+          "opacity": "1"
+        }
+      ],
+      "minimum": 5.319120007624354,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "accent-applied",
+      "label": "installed login live storage update",
+      "expected": "#123456",
+      "actual": {
+        "language": "ar",
+        "theme": "dark",
+        "scale": "1",
+        "accent": "#123456",
+        "chosenLanguage": true
+      },
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "kind": "unsent-login-form-preserved",
+      "username": true,
+      "password": true,
+      "page": true,
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "/workspace/artifacts/qa/picker-accent/chromium-touch-apps-ffffff.png",
+    "/workspace/artifacts/qa/picker-accent/chromium-touch-apps-000000.png",
+    "/workspace/artifacts/qa/picker-accent/chromium-desktop-apps-ffffff.png",
+    "/workspace/artifacts/qa/picker-accent/chromium-desktop-apps-000000.png",
+    "/workspace/artifacts/qa/picker-accent/webkit-touch-apps-ffffff.png",
+    "/workspace/artifacts/qa/picker-accent/webkit-touch-apps-000000.png",
+    "/workspace/artifacts/qa/picker-accent/webkit-desktop-apps-ffffff.png",
+    "/workspace/artifacts/qa/picker-accent/webkit-desktop-apps-000000.png"
+  ],
+  "browserVersions": {
+    "chromium": "156.0.8078.79",
+    "webkit": "27.2"
+  },
+  "historyReturns": [
+    {
+      "engine": "chromium",
+      "mode": "iPhone-touch",
+      "persisted": false,
+      "sameDocumentToken": false
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop",
+      "persisted": false,
+      "sameDocumentToken": false
+    },
+    {
+      "engine": "webkit",
+      "mode": "iPhone-touch",
+      "persisted": false,
+      "sameDocumentToken": false
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop",
+      "persisted": false,
+      "sameDocumentToken": false
+    }
+  ],
+  "limitations": [
+    "Browser iPhone/touch emulation; no physical iPhone claim.",
+    "No customer/provider account used. The installed login check uses unsent dummy form values only.",
+    "BFCache evidence uses pageshow.persisted; a normal history reload is reported as such.",
+    "All observed history returns recreated the document (pageshow.persisted=false); real BFCache restoration was not exercised."
+  ],
+  "revision": {
+    "name": "ابوناصر",
+    "name_en": "abbeedo",
+    "version": "2.1.2",
+    "revision": "web-33dcbd689ec6d193",
+    "builtAt": "2026-11-20T23:20:41.530Z"
+  },
+  "failures": [],
+  "summary": {
+    "checks": 160,
+    "passed": 160,
+    "failed": 0,
+    "pageErrors": 0,
+    "contrastSamples": 52,
+    "contrastMinimum": 5.319120007624354
+  },
+  "status": "passed",
+  "realBFCacheExercised": false,
+  "visualReview": {
+    "status": "passed",
+    "evidence": {
+      "browser": "WebKit 27.2",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "hasTouch": true,
+      "observations": [
+        {
+          "page": "website-closed",
+          "open": false,
+          "focus": "settings-close"
+        },
+        {
+          "page": "website-expanded",
+          "open": true
+        },
+        {
+          "page": "public-app-closed",
+          "open": false,
+          "focus": "preferences-close"
+        }
+      ]
+    },
+    "screenshots": [
+      "/workspace/artifacts/qa/picker-accent/screenshots/webkit-iphone-website-settings-closed.png",
+      "/workspace/artifacts/qa/picker-accent/screenshots/webkit-iphone-website-language-expanded.png",
+      "/workspace/artifacts/qa/picker-accent/screenshots/webkit-iphone-public-app-settings-closed.png"
+    ],
+    "observation": "Website and public app language disclosures render closed with Close focused; explicit expansion reveals Arabic/English buttons."
+  },
+  "passed": true,
+  "sourceScreenshots": [
+    "validation/hotfix-2.1.2/webkit-iphone-public-app-settings-closed.png",
+    "validation/hotfix-2.1.2/webkit-iphone-website-language-expanded.png"
+  ]
+}

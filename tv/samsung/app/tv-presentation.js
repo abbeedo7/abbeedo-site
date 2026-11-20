@@ -11,7 +11,7 @@ export function configureTVPresentation(scope=globalThis){
   if([461,10009].includes(code)){event.preventDefault();event.stopImmediatePropagation();(doc.activeElement||doc.body).dispatchEvent(new scope.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));return;}
   if(doc.documentElement.dataset.appReady==='true'||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;
   const dialog=doc.querySelector('dialog[open]');if(!dialog)return;
-  const buttons=[...dialog.querySelectorAll('button:not([disabled]),select,input')].filter(el=>el.getClientRects().length);
+  const buttons=[...dialog.querySelectorAll('button:not([disabled]),select,input,summary')].filter(el=>el.getClientRects().length);
   if(!buttons.length)return;
   const current=buttons.indexOf(doc.activeElement),step=['ArrowRight','ArrowDown'].includes(event.key)?1:-1;
   buttons[(Math.max(0,current)+step+buttons.length)%buttons.length].focus();event.preventDefault();
