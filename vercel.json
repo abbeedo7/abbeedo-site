@@ -3,5 +3,8 @@
   "framework": null,
   "buildCommand": "npm run build",
   "installCommand": "npm ci",
-  "outputDirectory": ".vercel/output/static"
+  "outputDirectory": ".vercel/output/static",
+  "regions": [
+    "fra1"
+  ]
 }

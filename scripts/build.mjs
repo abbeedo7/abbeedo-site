@@ -41,11 +41,15 @@ for(const entry of ['releases','download','source-diagnostic']){
  await build({entryPoints:[path.join(root,'api',entry+'.mjs')],outfile:path.join(fn,'index.mjs'),bundle:true,platform:'node',format:'esm',target:'node22',minify:false});
  await fs.writeFile(path.join(fn,'.vc-config.json'),JSON.stringify({runtime:'nodejs22.x',handler:'index.mjs',launcherType:'Nodejs',maxDuration:30,supportsResponseStreaming:true}));
 }
+const edgeFn=path.join(out,'functions','source-diagnostic-edge.func');await fs.mkdir(edgeFn,{recursive:true});
+await build({entryPoints:[path.join(root,'api/source-diagnostic-edge.mjs')],outfile:path.join(edgeFn,'index.mjs'),bundle:true,platform:'neutral',format:'esm',target:'es2022',minify:false});
+await fs.writeFile(path.join(edgeFn,'.vc-config.json'),JSON.stringify({runtime:'edge',entrypoint:'index.mjs'}));
 const csp="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: data: blob:; font-src 'self'; connect-src 'self' https:; media-src 'self' https: blob:; worker-src 'self' blob:; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
 const noCache={'Cache-Control':'no-store, max-age=0','CDN-Cache-Control':'no-store','Vercel-CDN-Cache-Control':'no-store'};
 const routes=[
  {src:'/(.*)',headers:{'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':csp},continue:true},
  {src:'^/api/source-diagnostic$',dest:'/source-diagnostic'},
+ {src:'^/api/source-diagnostic-edge$',dest:'/source-diagnostic-edge'},
  {src:'^/api/releases$',dest:'/releases'},
  {src:'^/api/download$',dest:'/download'},
  {src:'^/updates\\.json$',headers:noCache,dest:'/releases?format=android'},
