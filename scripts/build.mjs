@@ -36,7 +36,7 @@ await fs.writeFile(path.join(staticDir,'site-version.json'),JSON.stringify({name
 await fs.writeFile(path.join(staticDir,'robots.txt'),'User-agent: *\nAllow: /\nDisallow: /api/\nSitemap: '+config.domain+'/sitemap.xml\n');
 await fs.writeFile(path.join(staticDir,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>'+config.domain+'/</loc></url><url><loc>'+config.domain+'/apps</loc></url></urlset>');
 await fs.writeFile(path.join(staticDir,'404.html'),'<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>ابوناصر</title><style>body{background:#0a1018;color:#fff;font:22px sans-serif;text-align:center;padding:15vh 20px}a{color:#ff5260}</style><h1>الصفحة غير موجودة</h1><p>Page not found</p><a href="/">العودة للموقع · Home</a></html>');
-for(const entry of ['releases','download']){
+for(const entry of ['releases','download','source-diagnostic']){
  const fn=path.join(out,'functions',entry+'.func');await fs.mkdir(fn,{recursive:true});
  await build({entryPoints:[path.join(root,'api',entry+'.mjs')],outfile:path.join(fn,'index.mjs'),bundle:true,platform:'node',format:'esm',target:'node22',minify:false});
  await fs.writeFile(path.join(fn,'.vc-config.json'),JSON.stringify({runtime:'nodejs22.x',handler:'index.mjs',launcherType:'Nodejs',maxDuration:30,supportsResponseStreaming:true}));
@@ -45,6 +45,7 @@ const csp="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inlin
 const noCache={'Cache-Control':'no-store, max-age=0','CDN-Cache-Control':'no-store','Vercel-CDN-Cache-Control':'no-store'};
 const routes=[
  {src:'/(.*)',headers:{'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY','Content-Security-Policy':csp},continue:true},
+ {src:'^/api/source-diagnostic$',dest:'/source-diagnostic'},
  {src:'^/api/releases$',dest:'/releases'},
  {src:'^/api/download$',dest:'/download'},
  {src:'^/updates\\.json$',headers:noCache,dest:'/releases?format=android'},
