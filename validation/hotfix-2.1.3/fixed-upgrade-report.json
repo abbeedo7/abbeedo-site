@@ -1,0 +1,370 @@
+{
+  "phase": "fixed",
+  "at": "2026-11-21T04:13:14.438Z",
+  "checks": [
+    {
+      "name": "fixed-blue-under-still-legacy-worker",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "ready": "true",
+        "controller": "http://127.0.0.1:9024/sw.js",
+        "registrations": [
+          {
+            "scope": "http://127.0.0.1:9024/",
+            "active": "activated",
+            "scriptURL": "http://127.0.0.1:9024/sw.js"
+          }
+        ],
+        "cacheKeys": [
+          "abunasser-apple-web-1-9292e58ab816"
+        ],
+        "preferences": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#ff242d",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795233585918
+        },
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795233586646
+        }
+      }
+    },
+    {
+      "name": "fixed-versioned-preferences-bypasses-legacy-cache",
+      "pass": true,
+      "evidence": [
+        {
+          "url": "/assets/appearance-bootstrap.js?app-build=d0c3b0e3497f8983",
+          "fromSW": false,
+          "status": 200,
+          "hasSharedAccent": false,
+          "hasHandoff": false,
+          "length": 5733
+        },
+        {
+          "url": "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 11906
+        },
+        {
+          "url": "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+          "fromSW": false,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 4756
+        },
+        {
+          "url": "/app/preferences.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        },
+        {
+          "url": "/assets/appearance-bootstrap.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": false,
+          "hasHandoff": false,
+          "length": 5733
+        },
+        {
+          "url": "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 11906
+        },
+        {
+          "url": "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 4756
+        },
+        {
+          "url": "/app/preferences.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        },
+        {
+          "url": "/app/preferences.js",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        }
+      ]
+    },
+    {
+      "name": "fixed-entire-application-module-graph-versioned",
+      "pass": true,
+      "evidence": [
+        "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+        "/app/tv-presentation.js?app-build=d0c3b0e3497f8983",
+        "/app/glitch.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/install-gate.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+        "/app/distribution.js?site=2.0&app-build=d0c3b0e3497f8983",
+        "/app/preferences.js?app-build=d0c3b0e3497f8983",
+        "/app/tv-network.js?app-build=d0c3b0e3497f8983",
+        "/app/accent-colors.js?app-build=d0c3b0e3497f8983",
+        "/app/ui.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+        "/app/desktop-updates.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/updates.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/notifications.js?app-build=d0c3b0e3497f8983",
+        "/app/core.js?release=1.2&app-build=d0c3b0e3497f8983",
+        "/app/icons.js?release=1.1&app-build=d0c3b0e3497f8983",
+        "/app/native.js?app-build=d0c3b0e3497f8983",
+        "/app/player.js?release=1.1&app-build=d0c3b0e3497f8983",
+        "/app/connect.js?app-build=d0c3b0e3497f8983",
+        "/app/distribution.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/storage.js?app-build=d0c3b0e3497f8983"
+      ]
+    },
+    {
+      "name": "new-service-worker-installed-and-color-persists",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "ready": "true",
+        "controller": "http://127.0.0.1:9024/sw.js",
+        "registrations": [
+          {
+            "scope": "http://127.0.0.1:9024/",
+            "active": "activated",
+            "scriptURL": "http://127.0.0.1:9024/sw.js"
+          }
+        ],
+        "cacheKeys": [
+          "abunasser-apple-web-1-d0c3b0e3497f8983"
+        ],
+        "preferences": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#ff242d",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795233585918
+        },
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795233586646
+        }
+      }
+    },
+    {
+      "name": "updated-worker-fetches-current-module-before-stale-cache",
+      "pass": true,
+      "evidence": {
+        "status": 200,
+        "stale": false,
+        "hasSharedAccent": true,
+        "controller": "http://127.0.0.1:9024/sw.js"
+      }
+    },
+    {
+      "name": "app-install-identity-with-root-navigation-scope",
+      "pass": true,
+      "evidence": {
+        "id": "/app",
+        "name": "ابوناصر TV",
+        "short_name": "ابوناصر TV",
+        "lang": "ar",
+        "dir": "rtl",
+        "start_url": "/app?source=installed",
+        "scope": "/",
+        "display": "standalone",
+        "orientation": "any",
+        "background_color": "#0a1116",
+        "theme_color": "#0a1116",
+        "description": "قنواتك وأفلامك ومسلسلاتك من اشتراكك في واجهة واحدة.",
+        "icons": [
+          {
+            "src": "/app-icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any"
+          }
+        ]
+      }
+    }
+  ],
+  "responses": [
+    {
+      "url": "/assets/appearance-bootstrap.js?app-build=d0c3b0e3497f8983",
+      "fromSW": false,
+      "status": 200,
+      "hasSharedAccent": false,
+      "hasHandoff": false,
+      "length": 5733
+    },
+    {
+      "url": "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 11906
+    },
+    {
+      "url": "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+      "fromSW": false,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 4756
+    },
+    {
+      "url": "/app/preferences.js?app-build=d0c3b0e3497f8983",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 20372
+    },
+    {
+      "url": "/assets/appearance-bootstrap.js?app-build=d0c3b0e3497f8983",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": false,
+      "hasHandoff": false,
+      "length": 5733
+    },
+    {
+      "url": "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 11906
+    },
+    {
+      "url": "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 4756
+    },
+    {
+      "url": "/app/preferences.js?app-build=d0c3b0e3497f8983",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 20372
+    },
+    {
+      "url": "/app/preferences.js",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 20372
+    }
+  ],
+  "errors": [],
+  "fixed": {
+    "accent": "#1357df",
+    "ready": "true",
+    "controller": "http://127.0.0.1:9024/sw.js",
+    "registrations": [
+      {
+        "scope": "http://127.0.0.1:9024/",
+        "active": "activated",
+        "scriptURL": "http://127.0.0.1:9024/sw.js"
+      }
+    ],
+    "cacheKeys": [
+      "abunasser-apple-web-1-9292e58ab816"
+    ],
+    "preferences": {
+      "version": 1,
+      "values": {
+        "language": "ar",
+        "accent": "#ff242d",
+        "theme": "dark",
+        "text_scale": 1,
+        "background_speed": "standard",
+        "reduced_motion": false,
+        "high_contrast": false
+      },
+      "chosenLanguage": true,
+      "updatedAt": 1795233585918
+    },
+    "shared": {
+      "version": 1,
+      "accent": "#1357df",
+      "updatedAt": 1795233586646
+    }
+  },
+  "workerUpdate": {
+    "waiting": "installed",
+    "active": "activated"
+  },
+  "updated": {
+    "accent": "#1357df",
+    "ready": "true",
+    "controller": "http://127.0.0.1:9024/sw.js",
+    "registrations": [
+      {
+        "scope": "http://127.0.0.1:9024/",
+        "active": "activated",
+        "scriptURL": "http://127.0.0.1:9024/sw.js"
+      }
+    ],
+    "cacheKeys": [
+      "abunasser-apple-web-1-d0c3b0e3497f8983"
+    ],
+    "preferences": {
+      "version": 1,
+      "values": {
+        "language": "ar",
+        "accent": "#ff242d",
+        "theme": "dark",
+        "text_scale": 1,
+        "background_speed": "standard",
+        "reduced_motion": false,
+        "high_contrast": false
+      },
+      "chosenLanguage": true,
+      "updatedAt": 1795233585918
+    },
+    "shared": {
+      "version": 1,
+      "accent": "#1357df",
+      "updatedAt": 1795233586646
+    }
+  },
+  "status": "passed"
+}

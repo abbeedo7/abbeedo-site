@@ -1,4 +1,4 @@
-import {SHARED_ACCENT_KEY,getSharedAccent,setSharedAccent} from './shared-accent.js';
+import {SHARED_ACCENT_KEY,getSharedAccent,setSharedAccent,decorateAppearanceLinks} from './shared-accent.js';
 import {applyAccentColors} from './accent-colors.js';
 import {startBackground, triggerGlitch} from './background.js?site=2.1';
 
@@ -137,7 +137,7 @@ function applyPreferences() {
   document.body.dataset.highContrast=String(preferences.contrast);
   document.body.dataset.theme=preferences.theme;
   applyAccentColors(document,preferences.accent,{theme:preferences.theme,highContrast:preferences.contrast});
-  localize();syncPreferenceControls();
+  localize();syncPreferenceControls();decorateAppearanceLinks(document);
   document.documentElement.dataset.preferencesReady='true';
   window.dispatchEvent(new CustomEvent('abbeedo:website-preferences',{detail:{...preferences}}));
 }

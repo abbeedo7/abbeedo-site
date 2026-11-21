@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-11-20T23:23:09.912333+00:00",
+  "checked_at_utc": "2026-11-21T04:18:02.259925+00:00",
   "checks": [
     {
       "url": "https://www.abbeedo.com/site-version.json",
@@ -7,10 +7,6 @@
     },
     {
       "url": "https://www.abbeedo.com/api/health",
-      "status": 200
-    },
-    {
-      "url": "https://www.abbeedo.com/api/releases",
       "status": 200
     }
   ],
@@ -20,8 +16,8 @@
   "public_downloads_ready": true,
   "private_backend_configured": true,
   "production_origin": "https://www.abbeedo.com",
-  "production_version": "2.1.1",
-  "production_revision": "web-e40c06e42337217e",
-  "production_commit": "b3ddabc3c944d18db7b1f802a8801ff0b4f84ddb",
-  "production_deployment_id": "dpl_bpqcexkKBk6DYGZNvFGn1LiWCPWt"
+  "production_version": "2.1.2",
+  "production_revision": "web-33dcbd689ec6d193",
+  "production_commit": "452f5f6fc4463346de8f51c3ed8af3299b2909b8",
+  "production_deployment_id": "dpl_3Debh8hHT3BU4DUy56bV6VY63p1b"
 }

@@ -1,6 +1,6 @@
 {
   "built": true,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "hosting": {
     "lg": "Official hosted webOS app at https://www.abbeedo.com/app",
     "samsung": "Local packaged shared frontend with a narrow cookie-free TV API gateway"
@@ -11,9 +11,9 @@
   "artifacts": [
     {
       "platform": "LG webOS",
-      "file": "tv/dist/com.abbeedo.tv.app_1.2.2_all.ipk",
-      "bytes": 18768,
-      "sha256": "56dd00eb24c728e030bd7cf96b8c2ff6f632c62ded1b471ad10de84782653652",
+      "file": "tv/dist/com.abbeedo.tv.app_1.2.3_all.ipk",
+      "bytes": 18774,
+      "sha256": "1913d5dfaf98d8b69439980bbdc7d043f9be7dd7c9da2be01f829755c705623b",
       "packagedBy": "@webos-tools/cli@3.2.6",
       "metadataValidated": true,
       "storeUploadReady": false,
@@ -24,9 +24,9 @@
     },
     {
       "platform": "Samsung Tizen",
-      "file": "tv/dist/abbeedo-TV-Samsung-UNSIGNED-1.2.2.wgt",
-      "bytes": 2771114,
-      "sha256": "878a086f5112543f40b9ea068cbe352935ca7d1182fbbbcde15ca535126dbd9d",
+      "file": "tv/dist/abbeedo-TV-Samsung-UNSIGNED-1.2.3.wgt",
+      "bytes": 2784165,
+      "sha256": "2dc17c73b67afef6ec55454bc24201525fae1907fee7f71789a3b296503c9aef",
       "signed": false,
       "packagedFrontend": true,
       "hostedApprovalRequired": false,

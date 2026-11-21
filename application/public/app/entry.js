@@ -1,7 +1,7 @@
 import {configureTVPresentation} from './tv-presentation.js';
 import {startVisualEffects} from './glitch.js?site=2.1';
 import {isAppContext, installationPlatform} from './install-gate.js?site=2.1';
-import {SHARED_ACCENT_KEY,getSharedAccent} from './shared-accent.js';
+import {SHARED_ACCENT_KEY,getSharedAccent,appearanceHandoffURL} from './shared-accent.js';
 import {RELEASE_INDEX} from './distribution.js?site=2.0';
 import {applyClientPreferences,readPreferences,migrateVaultPreferences,chooseInitialLanguage,openPublicPreferences,text} from './preferences.js';
 
@@ -46,7 +46,7 @@ window.addEventListener('pageshow',refreshSharedAccent);window.addEventListener(
 // Migrate only public settings from an existing encrypted installation. Never expose account data.
 if(!readPreferences().chosenLanguage&&isAppContext()){
   gate.hidden=true;
-  try{const {Vault}=await import('./core.js?release=1.2.2');const vault=new Vault({namespace:'interface-v1'});const saved=await vault.get('ui',null);migrateVaultPreferences(saved?.settings);}catch{}
+  try{const {Vault}=await import('./core.js?release=1.2.3');const vault=new Vault({namespace:'interface-v1'});const saved=await vault.get('ui',null);migrateVaultPreferences(saved?.settings);}catch{}
   applyClientPreferences();
 }
 if(!readPreferences().chosenLanguage)await chooseInitialLanguage();
@@ -56,7 +56,7 @@ function openIfInstalled(){
   if(starting)return true;
   starting=true;gate.hidden=true;shell.hidden=false;shell.inert=true;
   document.documentElement.dataset.launchContext='app';
-  import('./ui.js?release=1.2.2').then(async module=>{await module.appReady;shell.inert=false;}).catch(()=>{
+  import('./ui.js?release=1.2.3').then(async module=>{await module.appReady;shell.inert=false;}).catch(()=>{
     starting=false;loadFailed=true;gate.hidden=false;shell.hidden=true;shell.inert=true;
     document.getElementById('install-instructions').hidden=true;document.getElementById('install-note').hidden=true;renderGate();
   });
@@ -65,7 +65,7 @@ function openIfInstalled(){
 window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();if(nativeDownload)return;pendingInstall=event;if(!starting)installButton.hidden=false;});
 window.addEventListener('appinstalled',()=>{if(nativeDownload)return;pendingInstall=null;installButton.hidden=true;setStatus('تمت الإضافة. افتح «ابوناصر TV» من أيقونته على الشاشة الرئيسية.','Added. Open abbeedo TV from its Home Screen icon.');});
 installButton.addEventListener('click',async()=>{if(!pendingInstall)return;const prompt=pendingInstall;pendingInstall=null;installButton.disabled=true;try{await prompt.prompt();const choice=await prompt.userChoice;if(choice?.outcome==='accepted')setStatus('بعد اكتمال الإضافة، افتح التطبيق من أيقونته على الشاشة الرئيسية.','Once added, open the app from its Home Screen icon.');}catch{setStatus('افتح قائمة المتصفح واختر «إضافة إلى الشاشة الرئيسية» أو «تثبيت التطبيق».','Open the browser menu and choose Add to Home Screen or Install app.');}finally{installButton.disabled=false;installButton.hidden=!pendingInstall;}});
-document.getElementById('copy-install-link').addEventListener('click',async()=>{const address=new URL('/app',location.href).href;let copied=false;try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(address);copied=true;}}catch{}if(!copied){const input=document.createElement('textarea');input.value=address;input.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.append(input);input.select();try{copied=document.execCommand('copy');}catch{}input.remove();}setStatus(...(copied?['تم نسخ الرابط. افتحه في Safari ثم أضفه إلى الشاشة الرئيسية.','Link copied. Open it in Safari, then add it to your Home Screen.']:['تعذر نسخ الرابط. انسخه من شريط العنوان وافتحه في Safari.','Could not copy. Copy it from the address bar and open it in Safari.']));});
+document.getElementById('copy-install-link').addEventListener('click',async()=>{const address=appearanceHandoffURL(new URL('/app',location.href).href);let copied=false;try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(address);copied=true;}}catch{}if(!copied){const input=document.createElement('textarea');input.value=address;input.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.append(input);input.select();try{copied=document.execCommand('copy');}catch{}input.remove();}setStatus(...(copied?['تم نسخ الرابط. افتحه في Safari ثم أضفه إلى الشاشة الرئيسية.','Link copied. Open it in Safari, then add it to your Home Screen.']:['تعذر نسخ الرابط. انسخه من شريط العنوان وافتحه في Safari.','Could not copy. Copy it from the address bar and open it in Safari.']));});
 async function refreshWindowsDownloads(){const notice=document.getElementById('download-status'),retry=document.getElementById('retry-download-check');retry.hidden=true;downloadWords=['جارٍ التحقق من توفر نسخة ويندوز…','Checking Windows download availability…'];notice.textContent=text(...downloadWords);try{const response=await fetch(RELEASE_INDEX,{credentials:'omit',cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw Error('Unavailable');const release=await response.json();let available=false;for(const [key,id]of [['setup','windows-download'],['portable','windows-portable']]){const ready=release.windows?.[key]?.available===true;document.getElementById(id).setAttribute('aria-disabled',String(!ready));if(key==='setup')available=ready;}downloadWords=available?['نسخة ويندوز جاهزة للتحميل.','Windows download is ready.']:['التحميل غير متاح مؤقتًا. أعد المحاولة بعد قليل.','Downloads are temporarily unavailable. Please try again shortly.'];retry.hidden=available;}catch{downloadWords=['تعذر التحقق من رابط التحميل. تحقق من الاتصال ثم أعد المحاولة.','Could not check downloads. Check your connection and retry.'];retry.hidden=false;}notice.textContent=text(...downloadWords);}
 for(const id of ['windows-download','windows-portable'])document.getElementById(id).addEventListener('click',event=>{if(event.currentTarget.getAttribute('aria-disabled')==='true')event.preventDefault();});
 document.getElementById('retry-download-check').addEventListener('click',refreshWindowsDownloads);

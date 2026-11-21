@@ -1,0 +1,1499 @@
+{
+  "at": "2026-11-21T04:15:19.958Z",
+  "website": "2.1.3",
+  "application": "1.2.3",
+  "revision": "web-99b55f94da47a3b7",
+  "appBuild": "d0c3b0e3497f8983",
+  "status": "passed",
+  "checks": [
+    {
+      "engine": "chromium",
+      "mode": "methods-denied",
+      "path": "/",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 806.8999999985099,
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true",
+        "ready": "true",
+        "siteReady": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "chromium",
+      "mode": "methods-denied",
+      "path": "/app",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 920.8999999985099,
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "false"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "chromium",
+      "mode": "getter-denied",
+      "path": "/app",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 886.1999999955297,
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "false"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "chromium",
+      "mode": "getter-denied",
+      "path": "/",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 737,
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true",
+        "ready": "true",
+        "siteReady": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "webkit",
+      "mode": "getter-denied",
+      "path": "/",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 136,
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true",
+        "ready": "true",
+        "siteReady": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "webkit",
+      "mode": "methods-denied",
+      "path": "/",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 126,
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true",
+        "ready": "true",
+        "siteReady": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "webkit",
+      "mode": "getter-denied",
+      "path": "/app",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 212,
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "false"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "webkit",
+      "mode": "methods-denied",
+      "path": "/app",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 150,
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "false"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "name": "fixed-blue-under-still-legacy-worker",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "ready": "true",
+        "controller": "http://127.0.0.1:9024/sw.js",
+        "registrations": [
+          {
+            "scope": "http://127.0.0.1:9024/",
+            "active": "activated",
+            "scriptURL": "http://127.0.0.1:9024/sw.js"
+          }
+        ],
+        "cacheKeys": [
+          "abunasser-apple-web-1-9292e58ab816"
+        ],
+        "preferences": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#ff242d",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795233585918
+        },
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795233586646
+        }
+      },
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "fixed-versioned-preferences-bypasses-legacy-cache",
+      "pass": true,
+      "evidence": [
+        {
+          "url": "/assets/appearance-bootstrap.js?app-build=d0c3b0e3497f8983",
+          "fromSW": false,
+          "status": 200,
+          "hasSharedAccent": false,
+          "hasHandoff": false,
+          "length": 5733
+        },
+        {
+          "url": "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 11906
+        },
+        {
+          "url": "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+          "fromSW": false,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 4756
+        },
+        {
+          "url": "/app/preferences.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        },
+        {
+          "url": "/assets/appearance-bootstrap.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": false,
+          "hasHandoff": false,
+          "length": 5733
+        },
+        {
+          "url": "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 11906
+        },
+        {
+          "url": "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 4756
+        },
+        {
+          "url": "/app/preferences.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        },
+        {
+          "url": "/app/preferences.js",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        }
+      ],
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "fixed-entire-application-module-graph-versioned",
+      "pass": true,
+      "evidence": [
+        "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+        "/app/tv-presentation.js?app-build=d0c3b0e3497f8983",
+        "/app/glitch.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/install-gate.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+        "/app/distribution.js?site=2.0&app-build=d0c3b0e3497f8983",
+        "/app/preferences.js?app-build=d0c3b0e3497f8983",
+        "/app/tv-network.js?app-build=d0c3b0e3497f8983",
+        "/app/accent-colors.js?app-build=d0c3b0e3497f8983",
+        "/app/ui.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+        "/app/desktop-updates.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/updates.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/notifications.js?app-build=d0c3b0e3497f8983",
+        "/app/core.js?release=1.2&app-build=d0c3b0e3497f8983",
+        "/app/icons.js?release=1.1&app-build=d0c3b0e3497f8983",
+        "/app/native.js?app-build=d0c3b0e3497f8983",
+        "/app/player.js?release=1.1&app-build=d0c3b0e3497f8983",
+        "/app/connect.js?app-build=d0c3b0e3497f8983",
+        "/app/distribution.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/storage.js?app-build=d0c3b0e3497f8983"
+      ],
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "new-service-worker-installed-and-color-persists",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "ready": "true",
+        "controller": "http://127.0.0.1:9024/sw.js",
+        "registrations": [
+          {
+            "scope": "http://127.0.0.1:9024/",
+            "active": "activated",
+            "scriptURL": "http://127.0.0.1:9024/sw.js"
+          }
+        ],
+        "cacheKeys": [
+          "abunasser-apple-web-1-d0c3b0e3497f8983"
+        ],
+        "preferences": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#ff242d",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795233585918
+        },
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795233586646
+        }
+      },
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "updated-worker-fetches-current-module-before-stale-cache",
+      "pass": true,
+      "evidence": {
+        "status": 200,
+        "stale": false,
+        "hasSharedAccent": true,
+        "controller": "http://127.0.0.1:9024/sw.js"
+      },
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "app-install-identity-with-root-navigation-scope",
+      "pass": true,
+      "evidence": {
+        "id": "/app",
+        "name": "ابوناصر TV",
+        "short_name": "ابوناصر TV",
+        "lang": "ar",
+        "dir": "rtl",
+        "start_url": "/app?source=installed",
+        "scope": "/",
+        "display": "standalone",
+        "orientation": "any",
+        "background_color": "#0a1116",
+        "theme_color": "#0a1116",
+        "description": "قنواتك وأفلامك ومسلسلاتك من اشتراكك في واجهة واحدة.",
+        "icons": [
+          {
+            "src": "/app-icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any"
+          }
+        ]
+      },
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "engine": "chromium",
+      "name": "website-actual-open-app-link-carries-public-color-timestamp",
+      "pass": true,
+      "evidence": "/app?appearance=1357df&appearance_at=1795234436713",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "isolated-installed-app-adopts-website-color",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "lang": "ar",
+        "theme": "dark",
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795234436713
+        },
+        "website": null,
+        "app": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#1357df",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795234440080
+        },
+        "url": "/app"
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "installed-app-cleans-handoff-query-before-display",
+      "pass": true,
+      "evidence": "/app",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "installed-app-actual-home-link-carries-new-color",
+      "pass": true,
+      "evidence": "/?appearance=1c9b57&appearance_at=1795234440520",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "isolated-safari-home-adopts-app-color-and-keeps-own-settings",
+      "pass": true,
+      "evidence": {
+        "accent": "#1c9b57",
+        "lang": "en",
+        "theme": "light",
+        "shared": {
+          "version": 1,
+          "accent": "#1c9b57",
+          "updatedAt": 1795234440520
+        },
+        "website": {
+          "language": "en",
+          "accent": "#1357df",
+          "theme": "light",
+          "textScale": 1.3
+        },
+        "app": null,
+        "url": "/"
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "stale-timestamped-handoff-does-not-override-fresh-choice",
+      "pass": true,
+      "evidence": {
+        "before": {
+          "accent": "#a04ddb",
+          "lang": "en",
+          "theme": "light",
+          "shared": {
+            "version": 1,
+            "accent": "#a04ddb",
+            "updatedAt": 1795234441049
+          },
+          "website": {
+            "language": "en",
+            "accent": "#a04ddb",
+            "contrast": false,
+            "motion": "standard",
+            "reduced": false,
+            "textScale": 1.3,
+            "theme": "light",
+            "notifications": false
+          },
+          "app": null,
+          "url": "/"
+        },
+        "after": {
+          "accent": "#a04ddb",
+          "lang": "en",
+          "theme": "light",
+          "shared": {
+            "version": 1,
+            "accent": "#a04ddb",
+            "updatedAt": 1795234441049
+          },
+          "website": {
+            "language": "en",
+            "accent": "#a04ddb",
+            "contrast": false,
+            "motion": "standard",
+            "reduced": false,
+            "textScale": 1.3,
+            "theme": "light",
+            "notifications": false
+          },
+          "app": null,
+          "url": "/"
+        }
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "handoff-url-data-only-public-color-and-time",
+      "pass": true,
+      "evidence": [
+        "/?appearance=a04ddb&appearance_at=1795234441252",
+        "/?appearance=a04ddb&appearance_at=1795234441252",
+        "/?appearance=a04ddb&appearance_at=1795234441252#television",
+        "/?appearance=a04ddb&appearance_at=1795234441252#subscriptions",
+        "/apps?appearance=a04ddb&appearance_at=1795234441252",
+        "/?appearance=a04ddb&appearance_at=1795234441252#faq",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/apps?appearance=a04ddb&appearance_at=1795234441252",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/apps?appearance=a04ddb&appearance_at=1795234441252#qr",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/?appearance=a04ddb&appearance_at=1795234441252",
+        "/apps?appearance=a04ddb&appearance_at=1795234441252#qr"
+      ],
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "website-actual-open-app-link-carries-public-color-timestamp",
+      "pass": true,
+      "evidence": "/app?appearance=1357df&appearance_at=1795234443778",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "isolated-installed-app-adopts-website-color",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "lang": "ar",
+        "theme": "dark",
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795234443778
+        },
+        "website": null,
+        "app": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#1357df",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795234446262
+        },
+        "url": "/app"
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "installed-app-cleans-handoff-query-before-display",
+      "pass": true,
+      "evidence": "/app",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "installed-app-actual-home-link-carries-new-color",
+      "pass": true,
+      "evidence": "/?appearance=1c9b57&appearance_at=1795234446853",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "isolated-safari-home-adopts-app-color-and-keeps-own-settings",
+      "pass": true,
+      "evidence": {
+        "accent": "#1c9b57",
+        "lang": "en",
+        "theme": "light",
+        "shared": {
+          "version": 1,
+          "accent": "#1c9b57",
+          "updatedAt": 1795234446853
+        },
+        "website": {
+          "language": "en",
+          "accent": "#1357df",
+          "theme": "light",
+          "textScale": 1.3
+        },
+        "app": null,
+        "url": "/"
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "stale-timestamped-handoff-does-not-override-fresh-choice",
+      "pass": true,
+      "evidence": {
+        "before": {
+          "accent": "#a04ddb",
+          "lang": "en",
+          "theme": "light",
+          "shared": {
+            "version": 1,
+            "accent": "#a04ddb",
+            "updatedAt": 1795234448764
+          },
+          "website": {
+            "language": "en",
+            "accent": "#a04ddb",
+            "contrast": false,
+            "motion": "standard",
+            "reduced": false,
+            "textScale": 1.3,
+            "theme": "light",
+            "notifications": false
+          },
+          "app": null,
+          "url": "/"
+        },
+        "after": {
+          "accent": "#a04ddb",
+          "lang": "en",
+          "theme": "light",
+          "shared": {
+            "version": 1,
+            "accent": "#a04ddb",
+            "updatedAt": 1795234448764
+          },
+          "website": {
+            "language": "en",
+            "accent": "#a04ddb",
+            "contrast": false,
+            "motion": "standard",
+            "reduced": false,
+            "textScale": 1.3,
+            "theme": "light",
+            "notifications": false
+          },
+          "app": null,
+          "url": "/"
+        }
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "handoff-url-data-only-public-color-and-time",
+      "pass": true,
+      "evidence": [
+        "/?appearance=a04ddb&appearance_at=1795234449488",
+        "/?appearance=a04ddb&appearance_at=1795234449488",
+        "/?appearance=a04ddb&appearance_at=1795234449488#television",
+        "/?appearance=a04ddb&appearance_at=1795234449488#subscriptions",
+        "/apps?appearance=a04ddb&appearance_at=1795234449488",
+        "/?appearance=a04ddb&appearance_at=1795234449488#faq",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/apps?appearance=a04ddb&appearance_at=1795234449488",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/apps?appearance=a04ddb&appearance_at=1795234449488#qr",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/?appearance=a04ddb&appearance_at=1795234449488",
+        "/apps?appearance=a04ddb&appearance_at=1795234449488#qr"
+      ],
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "name": "first-visible-primary-button-is-saved-blue-before-modules",
+      "engine": "chromium",
+      "pathname": "/",
+      "pass": true,
+      "suite": "first-paint"
+    },
+    {
+      "name": "first-visible-primary-button-is-saved-blue-before-modules",
+      "engine": "chromium",
+      "pathname": "/apps",
+      "pass": true,
+      "suite": "first-paint"
+    },
+    {
+      "name": "first-visible-primary-button-is-saved-blue-before-modules",
+      "engine": "webkit",
+      "pathname": "/",
+      "pass": true,
+      "suite": "first-paint"
+    },
+    {
+      "name": "first-visible-primary-button-is-saved-blue-before-modules",
+      "engine": "webkit",
+      "pathname": "/apps",
+      "pass": true,
+      "suite": "first-paint"
+    },
+    {
+      "name": "versioned-manifest-root-scope-under-pinned-legacy-worker",
+      "pass": true,
+      "suite": "legacy-worker-manifest"
+    }
+  ],
+  "passed": true,
+  "failed": 0,
+  "pageErrors": 0,
+  "baseline": {
+    "realLegacyWorkerReproduction": true,
+    "redFirstPaintReproduced": true,
+    "legacySource": "b3ddabc",
+    "brokenUpgradeTarget": "452f5f6"
+  },
+  "results": [
+    {
+      "engine": "chromium",
+      "mode": "methods-denied",
+      "path": "/",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 806.8999999985099,
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true",
+        "ready": "true",
+        "siteReady": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "chromium",
+      "mode": "methods-denied",
+      "path": "/app",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 920.8999999985099,
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "false"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "chromium",
+      "mode": "getter-denied",
+      "path": "/app",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 886.1999999955297,
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "false"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "chromium",
+      "mode": "getter-denied",
+      "path": "/",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 737,
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true",
+        "ready": "true",
+        "siteReady": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "webkit",
+      "mode": "getter-denied",
+      "path": "/",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 136,
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true",
+        "ready": "true",
+        "siteReady": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "webkit",
+      "mode": "methods-denied",
+      "path": "/",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 126,
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/",
+        "bootstrapReady": "true",
+        "ready": "true",
+        "siteReady": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "webkit",
+      "mode": "getter-denied",
+      "path": "/app",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 212,
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "false"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "engine": "webkit",
+      "mode": "methods-denied",
+      "path": "/app",
+      "name": "blocked-storage-handoff-survives-bootstrap-to-ESM",
+      "pass": true,
+      "before": {
+        "at": 150,
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "false"
+      },
+      "after": {
+        "accent": "#1357df",
+        "url": "/app",
+        "bootstrapReady": "true",
+        "ready": "true"
+      },
+      "suite": "blocked-storage"
+    },
+    {
+      "name": "fixed-blue-under-still-legacy-worker",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "ready": "true",
+        "controller": "http://127.0.0.1:9024/sw.js",
+        "registrations": [
+          {
+            "scope": "http://127.0.0.1:9024/",
+            "active": "activated",
+            "scriptURL": "http://127.0.0.1:9024/sw.js"
+          }
+        ],
+        "cacheKeys": [
+          "abunasser-apple-web-1-9292e58ab816"
+        ],
+        "preferences": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#ff242d",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795233585918
+        },
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795233586646
+        }
+      },
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "fixed-versioned-preferences-bypasses-legacy-cache",
+      "pass": true,
+      "evidence": [
+        {
+          "url": "/assets/appearance-bootstrap.js?app-build=d0c3b0e3497f8983",
+          "fromSW": false,
+          "status": 200,
+          "hasSharedAccent": false,
+          "hasHandoff": false,
+          "length": 5733
+        },
+        {
+          "url": "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 11906
+        },
+        {
+          "url": "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+          "fromSW": false,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 4756
+        },
+        {
+          "url": "/app/preferences.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        },
+        {
+          "url": "/assets/appearance-bootstrap.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": false,
+          "hasHandoff": false,
+          "length": 5733
+        },
+        {
+          "url": "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 11906
+        },
+        {
+          "url": "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 4756
+        },
+        {
+          "url": "/app/preferences.js?app-build=d0c3b0e3497f8983",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        },
+        {
+          "url": "/app/preferences.js",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 20372
+        }
+      ],
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "fixed-entire-application-module-graph-versioned",
+      "pass": true,
+      "evidence": [
+        "/app/entry.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+        "/app/tv-presentation.js?app-build=d0c3b0e3497f8983",
+        "/app/glitch.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/install-gate.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/shared-accent.js?app-build=d0c3b0e3497f8983",
+        "/app/distribution.js?site=2.0&app-build=d0c3b0e3497f8983",
+        "/app/preferences.js?app-build=d0c3b0e3497f8983",
+        "/app/tv-network.js?app-build=d0c3b0e3497f8983",
+        "/app/accent-colors.js?app-build=d0c3b0e3497f8983",
+        "/app/ui.js?release=1.2.3&app-build=d0c3b0e3497f8983",
+        "/app/desktop-updates.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/updates.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/notifications.js?app-build=d0c3b0e3497f8983",
+        "/app/core.js?release=1.2&app-build=d0c3b0e3497f8983",
+        "/app/icons.js?release=1.1&app-build=d0c3b0e3497f8983",
+        "/app/native.js?app-build=d0c3b0e3497f8983",
+        "/app/player.js?release=1.1&app-build=d0c3b0e3497f8983",
+        "/app/connect.js?app-build=d0c3b0e3497f8983",
+        "/app/distribution.js?site=2.1&app-build=d0c3b0e3497f8983",
+        "/app/storage.js?app-build=d0c3b0e3497f8983"
+      ],
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "new-service-worker-installed-and-color-persists",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "ready": "true",
+        "controller": "http://127.0.0.1:9024/sw.js",
+        "registrations": [
+          {
+            "scope": "http://127.0.0.1:9024/",
+            "active": "activated",
+            "scriptURL": "http://127.0.0.1:9024/sw.js"
+          }
+        ],
+        "cacheKeys": [
+          "abunasser-apple-web-1-d0c3b0e3497f8983"
+        ],
+        "preferences": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#ff242d",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795233585918
+        },
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795233586646
+        }
+      },
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "updated-worker-fetches-current-module-before-stale-cache",
+      "pass": true,
+      "evidence": {
+        "status": 200,
+        "stale": false,
+        "hasSharedAccent": true,
+        "controller": "http://127.0.0.1:9024/sw.js"
+      },
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "name": "app-install-identity-with-root-navigation-scope",
+      "pass": true,
+      "evidence": {
+        "id": "/app",
+        "name": "ابوناصر TV",
+        "short_name": "ابوناصر TV",
+        "lang": "ar",
+        "dir": "rtl",
+        "start_url": "/app?source=installed",
+        "scope": "/",
+        "display": "standalone",
+        "orientation": "any",
+        "background_color": "#0a1116",
+        "theme_color": "#0a1116",
+        "description": "قنواتك وأفلامك ومسلسلاتك من اشتراكك في واجهة واحدة.",
+        "icons": [
+          {
+            "src": "/app-icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any"
+          }
+        ]
+      },
+      "suite": "real-service-worker-upgrade"
+    },
+    {
+      "engine": "chromium",
+      "name": "website-actual-open-app-link-carries-public-color-timestamp",
+      "pass": true,
+      "evidence": "/app?appearance=1357df&appearance_at=1795234436713",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "isolated-installed-app-adopts-website-color",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "lang": "ar",
+        "theme": "dark",
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795234436713
+        },
+        "website": null,
+        "app": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#1357df",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795234440080
+        },
+        "url": "/app"
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "installed-app-cleans-handoff-query-before-display",
+      "pass": true,
+      "evidence": "/app",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "installed-app-actual-home-link-carries-new-color",
+      "pass": true,
+      "evidence": "/?appearance=1c9b57&appearance_at=1795234440520",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "isolated-safari-home-adopts-app-color-and-keeps-own-settings",
+      "pass": true,
+      "evidence": {
+        "accent": "#1c9b57",
+        "lang": "en",
+        "theme": "light",
+        "shared": {
+          "version": 1,
+          "accent": "#1c9b57",
+          "updatedAt": 1795234440520
+        },
+        "website": {
+          "language": "en",
+          "accent": "#1357df",
+          "theme": "light",
+          "textScale": 1.3
+        },
+        "app": null,
+        "url": "/"
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "stale-timestamped-handoff-does-not-override-fresh-choice",
+      "pass": true,
+      "evidence": {
+        "before": {
+          "accent": "#a04ddb",
+          "lang": "en",
+          "theme": "light",
+          "shared": {
+            "version": 1,
+            "accent": "#a04ddb",
+            "updatedAt": 1795234441049
+          },
+          "website": {
+            "language": "en",
+            "accent": "#a04ddb",
+            "contrast": false,
+            "motion": "standard",
+            "reduced": false,
+            "textScale": 1.3,
+            "theme": "light",
+            "notifications": false
+          },
+          "app": null,
+          "url": "/"
+        },
+        "after": {
+          "accent": "#a04ddb",
+          "lang": "en",
+          "theme": "light",
+          "shared": {
+            "version": 1,
+            "accent": "#a04ddb",
+            "updatedAt": 1795234441049
+          },
+          "website": {
+            "language": "en",
+            "accent": "#a04ddb",
+            "contrast": false,
+            "motion": "standard",
+            "reduced": false,
+            "textScale": 1.3,
+            "theme": "light",
+            "notifications": false
+          },
+          "app": null,
+          "url": "/"
+        }
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "handoff-url-data-only-public-color-and-time",
+      "pass": true,
+      "evidence": [
+        "/?appearance=a04ddb&appearance_at=1795234441252",
+        "/?appearance=a04ddb&appearance_at=1795234441252",
+        "/?appearance=a04ddb&appearance_at=1795234441252#television",
+        "/?appearance=a04ddb&appearance_at=1795234441252#subscriptions",
+        "/apps?appearance=a04ddb&appearance_at=1795234441252",
+        "/?appearance=a04ddb&appearance_at=1795234441252#faq",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/apps?appearance=a04ddb&appearance_at=1795234441252",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/apps?appearance=a04ddb&appearance_at=1795234441252#qr",
+        "/app?appearance=a04ddb&appearance_at=1795234441252",
+        "/?appearance=a04ddb&appearance_at=1795234441252",
+        "/apps?appearance=a04ddb&appearance_at=1795234441252#qr"
+      ],
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "website-actual-open-app-link-carries-public-color-timestamp",
+      "pass": true,
+      "evidence": "/app?appearance=1357df&appearance_at=1795234443778",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "isolated-installed-app-adopts-website-color",
+      "pass": true,
+      "evidence": {
+        "accent": "#1357df",
+        "lang": "ar",
+        "theme": "dark",
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795234443778
+        },
+        "website": null,
+        "app": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#1357df",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795234446262
+        },
+        "url": "/app"
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "installed-app-cleans-handoff-query-before-display",
+      "pass": true,
+      "evidence": "/app",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "installed-app-actual-home-link-carries-new-color",
+      "pass": true,
+      "evidence": "/?appearance=1c9b57&appearance_at=1795234446853",
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "isolated-safari-home-adopts-app-color-and-keeps-own-settings",
+      "pass": true,
+      "evidence": {
+        "accent": "#1c9b57",
+        "lang": "en",
+        "theme": "light",
+        "shared": {
+          "version": 1,
+          "accent": "#1c9b57",
+          "updatedAt": 1795234446853
+        },
+        "website": {
+          "language": "en",
+          "accent": "#1357df",
+          "theme": "light",
+          "textScale": 1.3
+        },
+        "app": null,
+        "url": "/"
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "stale-timestamped-handoff-does-not-override-fresh-choice",
+      "pass": true,
+      "evidence": {
+        "before": {
+          "accent": "#a04ddb",
+          "lang": "en",
+          "theme": "light",
+          "shared": {
+            "version": 1,
+            "accent": "#a04ddb",
+            "updatedAt": 1795234448764
+          },
+          "website": {
+            "language": "en",
+            "accent": "#a04ddb",
+            "contrast": false,
+            "motion": "standard",
+            "reduced": false,
+            "textScale": 1.3,
+            "theme": "light",
+            "notifications": false
+          },
+          "app": null,
+          "url": "/"
+        },
+        "after": {
+          "accent": "#a04ddb",
+          "lang": "en",
+          "theme": "light",
+          "shared": {
+            "version": 1,
+            "accent": "#a04ddb",
+            "updatedAt": 1795234448764
+          },
+          "website": {
+            "language": "en",
+            "accent": "#a04ddb",
+            "contrast": false,
+            "motion": "standard",
+            "reduced": false,
+            "textScale": 1.3,
+            "theme": "light",
+            "notifications": false
+          },
+          "app": null,
+          "url": "/"
+        }
+      },
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "handoff-url-data-only-public-color-and-time",
+      "pass": true,
+      "evidence": [
+        "/?appearance=a04ddb&appearance_at=1795234449488",
+        "/?appearance=a04ddb&appearance_at=1795234449488",
+        "/?appearance=a04ddb&appearance_at=1795234449488#television",
+        "/?appearance=a04ddb&appearance_at=1795234449488#subscriptions",
+        "/apps?appearance=a04ddb&appearance_at=1795234449488",
+        "/?appearance=a04ddb&appearance_at=1795234449488#faq",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/apps?appearance=a04ddb&appearance_at=1795234449488",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/apps?appearance=a04ddb&appearance_at=1795234449488#qr",
+        "/app?appearance=a04ddb&appearance_at=1795234449488",
+        "/?appearance=a04ddb&appearance_at=1795234449488",
+        "/apps?appearance=a04ddb&appearance_at=1795234449488#qr"
+      ],
+      "suite": "isolated-storage-navigation"
+    },
+    {
+      "name": "first-visible-primary-button-is-saved-blue-before-modules",
+      "engine": "chromium",
+      "pathname": "/",
+      "pass": true,
+      "suite": "first-paint"
+    },
+    {
+      "name": "first-visible-primary-button-is-saved-blue-before-modules",
+      "engine": "chromium",
+      "pathname": "/apps",
+      "pass": true,
+      "suite": "first-paint"
+    },
+    {
+      "name": "first-visible-primary-button-is-saved-blue-before-modules",
+      "engine": "webkit",
+      "pathname": "/",
+      "pass": true,
+      "suite": "first-paint"
+    },
+    {
+      "name": "first-visible-primary-button-is-saved-blue-before-modules",
+      "engine": "webkit",
+      "pathname": "/apps",
+      "pass": true,
+      "suite": "first-paint"
+    },
+    {
+      "name": "versioned-manifest-root-scope-under-pinned-legacy-worker",
+      "pass": true,
+      "suite": "legacy-worker-manifest"
+    }
+  ],
+  "reports": [
+    "baseline-upgrade-report.json",
+    "fixed-upgrade-report.json",
+    "isolated-report.json",
+    "firstpaint-current-report.json",
+    "firstpaint-fixed-report.json",
+    "old-worker-manifest-report.json",
+    "blocked-storage-report.json"
+  ],
+  "limitations": [
+    "Chromium service-worker upgrade uses a real activated worker, actual Cache Storage, and the same preserved browser profile across legacy/current/fixed builds.",
+    "Chromium and WebKit use iPhone viewport/touch emulation; no physical iPhone or native installation claim.",
+    "Separate browser contexts simulate Safari/PWA storage isolation; no customer/provider account or private subscription values used.",
+    "No deployment was performed by this QA agent."
+  ],
+  "check_count": 33,
+  "sourceScreenshots": [
+    "validation/hotfix-2.1.3/firstpaint-fixed-webkit-home.png",
+    "validation/hotfix-2.1.3/firstpaint-fixed-webkit-apps.png"
+  ]
+}

@@ -1,29 +1,83 @@
 {
-  "checkedAt": "2026-11-20T23:22:35.087Z",
-  "version": "1.2.2",
+  "checkedAt": "2026-11-21T04:16:16.647Z",
+  "version": "1.2.3",
+  "buildCommand": "WEBOS_CLI=/workspace/tv-tools/node_modules/.bin/ares-package node scripts/build-tv.mjs",
+  "lgPackager": "@webos-tools/cli@3.2.6",
   "packageTests": {
     "command": "node --test tests/tv-package.test.mjs",
     "passed": 8,
     "failed": 0
   },
+  "artifacts": [
+    {
+      "platform": "LG webOS",
+      "file": "tv/dist/com.abbeedo.tv.app_1.2.3_all.ipk",
+      "bytes": 18774,
+      "sha256": "1913d5dfaf98d8b69439980bbdc7d043f9be7dd7c9da2be01f829755c705623b"
+    },
+    {
+      "platform": "Samsung Tizen",
+      "file": "tv/dist/abbeedo-TV-Samsung-UNSIGNED-1.2.3.wgt",
+      "bytes": 2784165,
+      "sha256": "2dc17c73b67afef6ec55454bc24201525fae1907fee7f71789a3b296503c9aef"
+    }
+  ],
   "packagedSourceChecks": {
-    "version": "1.2.2",
-    "wgtEntries": 46,
+    "version": "1.2.3",
+    "wgtEntries": 48,
+    "firstBodyScript": "./assets/appearance-bootstrap.js",
+    "bootstrapClassicScriptParses": true,
+    "bootstrapPresent": true,
+    "bootstrapBytes": 5733,
+    "bootstrapSha256": "afb75692327b85d0ae9b6edf08c1d3f893cab1e72c26533f517c524f4b41415b",
     "sharedAccentSourceMatches": true,
     "sharedAccentBundled": true,
-    "sharedAccentSha256": "528b5625191ce84f02a374a7d48e29000ab22f94b15b7d9483fdd90685c6d2dd",
+    "sharedAccentSha256": "d60470a0290a2f68cda19140416e7bb2905040e01574c7ef8a62b8c298501e96",
     "accentHelperSourceMatches": true,
     "accentHelperBundled": true,
     "accentHelperSha256": "680e69c2f9c73d4725b09cdf6e317f14b85143b8eb373e0dc6837b8ff1d0b362",
+    "sharedGlobalAppearanceMemory": true,
+    "urlHandoffAppliedBeforeUI": true,
+    "handoffSurvivesDeniedStorageAndURLCleanup": true,
+    "laterModuleRetainsBootstrapColor": true,
+    "laterModuleCanUpdateAndHandoffColor": true,
+    "mainBundleSharedModules": 19,
+    "combinedRuntimeSharedModules": 20,
+    "combinedRuntimeModules": [
+      "accent-colors.js",
+      "appearance-bootstrap.js",
+      "connect.js",
+      "core.js",
+      "desktop-updates.js",
+      "distribution.js",
+      "entry.js",
+      "glitch.js",
+      "icons.js",
+      "install-gate.js",
+      "native.js",
+      "notifications.js",
+      "player.js",
+      "preferences.js",
+      "shared-accent.js",
+      "storage.js",
+      "tv-network.js",
+      "tv-presentation.js",
+      "ui.js",
+      "updates.js"
+    ],
+    "preferencesSourceMatchesWithTVLocalURLRewrite": true,
+    "importMetaAbsentFromTVBundle": true,
     "closedLanguageDisclosureIncluded": true,
     "summaryTVFocusTargetIncluded": true,
     "readableTVFocus": true,
-    "packagedAppVersion": "1.2.2",
+    "packagedAppVersion": "1.2.3",
     "samsungSigned": false
   },
+  "sourceCheckMethod": "Local WGT archive inspection, classic-script parsing and VM assertions for bootstrap and later shared-accent module; browser and native APIs were not exercised.",
   "browserSmokePerformedForThisVersion": false,
   "historicalPackageReports": [
-    "tv/dist/validation-report-1.2.1.json"
+    "tv/dist/validation-report-1.2.1.json",
+    "tv/dist/validation-report-1.2.2.json"
   ],
   "historicalBrowserSmoke": {
     "version": "1.2.0",

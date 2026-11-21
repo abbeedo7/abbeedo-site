@@ -93,14 +93,14 @@
   // tv/samsung/app/glitch.js?site=2.1
   function visualPolicy({ background = "standard", reducedMotion = false, systemReducedMotion = false, hidden = false, playback = false } = {}) {
     const speed = background === "fast" ? "fast" : "standard";
-    const state2 = hidden ? "hidden" : playback ? "playback" : reducedMotion || systemReducedMotion ? "reduced" : background === "off" ? "off" : "running";
+    const state3 = hidden ? "hidden" : playback ? "playback" : reducedMotion || systemReducedMotion ? "reduced" : background === "off" ? "off" : "running";
     return {
-      state: state2,
+      state: state3,
       speed,
       gridPeriod: speed === "fast" ? 1900 : 3200,
-      backgroundRunning: state2 === "running",
-      automaticGlitchEnabled: state2 === "running",
-      glitchEnabled: !["hidden", "playback", "reduced"].includes(state2)
+      backgroundRunning: state3 === "running",
+      automaticGlitchEnabled: state3 === "running",
+      glitchEnabled: !["hidden", "playback", "reduced"].includes(state3)
     };
   }
   function startVisualEffects(scope2 = globalThis) {
@@ -446,20 +446,21 @@
     return record2?.version === 1 && color(record2.accent) ? { version: 1, accent: color(record2.accent), updatedAt: Number(record2.updatedAt) || 0 } : null;
   }
   function current(storage) {
-    const persisted = valid(stored(storage, SHARED_ACCENT_KEY)), pending2 = storage ? fallbacks.get(storage) : memory;
+    const persisted = valid(stored(storage, SHARED_ACCENT_KEY)), pending2 = storage ? fallbacks.get(storage) : state.memory;
     if (persisted && (!pending2 || persisted.updatedAt >= pending2.updatedAt)) {
       if (storage) fallbacks.delete(storage);
       return persisted;
     }
     return pending2 || persisted;
   }
-  function setSharedAccent(value, storage = appearanceStorage()) {
+  function setSharedAccent(value, storage = appearanceStorage(), { updatedAt } = {}) {
     const accent = color(value);
     if (!accent) return null;
-    const old = current(storage);
-    if (old?.accent === accent) return old;
-    const record2 = { version: 1, accent, updatedAt: Math.max(Date.now(), (old?.updatedAt || 0) + 1) };
-    if (!storage) memory = record2;
+    const old = current(storage), incoming = Number.isSafeInteger(updatedAt) && updatedAt > 0 ? updatedAt : null;
+    if (incoming && old && old.updatedAt >= incoming) return old;
+    if (old?.accent === accent && !incoming) return old;
+    const record2 = { version: 1, accent, updatedAt: incoming || Math.max(Date.now(), (old?.updatedAt || 0) + 1) };
+    if (!storage) state.memory = record2;
     else try {
       storage.setItem(SHARED_ACCENT_KEY, JSON.stringify(record2));
       fallbacks.delete(storage);
@@ -476,15 +477,44 @@
     if (migrated) return setSharedAccent(migrated, storage).accent;
     return color(fallback);
   }
-  var SHARED_ACCENT_KEY, WEBSITE_KEY, APP_KEY, DEFAULT_ACCENT, fallbacks, memory, appearanceStorage, color;
+  function getSharedAppearance(storage = appearanceStorage()) {
+    getSharedAccent(null, storage);
+    return current(storage);
+  }
+  function appearanceHandoffURL(value, { base = globalThis.location?.href, storage = appearanceStorage() } = {}) {
+    if (typeof value !== "string" || value.startsWith("#")) return value;
+    let url, origin;
+    try {
+      origin = new URL(base);
+      url = new URL(value, origin);
+    } catch {
+      return value;
+    }
+    if (!["http:", "https:"].includes(url.protocol) || !(url.origin === origin.origin || ["abbeedo.com", "www.abbeedo.com"].includes(url.hostname))) return value;
+    if (!["/", "/app", "/app/", "/app.html", "/open", "/apps", "/apps/"].includes(url.pathname)) return value;
+    const record2 = getSharedAppearance(storage);
+    if (!record2) return value;
+    url.searchParams.set(HANDOFF, record2.accent.slice(1));
+    url.searchParams.set(STAMP, String(Math.max(Date.now(), record2.updatedAt)));
+    return url.origin === origin.origin ? url.pathname + url.search + url.hash : url.href;
+  }
+  function decorateAppearanceLinks(doc = globalThis.document) {
+    if (!doc) return;
+    for (const anchor of doc.querySelectorAll("a[href]")) {
+      const original = anchor.getAttribute("href"), next = appearanceHandoffURL(original, { base: doc.location?.href });
+      if (next !== original) anchor.setAttribute("href", next);
+    }
+  }
+  var SHARED_ACCENT_KEY, WEBSITE_KEY, APP_KEY, DEFAULT_ACCENT, stateKey, state, fallbacks, appearanceStorage, color, HANDOFF, STAMP;
   var init_shared_accent = __esm({
     "tv/samsung/app/shared-accent.js"() {
       SHARED_ACCENT_KEY = "abbeedo:appearance:v1";
       WEBSITE_KEY = "abbeedo:website:preferences:v2";
       APP_KEY = "abbeedo:preferences:v1";
       DEFAULT_ACCENT = "#ff242d";
-      fallbacks = /* @__PURE__ */ new WeakMap();
-      memory = null;
+      stateKey = Symbol.for("abbeedo.public-appearance.v1");
+      state = globalThis[stateKey] || (globalThis[stateKey] = { fallbacks: /* @__PURE__ */ new WeakMap(), memory: null });
+      fallbacks = state.fallbacks;
       appearanceStorage = () => {
         try {
           return globalThis.localStorage || null;
@@ -493,6 +523,8 @@
         }
       };
       color = (value) => typeof value === "string" && /^#[a-f\d]{6}$/i.test(value) ? value.toLowerCase() : null;
+      HANDOFF = "appearance";
+      STAMP = "appearance_at";
     }
   });
 
@@ -663,7 +695,7 @@
     }
     applyAccentColors(doc, p.accent, { theme: p.theme, application: true, highContrast: p.high_contrast });
     doc.title = brandName(p.language);
-    doc.querySelector('link[rel="manifest"]')?.setAttribute("href", p.language === "en" ? "/manifest.en.webmanifest" : "/manifest.webmanifest");
+    doc.querySelector('link[rel="manifest"]')?.setAttribute("href", (p.language === "en" ? "/manifest.en.webmanifest" : "/manifest.webmanifest") + (new URL(document.baseURI).searchParams.get("app-build") ? "?app-build=" + encodeURIComponent(new URL(document.baseURI).searchParams.get("app-build")) : ""));
     doc.querySelector('meta[name="apple-mobile-web-app-title"]')?.setAttribute("content", brandName(p.language));
     doc.querySelector('meta[name="description"]')?.setAttribute("content", text("\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV: \u0642\u0646\u0648\u0627\u062A\u0643 \u0648\u0623\u0641\u0644\u0627\u0645\u0643 \u0648\u0645\u0633\u0644\u0633\u0644\u0627\u062A\u0643 \u0645\u0646 \u0627\u0634\u062A\u0631\u0627\u0643\u0643.", "abbeedo TV: your subscription channels, movies and series.", p.language));
     localizeDocument(doc, p.language);
@@ -677,6 +709,7 @@
       } catch {
       }
     }
+    decorateAppearanceLinks(doc);
     doc.documentElement.dataset.preferencesReady = "true";
     return p;
   }
@@ -1306,29 +1339,29 @@
         }
       };
       Vault = class _Vault {
-        constructor({ name = "abunasser-apple-web", namespace = "default", memory: memory2 = false, driver = null } = {}) {
+        constructor({ name = "abunasser-apple-web", namespace = "default", memory = false, driver = null } = {}) {
           if (typeof namespace !== "string" || !namespace || namespace.length > 256) throw new VaultError("Invalid namespace", "INVALID_KEY");
           this.name = name;
           this.namespace = namespace;
           this.durable = false;
           this.fallbackReason = null;
-          this.ready = driver ? Promise.resolve(driver) : this._open(memory2);
+          this.ready = driver ? Promise.resolve(driver) : this._open(memory);
           this.ready.then((value) => {
             this.durable = value.durable;
           }, () => {
           });
         }
-        async _open(memory2) {
-          if (!memory2 && isNative()) return new NativeDriver(this.name);
+        async _open(memory) {
+          if (!memory && isNative()) return new NativeDriver(this.name);
           cryptoAPI();
-          if (!memory2 && typeof indexedDB !== "undefined") {
+          if (!memory && typeof indexedDB !== "undefined") {
             try {
               return new IDBDriver(await openDatabase(this.name));
             } catch (error) {
               if (error?.code === "STORAGE_BLOCKED") throw error;
               this.fallbackReason = "STORAGE_UNAVAILABLE";
             }
-          } else this.fallbackReason = memory2 ? "MEMORY_REQUESTED" : "STORAGE_UNAVAILABLE";
+          } else this.fallbackReason = memory ? "MEMORY_REQUESTED" : "STORAGE_UNAVAILABLE";
           return new MemoryDriver(this.name);
         }
         _id(key2) {
@@ -1473,7 +1506,7 @@
     }
   });
 
-  // tv/samsung/app/core.js?release=1.2.2
+  // tv/samsung/app/core.js?release=1.2.3
   var core_exports = {};
   __export(core_exports, {
     ACCOUNT_MODES: () => ACCOUNT_MODES,
@@ -1818,10 +1851,10 @@
   }
   var BRAND, PROVIDER, ACCOUNT_MODES, DEFAULT_SETTINGS, LIVE_FAMILIES, ADULT, textCache, clamp, ApiError, nativeAPIFetch, providerRequestSerial, ApiClient, UserLibrary;
   var init_core = __esm({
-    "tv/samsung/app/core.js?release=1.2.2"() {
+    "tv/samsung/app/core.js?release=1.2.3"() {
       init_storage();
       init_native();
-      BRAND = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.2", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
+      BRAND = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.3", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
       PROVIDER = "http://maglobalxx.xyz:2052";
       ACCOUNT_MODES = Object.freeze(["provider", "xtream", "m3u", "m3u-file", "auto", "direct", "stalker"]);
       DEFAULT_SETTINGS = Object.freeze({
@@ -2099,12 +2132,12 @@
             onBatch(rows, { kind, cached: true, partial: false });
             return rows;
           }
-          const began = performance.now(), scope2 = accountScope(account), key2 = `${scope2}:${kind}`, memory2 = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
+          const began = performance.now(), scope2 = accountScope(account), key2 = `${scope2}:${kind}`, memory = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
           this._status(kind, { loading: true, partial: false, error: null });
-          if (!force && memory2 && Date.now() - memory2.savedAt < maxAge) {
-            onBatch(memory2.items, { kind, cached: true, partial: false });
-            this._status(kind, { loading: false, cached: true, count: memory2.items.length });
-            return memory2.items;
+          if (!force && memory && Date.now() - memory.savedAt < maxAge) {
+            onBatch(memory.items, { kind, cached: true, partial: false });
+            this._status(kind, { loading: false, cached: true, count: memory.items.length });
+            return memory.items;
           }
           let preview, cached;
           try {
@@ -2208,7 +2241,7 @@
             this.timings[kind] = { ...this.timings[kind], totalMs: Math.round(performance.now() - began), state: failure.code };
             this._status(kind, { loading: false, partial: true, error: failure.message, code: failure.code });
             if (failure.code === "ABORTED" || signal?.aborted) throw abortError();
-            const available = collected.length ? collected : cached?.items || preview?.items || memory2?.items;
+            const available = collected.length ? collected : cached?.items || preview?.items || memory?.items;
             if (available?.length) {
               onBatch(available, { kind, cached: !collected.length, partial: true, error: failure.message });
               return available;
@@ -2309,10 +2342,10 @@
     const bridge = globalThis.abunasserDesktop;
     if (connected || !bridge?.nativeUpdater || typeof bridge.onUpdateStatus !== "function") return;
     connected = true;
-    bridge.onUpdateStatus((state2) => {
-      if (!state2 || typeof state2.status !== "string") return;
-      globalThis.dispatchEvent(new CustomEvent(EVENT, { detail: state2 }));
-      if (state2.open === true) Promise.resolve(open()).catch(() => {
+    bridge.onUpdateStatus((state3) => {
+      if (!state3 || typeof state3.status !== "string") return;
+      globalThis.dispatchEvent(new CustomEvent(EVENT, { detail: state3 }));
+      if (state3.open === true) Promise.resolve(open()).catch(() => {
       });
     });
   }
@@ -2338,12 +2371,12 @@
         busy = false;
       }
     };
-    function draw(state2) {
-      if (!state2 || !box2.isConnected) return;
-      latest = state2;
+    function draw(state3) {
+      if (!state3 || !box2.isConnected) return;
+      latest = state3;
       box2.replaceChildren();
-      box2.append(node2("p", "", x2("\u0627\u0644\u0625\u0635\u062F\u0627\u0631 \u0627\u0644\u0645\u062B\u0628\u062A: ", "Installed version: ") + (state2.installedVersion || bridge.version)));
-      if (state2.version) box2.append(node2("p", "", x2("\u0627\u0644\u0625\u0635\u062F\u0627\u0631 \u0627\u0644\u0645\u062A\u0627\u062D: ", "Available version: ") + state2.version));
+      box2.append(node2("p", "", x2("\u0627\u0644\u0625\u0635\u062F\u0627\u0631 \u0627\u0644\u0645\u062B\u0628\u062A: ", "Installed version: ") + (state3.installedVersion || bridge.version)));
+      if (state3.version) box2.append(node2("p", "", x2("\u0627\u0644\u0625\u0635\u062F\u0627\u0631 \u0627\u0644\u0645\u062A\u0627\u062D: ", "Available version: ") + state3.version));
       const messages2 = {
         idle: x2("\u064A\u0645\u0643\u0646\u0643 \u0641\u062D\u0635 \u0627\u0644\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0622\u0646.", "You can check for updates now."),
         checking: x2("\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u062A\u062D\u062F\u064A\u062B\u2026", "Checking for updates\u2026"),
@@ -2356,18 +2389,18 @@
         installing: x2("\u062C\u0627\u0631\u064D \u062A\u0634\u063A\u064A\u0644 \u0627\u0644\u0645\u062B\u0628\u062A. \u0623\u0643\u0645\u0644 \u0627\u0644\u062E\u0637\u0648\u0627\u062A \u0644\u0625\u0639\u0627\u062F\u0629 \u0641\u062A\u062D \u0627\u0644\u062A\u0637\u0628\u064A\u0642.", "Opening setup. Complete it to reopen the app."),
         error: x2("\u062A\u0639\u0630\u0631 \u0625\u0643\u0645\u0627\u0644 \u0627\u0644\u062A\u062D\u062F\u064A\u062B \u0628\u0623\u0645\u0627\u0646. \u0623\u0639\u062F \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629.", "The update could not be completed safely. Try again.")
       };
-      box2.append(node2("p", state2.status === "error" ? "inline-error" : "", messages2[state2.status] || messages2.idle));
-      if (state2.status === "downloading") {
+      box2.append(node2("p", state3.status === "error" ? "inline-error" : "", messages2[state3.status] || messages2.idle));
+      if (state3.status === "downloading") {
         const progress = node2("progress");
         progress.max = 1;
-        progress.value = Math.min(1, Math.max(0, Number(state2.progress) || 0));
+        progress.value = Math.min(1, Math.max(0, Number(state3.progress) || 0));
         progress.setAttribute("aria-label", x2("\u062A\u0642\u062F\u0645 \u062A\u0646\u0632\u064A\u0644 \u0627\u0644\u062A\u062D\u062F\u064A\u062B", "Update download progress"));
-        box2.append(progress, node2("p", "muted", bytes(state2.received) + " / " + bytes(state2.total)), btn2(x2("\u0625\u0644\u063A\u0627\u0621 \u0627\u0644\u062A\u0646\u0632\u064A\u0644", "Cancel download"), () => invoke("cancelUpdate"), "close"));
-      } else if (state2.status === "ready") {
+        box2.append(progress, node2("p", "muted", bytes(state3.received) + " / " + bytes(state3.total)), btn2(x2("\u0625\u0644\u063A\u0627\u0621 \u0627\u0644\u062A\u0646\u0632\u064A\u0644", "Cancel download"), () => invoke("cancelUpdate"), "close"));
+      } else if (state3.status === "ready") {
         box2.append(btn2(x2("\u062A\u062B\u0628\u064A\u062A \u0627\u0644\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0622\u0646", "Install update now"), () => invoke("installUpdate"), "update", "primary"));
-      } else if (["available", "cancelled"].includes(state2.status)) {
+      } else if (["available", "cancelled"].includes(state3.status)) {
         box2.append(btn2(x2("\u062A\u0646\u0632\u064A\u0644 \u0627\u0644\u062A\u062D\u062F\u064A\u062B", "Download update"), () => invoke("downloadUpdate"), "download", "primary"));
-      } else if (!["checking", "installing"].includes(state2.status)) {
+      } else if (!["checking", "installing"].includes(state3.status)) {
         box2.append(btn2(x2("\u0641\u062D\u0635 \u0627\u0644\u062A\u062D\u062F\u064A\u062B", "Check for update"), () => invoke("checkForUpdates"), "refresh"));
       }
     }
@@ -2375,9 +2408,9 @@
     globalThis.addEventListener(EVENT, update);
     disposePanel = () => globalThis.removeEventListener(EVENT, update);
     sheet2(x2("\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u062A\u0637\u0628\u064A\u0642", "App update"), box2);
-    void bridge.getUpdateStatus().then((state2) => {
-      draw(state2);
-      if (!["downloading", "ready", "installing", "checking"].includes(state2?.status)) void invoke("checkForUpdates");
+    void bridge.getUpdateStatus().then((state3) => {
+      draw(state3);
+      if (!["downloading", "ready", "installing", "checking"].includes(state3?.status)) void invoke("checkForUpdates");
     }).catch(() => void invoke("checkForUpdates"));
     return true;
   }
@@ -2689,7 +2722,7 @@
     "tv/samsung/app/core.js?release=1.2"() {
       init_storage();
       init_native();
-      BRAND2 = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.2", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
+      BRAND2 = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.3", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
       PROVIDER2 = "http://maglobalxx.xyz:2052";
       ACCOUNT_MODES2 = Object.freeze(["provider", "xtream", "m3u", "m3u-file", "auto", "direct", "stalker"]);
       DEFAULT_SETTINGS2 = Object.freeze({
@@ -2967,12 +3000,12 @@
             onBatch(rows, { kind, cached: true, partial: false });
             return rows;
           }
-          const began = performance.now(), scope2 = accountScope2(account), key2 = `${scope2}:${kind}`, memory2 = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
+          const began = performance.now(), scope2 = accountScope2(account), key2 = `${scope2}:${kind}`, memory = this.memory.get(key2), first = (rows) => onBatch(rows.slice(0, 128), { kind, cached: true, partial: true });
           this._status(kind, { loading: true, partial: false, error: null });
-          if (!force && memory2 && Date.now() - memory2.savedAt < maxAge) {
-            onBatch(memory2.items, { kind, cached: true, partial: false });
-            this._status(kind, { loading: false, cached: true, count: memory2.items.length });
-            return memory2.items;
+          if (!force && memory && Date.now() - memory.savedAt < maxAge) {
+            onBatch(memory.items, { kind, cached: true, partial: false });
+            this._status(kind, { loading: false, cached: true, count: memory.items.length });
+            return memory.items;
           }
           let preview, cached;
           try {
@@ -3076,7 +3109,7 @@
             this.timings[kind] = { ...this.timings[kind], totalMs: Math.round(performance.now() - began), state: failure.code };
             this._status(kind, { loading: false, partial: true, error: failure.message, code: failure.code });
             if (failure.code === "ABORTED" || signal?.aborted) throw abortError2();
-            const available = collected.length ? collected : cached?.items || preview?.items || memory2?.items;
+            const available = collected.length ? collected : cached?.items || preview?.items || memory?.items;
             if (available?.length) {
               onBatch(available, { kind, cached: !collected.length, partial: true, error: failure.message });
               return available;
@@ -3857,10 +3890,10 @@
     let rate = 1, position = 0, playing = false, nativeMode = false, nativeAttempted = false, progressTimer = null, sleepTimer2 = null, startTimer = null, objectURL = null;
     let recorder = null, recordingPromise = null, recordingTimer = null;
     let configuration = { aspect: "fit", buffer: "balanced", dataSaver: false, language: "ar", nativeFallback: true };
-    const state2 = () => ({ item, position: nativeMode ? position : Number(video.currentTime) || 0, duration: nativeMode ? Number(context.nativeDuration) || 0 : Number.isFinite(video.duration) ? video.duration : 0, rate, playing, native: nativeMode, live: item?.kind === "live", engine: engineKind });
+    const state3 = () => ({ item, position: nativeMode ? position : Number(video.currentTime) || 0, duration: nativeMode ? Number(context.nativeDuration) || 0 : Number.isFinite(video.duration) ? video.duration : 0, rate, playing, native: nativeMode, live: item?.kind === "live", engine: engineKind });
     const status = (text2) => safeInvoke(onStatus, text2);
     const progress = () => {
-      if (item) safeInvoke(onProgress, state2());
+      if (item) safeInvoke(onProgress, state3());
     };
     function listen(name, fn) {
       video.addEventListener(name, fn);
@@ -4176,7 +4209,7 @@
       },
       seek(seconds) {
         if (!item || item.kind === "live") return false;
-        const value = Math.max(0, Number(seconds) || 0), duration = state2().duration;
+        const value = Math.max(0, Number(seconds) || 0), duration = state3().duration;
         const target = duration ? Math.min(value, Math.max(0, duration - 0.1)) : value;
         if (nativeMode) return native("seek", { position: target });
         video.currentTime = target;
@@ -4195,7 +4228,7 @@
         configuration = { ...configuration, ...settings };
         applySettings();
       },
-      getState: state2,
+      getState: state3,
       getTracks() {
         if (nativeMode) return { audio: [], subtitles: [], quality: [], systemManaged: true };
         if (engineKind === "hls" && engine) return { audio: (engine.audioTracks || []).map((t, n2) => ({ id: n2, label: t.name || t.lang || `Audio ${n2 + 1}`, language: t.lang || "", selected: engine.audioTrack === n2 })), subtitles: [{ id: -1, label: configuration.language === "en" ? "Off" : "\u0625\u064A\u0642\u0627\u0641", selected: engine.subtitleTrack < 0 }, ...(engine.subtitleTracks || []).map((t, n2) => ({ id: n2, label: t.name || t.lang || `Subtitle ${n2 + 1}`, language: t.lang || "", selected: engine.subtitleTrack === n2 }))], quality: [{ id: -1, label: configuration.language === "en" ? "Automatic" : "\u062A\u0644\u0642\u0627\u0626\u064A", selected: engine.currentLevel < 0 }, ...(engine.levels || []).map((t, n2) => ({ id: n2, label: t.height ? `${t.height}p` : `${Math.round((t.bitrate || 0) / 1e3)} kbps`, selected: engine.currentLevel === n2 }))] };
@@ -4963,9 +4996,9 @@
               }
             }
             if (this.#receive?.getState) {
-              const state2 = await this.#receive.getState();
+              const state3 = await this.#receive.getState();
               if (epoch !== this.epoch) throw new ConnectError("CLOSED");
-              if (state2 && typeof state2 === "object") await this.request(PAIR_ROOT + "/" + session.id + "/state", "POST", session.token, await this.#encrypt(state2));
+              if (state3 && typeof state3 === "object") await this.request(PAIR_ROOT + "/" + session.id + "/state", "POST", session.token, await this.#encrypt(state3));
             }
           }
           return { status: info.status, expiresAt: session.expiresAt, ...receivedAccount ? { account: receivedAccount } : {} };
@@ -5136,7 +5169,7 @@
     }
   });
 
-  // tv/samsung/app/ui.js?release=1.2.2
+  // tv/samsung/app/ui.js?release=1.2.3
   var ui_exports = {};
   __export(ui_exports, {
     appReady: () => appReady
@@ -5167,9 +5200,9 @@
     try {
       const native2 = await bridge.getNotificationsEnabled();
       if (native2?.ok) {
-        const wanted = state.settings.notifications === true || native2.enabled === true;
+        const wanted = state2.settings.notifications === true || native2.enabled === true;
         const result = wanted && !native2.enabled ? await bridge.setNotificationsEnabled(true) : native2;
-        state.settings.notifications = result?.enabled === true;
+        state2.settings.notifications = result?.enabled === true;
       }
     } catch {
     }
@@ -5184,9 +5217,9 @@
     toastTick = setTimeout(() => $("toast").hidden = true, 4400);
   }
   function report(error) {
-    const message = errorText(error, state.settings.language);
-    state.errorLog.unshift({ at: Date.now(), code: String(error?.code || "CLIENT"), http: Number(error?.httpStatus) || 0 });
-    state.errorLog = state.errorLog.slice(0, 30);
+    const message = errorText(error, state2.settings.language);
+    state2.errorLog.unshift({ at: Date.now(), code: String(error?.code || "CLIENT"), http: Number(error?.httpStatus) || 0 });
+    state2.errorLog = state2.errorLog.slice(0, 30);
     toast(message);
     return message;
   }
@@ -5202,7 +5235,7 @@
   }
   function closeSheet() {
     $("sheet").close();
-    triggerGlitch($(state.page + "-page"));
+    triggerGlitch($(state2.page + "-page"));
   }
   function actions(...buttons) {
     const row = node("div", "sheet-actions");
@@ -5279,11 +5312,11 @@
     sheet(title, box2);
   }
   function scope() {
-    return accountScope2?.(state.account) || `${state.account?.mode || "demo"}|${state.account?.server || ""}|${state.account?.username || ""}`;
+    return accountScope2?.(state2.account) || `${state2.account?.mode || "demo"}|${state2.account?.server || ""}|${state2.account?.username || ""}`;
   }
   function collection() {
-    const id = scope() + "|" + state.profile;
-    return state.collections[id] ??= { favorites: [], hidden: [], watchlist: [], history: [], progress: {}, order: [], saved: {} };
+    const id = scope() + "|" + state2.profile;
+    return state2.collections[id] ??= { favorites: [], hidden: [], watchlist: [], history: [], progress: {}, order: [], saved: {} };
   }
   function key(item) {
     return stableKey2(scope(), item);
@@ -5292,8 +5325,8 @@
     return collection()[name].includes(key(item));
   }
   async function persist() {
-    const data = { accounts: state.accounts, profile: state.profile, profiles: state.profiles, settings: state.settings, collections: state.collections, pin: state.pin, lastChannel: state.lastChannel, account: $("remember-account").checked && !state.demo ? state.account : null, userInfo: state.userInfo };
-    if (state.settings.privacy_mode) data.lastChannel = null;
+    const data = { accounts: state2.accounts, profile: state2.profile, profiles: state2.profiles, settings: state2.settings, collections: state2.collections, pin: state2.pin, lastChannel: state2.lastChannel, account: $("remember-account").checked && !state2.demo ? state2.account : null, userInfo: state2.userInfo };
+    if (state2.settings.privacy_mode) data.lastChannel = null;
     await vault.set("ui", data);
   }
   function saveSoon() {
@@ -5302,36 +5335,36 @@
   }
   function applyPreferences() {
     updateWebsiteLinks();
-    const p = state.settings;
+    const p = state2.settings;
     const record2 = writePreferences(p, { chooseLanguage: true, notify: false });
     applyClientPreferences(record2);
-    const title = { settings: x("\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A", "Settings"), details: x("\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Title details"), catalog: label(state.kind) }[state.page];
+    const title = { settings: x("\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A", "Settings"), details: x("\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Title details"), catalog: label(state2.kind) }[state2.page];
     if (title) $("page-heading").textContent = title;
     $("video").style.objectFit = p.aspect_mode === "fill" ? "fill" : p.aspect_mode === "zoom" ? "cover" : "contain";
     controller?.configure?.({ aspect: p.aspect_mode, buffer: ["balanced", "low", "stable"][Number(p.buffer_mode) || 0], dataSaver: p.data_saver, language: p.language });
-    $("content-hint").textContent = state.demo ? x("\u0648\u0636\u0639 \u0627\u0644\u062A\u062C\u0631\u0628\u0629 \xB7 \u0645\u0642\u0627\u0637\u0639 \u0627\u062E\u062A\u0628\u0627\u0631 \u0645\u0645\u0644\u0648\u0643\u0629\u060C \u062F\u0648\u0646 \u0627\u0634\u062A\u0631\u0627\u0643 \u062D\u0642\u064A\u0642\u064A", "Demo mode \xB7 owned test clips, no real subscription") : x("\u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u0646 \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \xB7 \u0627\u0636\u063A\u0637 \u0645\u0637\u0648\u0644\u064B\u0627 \u0644\u0644\u0645\u0641\u0636\u0644\u0629 \u0648\u0627\u0644\u062A\u0631\u062A\u064A\u0628 \u0648\u0627\u0644\u0625\u062E\u0641\u0627\u0621", "Your subscription content \xB7 hold for favorites, order and hiding");
+    $("content-hint").textContent = state2.demo ? x("\u0648\u0636\u0639 \u0627\u0644\u062A\u062C\u0631\u0628\u0629 \xB7 \u0645\u0642\u0627\u0637\u0639 \u0627\u062E\u062A\u0628\u0627\u0631 \u0645\u0645\u0644\u0648\u0643\u0629\u060C \u062F\u0648\u0646 \u0627\u0634\u062A\u0631\u0627\u0643 \u062D\u0642\u064A\u0642\u064A", "Demo mode \xB7 owned test clips, no real subscription") : x("\u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u0646 \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \xB7 \u0627\u0636\u063A\u0637 \u0645\u0637\u0648\u0644\u064B\u0627 \u0644\u0644\u0645\u0641\u0636\u0644\u0629 \u0648\u0627\u0644\u062A\u0631\u062A\u064A\u0628 \u0648\u0627\u0644\u0625\u062E\u0641\u0627\u0621", "Your subscription content \xB7 hold for favorites, order and hiding");
     paintIcons();
   }
   function showPage(page, { title = "", remember = true } = {}) {
-    if (remember && state.page !== page) state.previous = state.page;
+    if (remember && state2.page !== page) state2.previous = state2.page;
     if (page !== "catalog") {
       loadAbort?.abort();
-      state.generation++;
+      state2.generation++;
     }
-    state.page = page;
+    state2.page = page;
     for (const p of ["login", "home", "catalog", "details", "settings", "collection"]) $(p + "-page").hidden = p !== page;
     $("back-button").hidden = ["home", "login"].includes(page);
     $("settings-button").hidden = page === "settings";
-    $("page-heading").textContent = title || ({ catalog: label(state.kind), settings: x("\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A", "Settings"), details: x("\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Title details") }[page] || "");
+    $("page-heading").textContent = title || ({ catalog: label(state2.kind), settings: x("\u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A", "Settings"), details: x("\u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Title details") }[page] || "");
     if (page === "home") {
       renderHome();
       setTimeout(() => {
-        if (state.page === "home" && $("sheet").open === false && $("player-page").hidden) $("home-cards").querySelector("[data-kind=live]")?.focus({ preventScroll: true });
+        if (state2.page === "home" && $("sheet").open === false && $("player-page").hidden) $("home-cards").querySelector("[data-kind=live]")?.focus({ preventScroll: true });
       }, 0);
     }
     if (page === "settings") renderSettings();
     $("main-content").scrollTop = 0;
-    document.title = page === "home" || page === "login" ? brandName(state.settings.language) : `${$("page-heading").textContent} \xB7 ${brandName(state.settings.language)}`;
+    document.title = page === "home" || page === "login" ? brandName(state2.settings.language) : `${$("page-heading").textContent} \xB7 ${brandName(state2.settings.language)}`;
     triggerGlitch($(page + "-page"));
   }
   function contact(title = x("\u0628\u0631\u0645\u062C\u0629 \u0627\u0628\u0648\u0646\u0627\u0635\u0631", "Developed by Abunasser"), support = false) {
@@ -5339,10 +5372,10 @@
     box2.append(node("p", "", support ? x("\u0644\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0623\u0648 \u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A\u060C \u062A\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0628\u0648\u0646\u0627\u0635\u0631.", "Contact Abunasser for subscription or support.") : x(`\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV \xB7 \u0628\u0631\u0645\u062C\u0629 \u0648\u062A\u0637\u0648\u064A\u0631 \u0627\u0628\u0648\u0646\u0627\u0635\u0631 \xB7 \u0627\u0644\u0625\u0635\u062F\u0627\u0631 ${APP_VERSION}`, `abbeedo TV \xB7 Developed by Abunasser \xB7 Version ${APP_VERSION}`)), node("p", "phone-number", "0571514382"));
     box2.append(actions(btn(x("\u0646\u0633\u062E \u0627\u0644\u0631\u0642\u0645", "Copy number"), () => copyText("0571514382"), "copy"), btn(x("\u0645\u0631\u0627\u0633\u0644\u0629 \u0648\u0627\u062A\u0633\u0627\u0628", "Message on WhatsApp"), () => openExternal(BRAND2.whatsapp), "chat", "primary")));
     if (support) box2.append(btn(x("\u0625\u0631\u0633\u0627\u0644 \u062A\u0642\u0631\u064A\u0631 \u062A\u0634\u062E\u064A\u0635 \u0628\u062F\u0648\u0646 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643", "Send a report without subscription details"), () => {
-      const summary = `${brandName(state.settings.language)} ${APP_VERSION}
+      const summary = `${brandName(state2.settings.language)} ${APP_VERSION}
 ${isNative2() ? "iPhone app" : "Web"}
 ${navigator.onLine ? "Online" : "Offline"}
-${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })}`;
+${JSON.stringify({ timings: state2.timings, errors: state2.errorLog.slice(0, 5) })}`;
       openExternal(BRAND2.whatsapp + "?text=" + encodeURIComponent(summary));
     }, "support"));
     sheet(title, box2);
@@ -5403,21 +5436,21 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       const started = performance.now();
       const auth = await api.authenticate(account, { signal: loadAbort.signal });
       await closePlayer();
-      state.account = { ...account };
-      state.userInfo = auth?.userInfo || auth?.user_info || {};
-      state.demo = false;
-      state.catalogs = {};
+      state2.account = { ...account };
+      state2.userInfo = auth?.userInfo || auth?.user_info || {};
+      state2.demo = false;
+      state2.catalogs = {};
       if (remember) {
         const id = accountScope2(account);
-        const existing = state.accounts.findIndex((a) => accountScope2(a) === id);
+        const existing = state2.accounts.findIndex((a) => accountScope2(a) === id);
         const saved = { ...account, name: account.name || account.username || x("\u0627\u0634\u062A\u0631\u0627\u0643", "Subscription") };
-        if (existing >= 0) state.accounts[existing] = saved;
-        else state.accounts.push(saved);
+        if (existing >= 0) state2.accounts[existing] = saved;
+        else state2.accounts.push(saved);
       }
-      state.timings.login = { ms: Math.round(performance.now() - started), state: "ready" };
+      state2.timings.login = { ms: Math.round(performance.now() - started), state: "ready" };
       $("password").value = "";
-      state.profile = state.profiles[0] || "Default";
-      state.lastChannel = collection().lastChannel || null;
+      state2.profile = state2.profiles[0] || "Default";
+      state2.lastChannel = collection().lastChannel || null;
       applyPreferences();
       await persist();
       showPage("home");
@@ -5450,13 +5483,13 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     return result;
   }
   function demo() {
-    state.account = { mode: "demo", username: "demo", server: "" };
-    state.userInfo = {};
-    state.demo = true;
-    state.catalogs = demoItems();
-    state.group = "";
-    state.family = "all";
-    state.view = "all";
+    state2.account = { mode: "demo", username: "demo", server: "" };
+    state2.userInfo = {};
+    state2.demo = true;
+    state2.catalogs = demoItems();
+    state2.group = "";
+    state2.family = "all";
+    state2.view = "all";
     applyPreferences();
     showPage("home");
     setupDownloads();
@@ -5465,7 +5498,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   function renderHome() {
     const cards = $("home-cards");
     cards.replaceChildren();
-    let order = String(state.settings.home_order || "series,live,movie").split(",");
+    let order = String(state2.settings.home_order || "series,live,movie").split(",");
     if (order.length !== 3 || new Set(order).size !== 3 || order.some((k) => !NAMES[k])) order = ["series", "live", "movie"];
     for (const kind of order) {
       const b = btn(label(kind), () => kind === "live" ? openLive() : openCatalog(kind), kind, "home-card");
@@ -5477,144 +5510,144 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       b.dataset.action = id;
       return b;
     }));
-    const expiry = formatExpiry2(state.userInfo, { locale: state.settings.language === "en" ? "en-GB" : "ar-SA-u-ca-gregory" });
-    $("subscription-expiry").textContent = state.demo ? x("\u062A\u062C\u0631\u0628\u0629 \u062F\u0648\u0646 \u0627\u0634\u062A\u0631\u0627\u0643 \xB7 \u0628\u064A\u0627\u0646\u0627\u062A \u062A\u0648\u0636\u064A\u062D\u064A\u0629 \u0641\u0642\u0637", "Demo without subscription \xB7 sample data only") : expiry.known ? x(`\u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: ${expiry.date} \xB7 \u0627\u0644\u0645\u062A\u0628\u0642\u064A: ${expiry.days} \u064A\u0648\u0645`, `Subscription ends: ${expiry.date} \xB7 ${expiry.days} days left`) : x("\u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: \u0644\u0645 \u064A\u062D\u062F\u062F\u0647 \u0627\u0644\u0645\u0635\u062F\u0631", "Subscription expiry: not supplied by the provider");
+    const expiry = formatExpiry2(state2.userInfo, { locale: state2.settings.language === "en" ? "en-GB" : "ar-SA-u-ca-gregory" });
+    $("subscription-expiry").textContent = state2.demo ? x("\u062A\u062C\u0631\u0628\u0629 \u062F\u0648\u0646 \u0627\u0634\u062A\u0631\u0627\u0643 \xB7 \u0628\u064A\u0627\u0646\u0627\u062A \u062A\u0648\u0636\u064A\u062D\u064A\u0629 \u0641\u0642\u0637", "Demo without subscription \xB7 sample data only") : expiry.known ? x(`\u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: ${expiry.date} \xB7 \u0627\u0644\u0645\u062A\u0628\u0642\u064A: ${expiry.days} \u064A\u0648\u0645`, `Subscription ends: ${expiry.date} \xB7 ${expiry.days} days left`) : x("\u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: \u0644\u0645 \u064A\u062D\u062F\u062F\u0647 \u0627\u0644\u0645\u0635\u062F\u0631", "Subscription expiry: not supplied by the provider");
     applyPreferences();
   }
   async function homeAction(action) {
     if (action === "refresh") {
-      if (state.demo) {
+      if (state2.demo) {
         toast(x("\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u062A\u062C\u0631\u0628\u0629 \u062C\u0627\u0647\u0632\u0629", "Demo data is ready"));
         return;
       }
-      delete state.catalogs[state.kind];
-      await openCatalog(state.kind, { force: true });
+      delete state2.catalogs[state2.kind];
+      await openCatalog(state2.kind, { force: true });
     } else if (action === "notifications") await showNotifications();
     else if (action === "account") showAccount();
     else if (action === "accounts") showAccounts();
     else if (action === "downloads") showDownloads();
     else if (action === "last") {
-      if (state.lastChannel) await playItem(state.lastChannel);
+      if (state2.lastChannel) await playItem(state2.lastChannel);
       else toast(x("\u0644\u0627 \u062A\u0648\u062C\u062F \u0642\u0646\u0627\u0629 \u0633\u0627\u0628\u0642\u0629 \u0628\u0639\u062F", "No previous channel yet"));
     } else if (action === "epg") showGuide();
     else await showSavedCollection(action);
   }
   async function getCatalog(kind, { force = false, onBatch } = {}) {
-    if (state.catalogs[kind] && !force) {
-      onBatch?.(state.catalogs[kind], { cached: true });
-      return state.catalogs[kind];
+    if (state2.catalogs[kind] && !force) {
+      onBatch?.(state2.catalogs[kind], { cached: true });
+      return state2.catalogs[kind];
     }
-    if (state.demo) return state.catalogs[kind] || [];
-    if (state.account?.mode === "m3u-file") {
-      return state.catalogs[kind] || [];
+    if (state2.demo) return state2.catalogs[kind] || [];
+    if (state2.account?.mode === "m3u-file") {
+      return state2.catalogs[kind] || [];
     }
     const started = performance.now();
-    const rows = await api.catalog(state.account, kind, { force, signal: loadAbort?.signal, onBatch: (items, meta) => {
-      if (!state.timings[kind]?.first) state.timings[kind] = { first: Math.round(performance.now() - started), rows: items.length, state: "partial" };
+    const rows = await api.catalog(state2.account, kind, { force, signal: loadAbort?.signal, onBatch: (items, meta) => {
+      if (!state2.timings[kind]?.first) state2.timings[kind] = { first: Math.round(performance.now() - started), rows: items.length, state: "partial" };
       onBatch?.(items, meta);
     } });
-    state.catalogs[kind] = Array.isArray(rows) ? rows : rows.items || [];
-    state.timings[kind] = { ...state.timings[kind], total: Math.round(performance.now() - started), rows: state.catalogs[kind].length, state: "ready" };
-    return state.catalogs[kind];
+    state2.catalogs[kind] = Array.isArray(rows) ? rows : rows.items || [];
+    state2.timings[kind] = { ...state2.timings[kind], total: Math.round(performance.now() - started), rows: state2.catalogs[kind].length, state: "ready" };
+    return state2.catalogs[kind];
   }
   async function openCatalog(kind, { force = false, view = "all" } = {}) {
-    if (!state.account) return showPage("login");
+    if (!state2.account) return showPage("login");
     loadAbort?.abort();
     loadAbort = new AbortController();
-    const generation = ++state.generation;
-    state.kind = kind;
-    state.view = view;
-    state.group = "";
-    state.family = "all";
-    state.query = "";
-    state.filters = {};
-    state.limit = 60;
+    const generation = ++state2.generation;
+    state2.kind = kind;
+    state2.view = view;
+    state2.group = "";
+    state2.family = "all";
+    state2.query = "";
+    state2.filters = {};
+    state2.limit = 60;
     $("catalog-search").value = "";
     showPage("catalog");
-    state.settings.last_section = kind;
+    state2.settings.last_section = kind;
     saveSoon();
-    state.loading = true;
+    state2.loading = true;
     $("catalog-status").textContent = x("\u062C\u0627\u0631\u064D \u062C\u0644\u0628 \u0627\u0644\u0645\u062D\u062A\u0648\u0649\u2026 \u064A\u0645\u0643\u0646\u0643 \u0627\u0644\u0631\u062C\u0648\u0639 \u0641\u064A \u0623\u064A \u0648\u0642\u062A.", "Fetching content\u2026 you can go back at any time.");
     renderCatalog();
     try {
       const rows = await getCatalog(kind, { force, onBatch: (items) => {
-        if (state.generation !== generation || state.page !== "catalog") return;
-        state.catalogs[kind] = items;
+        if (state2.generation !== generation || state2.page !== "catalog") return;
+        state2.catalogs[kind] = items;
         renderCatalog();
         $("catalog-status").textContent = x("\u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0627\u0644\u0630\u064A \u0648\u0635\u0644 \u0645\u062A\u0627\u062D \u0627\u0644\u0622\u0646\u061B \u062C\u0627\u0631\u064D \u0625\u0643\u0645\u0627\u0644 \u0627\u0644\u0642\u0627\u0626\u0645\u0629\u2026", "Received content is ready; fetching the rest\u2026");
       } });
-      if (state.generation !== generation || state.page !== "catalog") return;
-      state.catalogs[kind] = rows;
+      if (state2.generation !== generation || state2.page !== "catalog") return;
+      state2.catalogs[kind] = rows;
       $("catalog-status").textContent = "";
       renderCatalog();
     } catch (error) {
-      if (error.name === "AbortError" || state.generation !== generation) return;
+      if (error.name === "AbortError" || state2.generation !== generation) return;
       $("catalog-status").textContent = report(error);
     } finally {
-      if (state.generation === generation) state.loading = false;
+      if (state2.generation === generation) state2.loading = false;
     }
   }
-  function filtered(rows = state.catalogs[state.kind] || [], options = {}) {
+  function filtered(rows = state2.catalogs[state2.kind] || [], options = {}) {
     const c = collection();
-    return filterItems2(rows, { scope: scope(), kind: state.kind, group: state.group, family: state.kind === "live" ? state.family : "", query: state.query, ...state.filters, parental: state.settings.parental_enabled, hidden: c.hidden, favorites: c.favorites, watchlist: c.watchlist, history: c.history, favoritesOnly: state.view === "favorites" || state.family === "favorites", watchlistOnly: state.view === "watchlist", historyOnly: state.view === "continue" || state.family === "history", recentOnly: state.view === "recent", dedupeMovies: state.settings.dedupe_movies, dedupeChannels: state.settings.deduplicate_channels, sort: state.sort, order: c.order, ...options });
+    return filterItems2(rows, { scope: scope(), kind: state2.kind, group: state2.group, family: state2.kind === "live" ? state2.family : "", query: state2.query, ...state2.filters, parental: state2.settings.parental_enabled, hidden: c.hidden, favorites: c.favorites, watchlist: c.watchlist, history: c.history, favoritesOnly: state2.view === "favorites" || state2.family === "favorites", watchlistOnly: state2.view === "watchlist", historyOnly: state2.view === "continue" || state2.family === "history", recentOnly: state2.view === "recent", dedupeMovies: state2.settings.dedupe_movies, dedupeChannels: state2.settings.deduplicate_channels, sort: state2.sort, order: c.order, ...options });
   }
   function categoryButtons(rows, { receiver = false } = {}) {
-    rows = rows.filter((item) => !collection().hidden.includes(key(item)) && (!state.settings.parental_enabled || !isAdult2(item)));
+    rows = rows.filter((item) => !collection().hidden.includes(key(item)) && (!state2.settings.parental_enabled || !isAdult2(item)));
     const box2 = node("div");
     const counts = /* @__PURE__ */ new Map();
     for (const item of rows) {
-      if (state.settings.parental_enabled && isAdult2(item) || collection().hidden.includes(key(item))) continue;
+      if (state2.settings.parental_enabled && isAdult2(item) || collection().hidden.includes(key(item))) continue;
       counts.set(item.group || x("\u063A\u064A\u0631 \u0645\u0635\u0646\u0641", "Uncategorized"), (counts.get(item.group || x("\u063A\u064A\u0631 \u0645\u0635\u0646\u0641", "Uncategorized")) || 0) + 1);
     }
     const choose = (family, group) => {
-      state.family = family;
-      state.group = group;
-      state.limit = 60;
+      state2.family = family;
+      state2.group = group;
+      state2.limit = 60;
       receiver ? renderReceiver() : renderCatalog();
     };
-    if ((state.kind === "live" || receiver) && state.settings.auto_categories) {
+    if ((state2.kind === "live" || receiver) && state2.settings.auto_categories) {
       for (const family of LIVE_FAMILIES2) {
         const count = family.id === "all" ? rows.length : family.id === "favorites" ? rows.filter((i) => inSet("favorites", i)).length : family.id === "history" ? rows.filter((i) => collection().history.some((h) => h.key === key(i))).length : rows.filter((i) => classifyLive2(i) === family.id).length;
         if (!count && !["all", "favorites", "history"].includes(family.id)) continue;
         const b = btn(`${String([...box2.children].length + 1).padStart(3, "0")}  ${x(family.ar, family.en)} (${count})`, () => choose(family.id, ""));
-        b.classList.toggle("selected", state.family === family.id && !state.group);
+        b.classList.toggle("selected", state2.family === family.id && !state2.group);
         b.dataset.family = family.id;
         box2.append(b);
       }
     } else {
-      const b = btn(x(`\u0643\u0644 ${label(state.kind)} (${rows.length})`, `All ${label(state.kind)} (${rows.length})`), () => choose("all", ""));
-      b.classList.toggle("selected", !state.group);
+      const b = btn(x(`\u0643\u0644 ${label(state2.kind)} (${rows.length})`, `All ${label(state2.kind)} (${rows.length})`), () => choose("all", ""));
+      b.classList.toggle("selected", !state2.group);
       box2.append(b);
     }
     for (const [group, count] of counts) {
       const b = btn(`${group} (${count})`, () => choose("all", group));
-      b.classList.toggle("selected", state.group === group);
+      b.classList.toggle("selected", state2.group === group);
       box2.append(b);
     }
     return [...box2.children];
   }
   function renderCatalog() {
-    if (state.page !== "catalog") return;
+    if (state2.page !== "catalog") return;
     $("catalog-tabs").replaceChildren(...["live", "movie", "series"].map((kind) => {
       const b = btn(label(kind), () => kind === "live" ? openLive() : openCatalog(kind));
-      b.classList.toggle("selected", kind === state.kind);
+      b.classList.toggle("selected", kind === state2.kind);
       return b;
     }));
-    $("catalog-filters").hidden = state.kind === "live";
-    $("catalog-favorites").classList.toggle("selected", state.view === "favorites");
-    const source = state.catalogs[state.kind] || [];
+    $("catalog-filters").hidden = state2.kind === "live";
+    $("catalog-favorites").classList.toggle("selected", state2.view === "favorites");
+    const source = state2.catalogs[state2.kind] || [];
     $("category-list").replaceChildren(...categoryButtons(source));
     let rows = filtered(source);
-    if (state.view === "recommend") {
+    if (state2.view === "recommend") {
       const groups = new Set(collection().history.map((h) => h.item?.group).filter(Boolean));
       rows = [...rows].sort((a, b) => Number(groups.has(b.group)) - Number(groups.has(a.group)) || Number(b.rating || 0) - Number(a.rating || 0));
     }
-    $("collection-title").textContent = state.group || label(state.kind);
+    $("collection-title").textContent = state2.group || label(state2.kind);
     $("catalog-count").textContent = String(rows.length);
-    $("catalog-grid").classList.toggle("live-grid", state.kind === "live");
-    $("catalog-grid").replaceChildren(...rows.slice(0, state.limit).map((item, index) => mediaCard(item, index)));
-    $("catalog-empty").hidden = rows.length > 0 || state.loading;
-    $("catalog-more").hidden = rows.length <= state.limit;
+    $("catalog-grid").classList.toggle("live-grid", state2.kind === "live");
+    $("catalog-grid").replaceChildren(...rows.slice(0, state2.limit).map((item, index) => mediaCard(item, index)));
+    $("catalog-empty").hidden = rows.length > 0 || state2.loading;
+    $("catalog-more").hidden = rows.length <= state2.limit;
   }
   function posterImage(item, className = "") {
     const url = safeURL2(item.logo || item.cover || item.poster, location.href);
@@ -5681,8 +5714,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     collection().saved ??= {};
     if (at < 0) collection().saved[id] = { ...item };
     saveSoon();
-    if (state.page === "catalog") renderCatalog();
-    else if (state.page === "collection") showSavedCollection(state.view);
+    if (state2.page === "catalog") renderCatalog();
+    else if (state2.page === "collection") showSavedCollection(state2.view);
     if (!$("receiver-panel").hidden) renderReceiver();
     toast(at < 0 ? x("\u062A\u0645\u062A \u0627\u0644\u0625\u0636\u0627\u0641\u0629", "Added") : x("\u062A\u0645\u062A \u0627\u0644\u0625\u0632\u0627\u0644\u0629", "Removed"));
   }
@@ -5704,7 +5737,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       if (value === "download") enqueueDownload(item);
       if (value === "epg") showGuide(item);
       if (value === "up" || value === "down") {
-        const rows2 = filtered(state.catalogs.live || [], { group: "", family: "all" });
+        const rows2 = filtered(state2.catalogs.live || [], { group: "", family: "all" });
         const at = rows2.findIndex((i) => i.id === item.id), next = at + (value === "up" ? -1 : 1);
         if (at >= 0 && next >= 0 && next < rows2.length) {
           [rows2[at], rows2[next]] = [rows2[next], rows2[at]];
@@ -5717,27 +5750,27 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   async function showDetails(item) {
     const generation = ++detailGeneration;
-    state.detail = { item, info: { ...item }, episodes: null, loading: true };
+    state2.detail = { item, info: { ...item }, episodes: null, loading: true };
     showPage("details");
     renderDetails();
     try {
       let data;
       if (item.demo) {
         data = { info: { ...item, duration: x("50 \u062B\u0627\u0646\u064A\u0629", "50 seconds"), cast: "", director: "", production_company: "", trailer: "" }, episodes: item.kind === "series" ? { "1": [1, 2, 3].map((n2) => ({ id: "episode:demo" + n2, kind: "episode", name: x(`\u062D\u0644\u0642\u0629 \u0627\u0644\u062A\u062C\u0631\u0628\u0629 ${n2}`, `Demo episode ${n2}`), title: x(`\u062D\u0644\u0642\u0629 \u0627\u0644\u062A\u062C\u0631\u0628\u0629 ${n2}`, `Demo episode ${n2}`), episode_num: n2, url: new URL("/watch-demo.mp4", globalThis.ABUNASSER_CONFIG?.apiOrigin || location.href).href, demo: true })) } : null };
-      } else data = await api.details(state.account, item, {});
+      } else data = await api.details(state2.account, item, {});
       if (item.kind === "series" && item.url && !flattenEpisodes(data.episodes).length) data.episodes = { "1": [{ ...item, id: "episode:" + item.id, providerId: "", kind: "episode", episode_num: 1, name: item.name, url: item.url }] };
-      if (generation !== detailGeneration || state.page !== "details") return;
-      state.detail = { item, info: { ...item, ...data.info || {} }, episodes: data.episodes || null, loading: false };
+      if (generation !== detailGeneration || state2.page !== "details") return;
+      state2.detail = { item, info: { ...item, ...data.info || {} }, episodes: data.episodes || null, loading: false };
       renderDetails();
     } catch (error) {
       if (generation !== detailGeneration) return;
-      state.detail.loading = false;
-      state.detail.error = errorText(error, state.settings.language);
+      state2.detail.loading = false;
+      state2.detail.error = errorText(error, state2.settings.language);
       renderDetails();
     }
   }
   function renderDetails() {
-    const d = state.detail;
+    const d = state2.detail;
     if (!d) return;
     const { item, info } = d, root = node("div", "details-layout");
     const image = posterImage({ ...item, logo: info.cover || info.movie_image || item.logo }, "details-poster");
@@ -5764,17 +5797,17 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     meta.append(row);
     if (d.loading) meta.append(node("p", "muted", x("\u062C\u0627\u0631\u064D \u062C\u0644\u0628 \u062A\u0641\u0627\u0635\u064A\u0644 \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0641\u0642\u0637\u2026", "Fetching details for this title\u2026")));
     if (d.error) meta.append(node("p", "inline-error", d.error));
-    const versions = (state.catalogs.movie || []).filter((other) => other.id !== item.id && normalize2(other.name).replace(/\b(4k|uhd|fhd|hd|sd|hevc|1080p|720p)\b/g, "").trim() === normalize2(item.name).replace(/\b(4k|uhd|fhd|hd|sd|hevc|1080p|720p)\b/g, "").trim());
+    const versions = (state2.catalogs.movie || []).filter((other) => other.id !== item.id && normalize2(other.name).replace(/\b(4k|uhd|fhd|hd|sd|hevc|1080p|720p)\b/g, "").trim() === normalize2(item.name).replace(/\b(4k|uhd|fhd|hd|sd|hevc|1080p|720p)\b/g, "").trim());
     if (versions.length) {
       meta.append(btn(x(`\u0646\u0633\u062E \u0648\u062C\u0648\u062F\u0627\u062A \u0623\u062E\u0631\u0649 (${versions.length})`, `Other versions (${versions.length})`), () => choices(x("\u0646\u0633\u062E \u0627\u0644\u0645\u0635\u062F\u0631", "Provider versions"), versions.map((v) => ({ label: v.name, value: v.id })), (id) => showDetails(versions.find((v) => v.id === id)))));
     }
     root.append(meta);
     if (item.kind === "series") {
       const episodes = node("div", "episode-list");
-      state.episodes = flattenEpisodes(d.episodes);
-      if (!state.episodes.length && !d.loading) episodes.append(node("p", "muted", x("\u0644\u0627 \u062A\u0648\u062C\u062F \u062D\u0644\u0642\u0627\u062A \u0645\u062A\u0627\u062D\u0629 \u0645\u0646 \u0627\u0644\u0645\u0635\u062F\u0631.", "No episodes were supplied.")));
+      state2.episodes = flattenEpisodes(d.episodes);
+      if (!state2.episodes.length && !d.loading) episodes.append(node("p", "muted", x("\u0644\u0627 \u062A\u0648\u062C\u062F \u062D\u0644\u0642\u0627\u062A \u0645\u062A\u0627\u062D\u0629 \u0645\u0646 \u0627\u0644\u0645\u0635\u062F\u0631.", "No episodes were supplied.")));
       const seasons = /* @__PURE__ */ new Map();
-      for (const ep of state.episodes) {
+      for (const ep of state2.episodes) {
         const season = String(ep.season || 1);
         if (!seasons.has(season)) seasons.set(season, []);
         seasons.get(season).push(ep);
@@ -5814,22 +5847,22 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     return u && ["www.youtube.com", "youtube.com", "youtu.be", "vimeo.com", "www.vimeo.com"].includes(u.hostname) ? u.href : "";
   }
   async function playFirstEpisode() {
-    const ep = state.episodes[0];
+    const ep = state2.episodes[0];
     if (ep) await playItem(ep);
     else toast(x("\u0644\u0627 \u062A\u0648\u062C\u062F \u062D\u0644\u0642\u0629 \u0645\u062A\u0627\u062D\u0629 \u0628\u0639\u062F.", "No episode is available yet."));
   }
   async function openLive() {
-    if (!state.account) return showPage("login");
+    if (!state2.account) return showPage("login");
     loadAbort?.abort();
     loadAbort = new AbortController();
-    const generation = ++state.generation;
-    state.kind = "live";
-    state.family = "all";
-    state.group = "";
-    state.view = "all";
+    const generation = ++state2.generation;
+    state2.kind = "live";
+    state2.family = "all";
+    state2.group = "";
+    state2.view = "all";
     let opened = false;
     const start = async (rows) => {
-      if (opened || !rows.length || generation !== state.generation) return;
+      if (opened || !rows.length || generation !== state2.generation) return;
       const first = filtered(rows, { kind: "live", family: "all", group: "", query: "" })[0];
       if (first) {
         opened = true;
@@ -5837,13 +5870,13 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       }
     };
     try {
-      await start(state.catalogs.live || []);
+      await start(state2.catalogs.live || []);
       const rows = await getCatalog("live", { onBatch: (rows2) => {
-        state.catalogs.live = rows2;
+        state2.catalogs.live = rows2;
         if (!opened) start(rows2).catch(report);
         else if (!$("receiver-panel").hidden) renderReceiver();
       } });
-      state.catalogs.live = rows;
+      state2.catalogs.live = rows;
       if (!opened) await start(rows);
       if (!opened) {
         await openCatalog("live");
@@ -5856,17 +5889,17 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   async function playItem(item, { offlineSource = null } = {}) {
     if (!$("screen-lock").hidden) return toast(x("\u0627\u0641\u062A\u062D \u0642\u0641\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0644\u0628\u062F\u0621 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629.", "Unlock the app to start watching."));
-    if (state.settings.parental_enabled && isAdult2(item)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u062C\u0648\u0628 \u0628\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "This content is blocked by parental controls."));
+    if (state2.settings.parental_enabled && isAdult2(item)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u062C\u0648\u0628 \u0628\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "This content is blocked by parental controls."));
     if (inSet("hidden", item)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062E\u0641\u064A \u0641\u064A \u0645\u0644\u0641\u0643.", "This content is hidden in this profile."));
     controller?.stop();
-    state.playingSource = null;
-    lastPlayerPage = state.page;
-    const previous = state.current;
-    if (previous?.kind === "live" && previous.id !== item.id) state.lastChannel = previous;
-    if (!state.settings.privacy_mode && previous?.kind === "live" && previous.id !== item.id) collection().lastChannel = previous;
-    state.current = item;
-    playbackOwner = { itemId: item.id, scope: scope(), profile: state.profile };
-    const generation = state.playGeneration = (state.playGeneration || 0) + 1;
+    state2.playingSource = null;
+    lastPlayerPage = state2.page;
+    const previous = state2.current;
+    if (previous?.kind === "live" && previous.id !== item.id) state2.lastChannel = previous;
+    if (!state2.settings.privacy_mode && previous?.kind === "live" && previous.id !== item.id) collection().lastChannel = previous;
+    state2.current = item;
+    playbackOwner = { itemId: item.id, scope: scope(), profile: state2.profile };
+    const generation = state2.playGeneration = (state2.playGeneration || 0) + 1;
     $("player-page").hidden = false;
     $("app-shell").inert = true;
     $("playing-title").textContent = item.name || item.title || label(item.kind);
@@ -5881,90 +5914,90 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         $("player-status").textContent = report(error);
       }, onProgress: (progress) => {
         const played = progress.item, owner = playbackOwner;
-        if (!played || !owner || played.id !== owner.itemId || state.settings.privacy_mode || scope() !== owner.scope || state.profile !== owner.profile) return;
-        const collectionId = owner.scope + "|" + owner.profile, c = state.collections[collectionId] ??= { favorites: [], hidden: [], watchlist: [], history: [], progress: {}, order: [], saved: {} }, id = stableKey2(owner.scope, played);
+        if (!played || !owner || played.id !== owner.itemId || state2.settings.privacy_mode || scope() !== owner.scope || state2.profile !== owner.profile) return;
+        const collectionId = owner.scope + "|" + owner.profile, c = state2.collections[collectionId] ??= { favorites: [], hidden: [], watchlist: [], history: [], progress: {}, order: [], saved: {} }, id = stableKey2(owner.scope, played);
         c.progress[id] = { position: Number(progress.position) || 0, duration: Number(progress.duration) || 0, at: Date.now(), item: played };
         saveSoon();
       }, onEnded: () => {
-        if (state.settings.auto_next && state.current?.kind === "episode") {
-          const at = state.episodes.findIndex((i) => i.id === state.current.id);
-          if (at >= 0 && state.episodes[at + 1]) playItem(state.episodes[at + 1]).catch(report);
+        if (state2.settings.auto_next && state2.current?.kind === "episode") {
+          const at = state2.episodes.findIndex((i) => i.id === state2.current.id);
+          if (at >= 0 && state2.episodes[at + 1]) playItem(state2.episodes[at + 1]).catch(report);
         }
       } });
     }
     applyPreferences();
     try {
-      const source = offlineSource || (item.demo ? { url: item.url, mime: "video/mp4" } : await api.resolve(state.account, item, {}));
-      if (generation !== state.playGeneration) return;
-      state.playingSource = source;
+      const source = offlineSource || (item.demo ? { url: item.url, mime: "video/mp4" } : await api.resolve(state2.account, item, {}));
+      if (generation !== state2.playGeneration) return;
+      state2.playingSource = source;
       const progress = collection().progress[key(item)], resume = item.kind === "live" ? 0 : progress && progress.duration > 0 && progress.position < progress.duration - 15 ? progress.position : 0;
-      await controller.play(item, source, { account: state.account, playlist: item.kind === "live" ? state.catalogs.live : state.episodes, position: resume, rate: item.kind === "live" ? 1 : Number(state.settings.playback_rate) || 1 });
-      if (!state.settings.privacy_mode) {
+      await controller.play(item, source, { account: state2.account, playlist: item.kind === "live" ? state2.catalogs.live : state2.episodes, position: resume, rate: item.kind === "live" ? 1 : Number(state2.settings.playback_rate) || 1 });
+      if (!state2.settings.privacy_mode) {
         const c = collection(), id = key(item);
         c.history = [{ key: id, item, at: Date.now() }, ...c.history.filter((h) => h.key !== id)].slice(0, 300);
         saveSoon();
       }
       if (watchSession?.active) await watchSession.update(playerSnapshot(), item, source).catch(report);
     } catch (error) {
-      if (generation !== state.playGeneration) return;
+      if (generation !== state2.playGeneration) return;
       $("player-status").textContent = report(error);
     }
   }
   function playerSnapshot() {
     const s = controller?.getState?.() || {}, v = $("video");
-    return { positionMs: Math.max(0, Math.round(Number(s.position ?? v.currentTime ?? 0) * 1e3)), durationMs: Math.max(0, Math.round(Number.isFinite(Number(s.duration ?? v.duration)) ? Number(s.duration ?? v.duration) * 1e3 : 0)), playing: s.playing ?? !v.paused, speed: state.current?.kind === "live" ? 1 : Number(s.rate || v.playbackRate || 1), liveOffsetMs: -1 };
+    return { positionMs: Math.max(0, Math.round(Number(s.position ?? v.currentTime ?? 0) * 1e3)), durationMs: Math.max(0, Math.round(Number.isFinite(Number(s.duration ?? v.duration)) ? Number(s.duration ?? v.duration) * 1e3 : 0)), playing: s.playing ?? !v.paused, speed: state2.current?.kind === "live" ? 1 : Number(s.rate || v.playbackRate || 1), liveOffsetMs: -1 };
   }
   async function closePlayer() {
-    state.playGeneration = (state.playGeneration || 0) + 1;
+    state2.playGeneration = (state2.playGeneration || 0) + 1;
     await watchSession?.close().catch(() => {
     });
     watchSession = null;
-    if (state.current?.kind === "live" && !state.settings.privacy_mode) {
-      state.lastChannel = state.current;
-      collection().lastChannel = state.current;
+    if (state2.current?.kind === "live" && !state2.settings.privacy_mode) {
+      state2.lastChannel = state2.current;
+      collection().lastChannel = state2.current;
       saveSoon();
     }
     controller?.stop();
     $("player-page").hidden = true;
     $("receiver-panel").hidden = true;
     $("app-shell").inert = false;
-    if (state.page === "home") renderHome();
+    if (state2.page === "home") renderHome();
   }
   async function changeChannel(delta) {
-    const rows = filtered(state.catalogs.live || [], { kind: "live", group: "", family: "all", query: "", favoritesOnly: false, historyOnly: false });
+    const rows = filtered(state2.catalogs.live || [], { kind: "live", group: "", family: "all", query: "", favoritesOnly: false, historyOnly: false });
     if (!rows.length) return;
-    const at = rows.findIndex((i) => i.id === state.current?.id);
+    const at = rows.findIndex((i) => i.id === state2.current?.id);
     await playItem(rows[(Math.max(0, at) + delta + rows.length) % rows.length]);
   }
   function toggleReceiver() {
     const open = $("receiver-panel").hidden;
     $("receiver-panel").hidden = !open;
     if (open) {
-      state.kind = "live";
-      state.group = "";
-      state.family = "all";
-      state.receiverLimit = 350;
-      state.receiverFilter = "";
+      state2.kind = "live";
+      state2.group = "";
+      state2.family = "all";
+      state2.receiverLimit = 350;
+      state2.receiverFilter = "";
       $("receiver-search").value = "";
       renderReceiver();
       setTimeout(() => $("receiver-categories").querySelector("button.selected,button")?.focus(), 0);
     }
   }
   function renderReceiver() {
-    const rows = state.catalogs.live || [];
-    state.kind = "live";
+    const rows = state2.catalogs.live || [];
+    state2.kind = "live";
     $("receiver-categories").replaceChildren(...categoryButtons(rows, { receiver: true }));
     const q = $("receiver-search").value;
-    const filteredRows = filtered(rows, { kind: "live", query: q }), filterKey = JSON.stringify([state.family, state.group, q]);
-    if (state.receiverFilter !== filterKey) {
-      state.receiverFilter = filterKey;
-      state.receiverLimit = 350;
+    const filteredRows = filtered(rows, { kind: "live", query: q }), filterKey = JSON.stringify([state2.family, state2.group, q]);
+    if (state2.receiverFilter !== filterKey) {
+      state2.receiverFilter = filterKey;
+      state2.receiverLimit = 350;
     }
-    const receiverLimit = state.receiverLimit || 350;
+    const receiverLimit = state2.receiverLimit || 350;
     const sourceIndices = new Map(rows.map((item, i) => [item.id, i + 1]));
     $("receiver-channels").replaceChildren(...filteredRows.slice(0, receiverLimit).map((item) => {
       const button = btn("", async () => {
-        if (item.id === state.current?.id) {
+        if (item.id === state2.current?.id) {
           $("receiver-panel").hidden = true;
           return;
         }
@@ -5973,7 +6006,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         renderReceiver();
       });
       button.dataset.channelId = item.id;
-      button.classList.toggle("selected", item.id === state.current?.id);
+      button.classList.toggle("selected", item.id === state2.current?.id);
       button.replaceChildren(node("small", "", String(sourceIndices.get(item.id)).padStart(3, "0")));
       const logo = safeURL2(item.logo, location.href);
       if (logo) {
@@ -5984,23 +6017,23 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         image.referrerPolicy = "no-referrer";
         button.append(image);
       }
-      button.append(node("span", "", (item.id === state.current?.id ? "\u25B6 " : "") + item.name));
+      button.append(node("span", "", (item.id === state2.current?.id ? "\u25B6 " : "") + item.name));
       return button;
     }));
     if (filteredRows.length > receiverLimit) $("receiver-channels").append(btn(x(`\u0639\u0631\u0636 \u0627\u0644\u0645\u0632\u064A\u062F \u0645\u0646 \u0627\u0644\u0642\u0646\u0648\u0627\u062A (${filteredRows.length - receiverLimit})`, `Show more channels (${filteredRows.length - receiverLimit})`), () => {
       const nextId = filteredRows[receiverLimit]?.id;
-      state.receiverLimit = receiverLimit + 350;
+      state2.receiverLimit = receiverLimit + 350;
       renderReceiver();
       Array.from($("receiver-channels").querySelectorAll("[data-channel-id]")).find((button) => button.dataset.channelId === nextId)?.focus({ preventScroll: false });
     }, "down", "receiver-more"));
-    $("receiver-now").textContent = state.current?.name || x("\u0627\u062E\u062A\u0631 \u0642\u0646\u0627\u0629", "Choose a channel");
+    $("receiver-now").textContent = state2.current?.name || x("\u0627\u062E\u062A\u0631 \u0642\u0646\u0627\u0629", "Choose a channel");
   }
   async function chooseRate() {
-    if (state.current?.kind === "live") return;
+    if (state2.current?.kind === "live") return;
     choices(x("\u0633\u0631\u0639\u0629 \u0627\u0644\u062A\u0634\u063A\u064A\u0644", "Playback speed"), [0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4, 5, 6].filter((rate) => !controller?.getState?.().native || rate <= 2).map((rate) => ({ label: rate + "\xD7", value: rate })), async (rate) => {
       await controller?.setRate(rate);
       $("rate-button").textContent = rate + "\xD7";
-      state.settings.playback_rate = rate;
+      state2.settings.playback_rate = rate;
       saveSoon();
     });
   }
@@ -6011,10 +6044,10 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       if (value === "sleep") sleepTimer();
       if (value === "capture") captureMenu();
       if (value === "native") {
-        if (isNative2() && state.playingSource?.url) await controller.useNative();
+        if (isNative2() && state2.playingSource?.url) await controller.useNative();
         else toast(x("\u0627\u0644\u0645\u0634\u063A\u0644 \u0627\u0644\u0623\u0635\u0644\u064A \u0645\u062A\u0627\u062D \u062F\u0627\u062E\u0644 \u062A\u0637\u0628\u064A\u0642 \u0627\u0644\u0622\u064A\u0641\u0648\u0646\u061B \u0647\u0646\u0627 \u0627\u0633\u062A\u062E\u062F\u0645 \u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629 \u0623\u0648 AirPlay \u0645\u0646 \u0627\u0644\u0641\u064A\u062F\u064A\u0648.", "The native player is available in the iPhone app. Here use fullscreen or AirPlay in the video."));
       }
-      if (value === "retry") playItem(state.current);
+      if (value === "retry") playItem(state2.current);
     });
   }
   async function showTracks() {
@@ -6074,22 +6107,22 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     sheet(x("\u0627\u0644\u0627\u0644\u062A\u0642\u0627\u0637 \u0648\u0627\u0644\u062A\u0633\u062C\u064A\u0644", "Capture and recording"), box2);
   }
   function watchSource() {
-    return state.current?.demo ? { ...state.playingSource, sourceUrl: new URL("/watch-demo.mp4", globalThis.ABUNASSER_CONFIG?.apiOrigin || location.href).href } : state.playingSource;
+    return state2.current?.demo ? { ...state2.playingSource, sourceUrl: new URL("/watch-demo.mp4", globalThis.ABUNASSER_CONFIG?.apiOrigin || location.href).href } : state2.playingSource;
   }
   async function hostWatch() {
-    if (!state.current || !state.playingSource) return;
+    if (!state2.current || !state2.playingSource) return;
     try {
       if (!watchSession?.active) {
         watchSession = new WatchHost();
-        await watchSession.create(state.current, watchSource(), { snapshot: playerSnapshot() });
-        watchSession.startHeartbeat(() => ({ item: state.current, resolved: watchSource(), snapshot: playerSnapshot() }), { onError: report });
+        await watchSession.create(state2.current, watchSource(), { snapshot: playerSnapshot() });
+        watchSession.startHeartbeat(() => ({ item: state2.current, resolved: watchSource(), snapshot: playerSnapshot() }), { onError: report });
       }
       const url = watchSession.joinURL || watchSession.watchUrl;
       const box2 = node("div");
       box2.append(node("p", "", x("\u0634\u0627\u0634\u0629 \u0648\u0627\u062D\u062F\u0629 \u0645\u0647\u0645\u0627 \u0628\u0639\u062F\u062A \u0627\u0644\u0645\u0633\u0627\u0641\u0629. \u0623\u0628\u0642\u0650 \u0627\u0644\u0645\u0634\u063A\u0644 \u0645\u0641\u062A\u0648\u062D\u064B\u0627 \u0644\u062A\u0633\u062A\u0645\u0631 \u0645\u0632\u0627\u0645\u0646\u0629 \u0627\u0644\u062C\u0644\u0633\u0629. \u064A\u062F\u0639\u0645 \u0627\u0644\u0636\u064A\u0641 \u0641\u0642\u0637 \u0627\u0644\u0635\u064A\u063A \u0627\u0644\u062A\u064A \u064A\u0633\u062A\u0637\u064A\u0639 \u0645\u062A\u0635\u0641\u062D\u0647 \u062A\u0634\u063A\u064A\u0644\u0647\u0627.", "One screen, wherever you are. Keep the player open to synchronize. Guest playback depends on browser codec support.")));
       box2.append(actions(btn(x("\u0645\u0634\u0627\u0631\u0643\u0629 \u0627\u0644\u0631\u0627\u0628\u0637", "Share invitation"), async () => {
         if (isNative2()) await nativeRequest2("share", { text: x("\u0634\u0627\u0647\u062F \u0645\u0639\u064A \u0639\u0644\u0649 \u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", "Watch together on abbeedo TV"), url });
-        else if (navigator.share) await navigator.share({ title: brandName(state.settings.language), url });
+        else if (navigator.share) await navigator.share({ title: brandName(state2.settings.language), url });
         else await copyText(url);
       }, "friends", "primary"), btn(x("\u0646\u0633\u062E \u0627\u0644\u0631\u0627\u0628\u0637", "Copy invitation"), () => copyText(url), "copy"), btn(x("\u0625\u0646\u0647\u0627\u0621 \u0627\u0644\u062C\u0644\u0633\u0629", "End session"), async () => {
         await watchSession.close();
@@ -6103,17 +6136,17 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     }
   }
   async function setupDownloads() {
-    if (!state.account) return;
+    if (!state2.account) return;
     downloads?.destroy?.();
-    downloads = new DownloadManager({ scope: scope() + "/" + state.profile, maxBytes: 512 * 1024 * 1024 });
+    downloads = new DownloadManager({ scope: scope() + "/" + state2.profile, maxBytes: 512 * 1024 * 1024 });
     downloads.subscribe?.(() => {
-      if (state.page === "collection" && state.view === "downloads") showDownloads();
+      if (state2.page === "collection" && state2.view === "downloads") showDownloads();
     });
   }
   async function enqueueDownload(item) {
     if (item.kind === "live" || item.kind === "series") return toast(x("\u0627\u0644\u062A\u0646\u0632\u064A\u0644 \u0645\u062A\u0627\u062D \u0644\u0644\u0641\u064A\u0644\u0645 \u0623\u0648 \u0627\u0644\u062D\u0644\u0642\u0629 \u0627\u0644\u0645\u062D\u062F\u0648\u062F\u0629 \u0641\u0642\u0637.", "Downloads are available only for finite movies or episodes."));
     if (!downloads) await setupDownloads();
-    const source = item.demo ? { url: item.url, mime: "video/mp4" } : await api.resolve(state.account, item, {}), manager = downloads;
+    const source = item.demo ? { url: item.url, mime: "video/mp4" } : await api.resolve(state2.account, item, {}), manager = downloads;
     void Promise.resolve(manager.enqueue(item, source)).catch((error) => {
       if (error?.name !== "AbortError" && manager === downloads) report(error);
     });
@@ -6123,13 +6156,13 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     return { downloading: x("\u062C\u0627\u0631\u064D \u0627\u0644\u062A\u0646\u0632\u064A\u0644", "Downloading"), paused: x("\u0645\u062A\u0648\u0642\u0641 \u0645\u0624\u0642\u062A\u064B\u0627", "Paused"), complete: x("\u0645\u0643\u062A\u0645\u0644", "Complete"), completed: x("\u0645\u0643\u062A\u0645\u0644", "Complete"), ready: x("\u062C\u0627\u0647\u0632", "Ready"), failed: x("\u062A\u0639\u0630\u0631 \u0627\u0644\u062A\u0646\u0632\u064A\u0644", "Failed"), cancelled: x("\u0645\u0644\u063A\u0649", "Canceled") }[value] || String(value || "");
   }
   async function showDownloads() {
-    state.view = "downloads";
+    state2.view = "downloads";
     showPage("collection", { title: x("\u0627\u0644\u062A\u0646\u0632\u064A\u0644\u0627\u062A", "Downloads") });
     const root = $("collection-body");
     root.replaceChildren(node("h2", "collection-heading", x("\u0627\u0644\u062A\u0646\u0632\u064A\u0644\u0627\u062A", "Downloads")), node("p", "muted", isNative2() ? x("\u0627\u0644\u062A\u0646\u0632\u064A\u0644\u0627\u062A \u0627\u0644\u0645\u0643\u062A\u0645\u0644\u0629 \u0645\u062D\u0641\u0648\u0638\u0629 \u0639\u0644\u0649 \u0627\u0644\u0622\u064A\u0641\u0648\u0646.", "Completed downloads are stored on the iPhone.") : x("\u064A\u0633\u062A\u0645\u0631 \u0627\u0644\u062A\u0646\u0632\u064A\u0644 \u0623\u062B\u0646\u0627\u0621 \u0628\u0642\u0627\u0621 \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0645\u0641\u062A\u0648\u062D\u064B\u0627. \u0627\u0633\u062A\u0626\u0646\u0627\u0641 \u062A\u0646\u0632\u064A\u0644 \u0645\u062A\u0648\u0642\u0641 \u0641\u064A \u0627\u0644\u0645\u062A\u0635\u0641\u062D \u064A\u0628\u062F\u0623 \u0627\u0644\u0645\u0644\u0641 \u0645\u0646 \u0627\u0644\u0628\u062F\u0627\u064A\u0629.", "Downloads run while the app stays open. Resuming a paused browser download restarts the file.")));
     if (!downloads) await setupDownloads();
     const manager = downloads, rows = await manager?.list?.() || [];
-    if (manager !== downloads || state.page !== "collection" || state.view !== "downloads") return;
+    if (manager !== downloads || state2.page !== "collection" || state2.view !== "downloads") return;
     if (!rows.length) {
       root.append(node("p", "empty-message", x("\u0644\u0627 \u062A\u0648\u062C\u062F \u062A\u0646\u0632\u064A\u0644\u0627\u062A. \u0627\u0641\u062A\u062D \u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0641\u064A\u0644\u0645 \u0623\u0648 \u062E\u064A\u0627\u0631\u0627\u062A \u062D\u0644\u0642\u0629 \u0644\u0628\u062F\u0621 \u062A\u0646\u0632\u064A\u0644.", "No downloads. Open a movie or episode options to download it.")));
       return;
@@ -6141,8 +6174,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       if (["completed", "complete", "ready"].includes(status)) line2.append(btn(x("\u0645\u0634\u0627\u0647\u062F\u0629", "Watch"), async () => {
         const kind = row.kind || (String(row.id).startsWith("episode:") ? "episode" : "movie"), known = Array.from(allKnown().values()).find((item) => item.id === row.id && item.kind === kind), offlineItem = row.item || known || { id: row.id, name: row.name || row.title, kind };
         if (!$("screen-lock").hidden) return toast(x("\u0627\u0641\u062A\u062D \u0642\u0641\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0644\u0628\u062F\u0621 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629.", "Unlock the app to start watching."));
-        if (state.settings.parental_enabled && !row.item && !known) throw Error(x("\u062A\u0639\u0630\u0631 \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u062A\u0635\u0646\u064A\u0641 \u0647\u0630\u0627 \u0627\u0644\u062A\u0646\u0632\u064A\u0644 \u0627\u0644\u0642\u062F\u064A\u0645. \u0627\u0641\u062A\u062D \u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0645\u0646 \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \u0648\u0623\u0639\u062F \u062A\u0646\u0632\u064A\u0644\u0647.", "This older download has no verifiable content category. Open its title details from your subscription and download it again."));
-        if (state.settings.parental_enabled && isAdult2(offlineItem)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u062C\u0648\u0628 \u0628\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "This content is blocked by parental controls."));
+        if (state2.settings.parental_enabled && !row.item && !known) throw Error(x("\u062A\u0639\u0630\u0631 \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u062A\u0635\u0646\u064A\u0641 \u0647\u0630\u0627 \u0627\u0644\u062A\u0646\u0632\u064A\u0644 \u0627\u0644\u0642\u062F\u064A\u0645. \u0627\u0641\u062A\u062D \u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0627\u0644\u0639\u0646\u0648\u0627\u0646 \u0645\u0646 \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \u0648\u0623\u0639\u062F \u062A\u0646\u0632\u064A\u0644\u0647.", "This older download has no verifiable content category. Open its title details from your subscription and download it again."));
+        if (state2.settings.parental_enabled && isAdult2(offlineItem)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u062C\u0648\u0628 \u0628\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "This content is blocked by parental controls."));
         if (inSet("hidden", offlineItem)) return toast(x("\u0647\u0630\u0627 \u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0645\u062E\u0641\u064A \u0641\u064A \u0645\u0644\u0641\u0643.", "This content is hidden in this profile."));
         if (isNative2() && manager.openNativeDownload) await manager.openNativeDownload(row.id);
         else {
@@ -6172,20 +6205,20 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   function allKnown() {
     const map = /* @__PURE__ */ new Map();
-    for (const item of Object.values(state.catalogs).flat()) map.set(key(item), item);
+    for (const item of Object.values(state2.catalogs).flat()) map.set(key(item), item);
     const c = collection();
     for (const [id, item] of Object.entries(c.saved || {})) map.set(id, item);
     for (const row of c.history) if (row.item) map.set(row.key, row.item);
     return map;
   }
   async function showSavedCollection(view) {
-    state.view = view;
+    state2.view = view;
     const titles = { favorites: ["\u0627\u0644\u0645\u0641\u0636\u0644\u0629", "Favorites"], watchlist: ["\u0623\u0631\u064A\u062F \u0645\u0634\u0627\u0647\u062F\u062A\u0647", "Watchlist"], continue: ["\u0645\u062A\u0627\u0628\u0639\u0629 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629", "Continue watching"], recent: ["\u0627\u0644\u0645\u0636\u0627\u0641 \u062D\u062F\u064A\u062B\u064B\u0627", "Recently added"], recommend: ["\u0645\u0642\u062A\u0631\u062D\u0627\u062A \u0645\u062D\u0644\u064A\u0629", "Local suggestions"] };
-    if (["recent", "recommend"].includes(view)) return openCatalog(state.kind === "live" ? "movie" : state.kind, { view });
+    if (["recent", "recommend"].includes(view)) return openCatalog(state2.kind === "live" ? "movie" : state2.kind, { view });
     showPage("collection", { title: x(...titles[view] || ["\u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Content"]) });
     const c = collection(), known = allKnown();
     let rows = view === "continue" ? c.history.map((h) => known.get(h.key)).filter(Boolean) : (c[view] || []).map((id) => known.get(id)).filter(Boolean);
-    rows = rows.filter((item) => !c.hidden.includes(key(item)) && (!state.settings.parental_enabled || !isAdult2(item)));
+    rows = rows.filter((item) => !c.hidden.includes(key(item)) && (!state2.settings.parental_enabled || !isAdult2(item)));
     const root = $("collection-body");
     root.replaceChildren(node("h2", "collection-heading", x(...titles[view] || ["\u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Content"])));
     if (!rows.length) root.append(node("p", "empty-message", x("\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u062D\u062A\u0648\u0649 \u0645\u062D\u0641\u0648\u0638 \u0647\u0646\u0627 \u0628\u0639\u062F. \u0627\u0641\u062A\u062D \u0623\u062D\u062F \u0627\u0644\u0623\u0642\u0633\u0627\u0645 \u0648\u0627\u062E\u062A\u0631 \u0645\u0646 \u062E\u064A\u0627\u0631\u0627\u062A \u0627\u0644\u0639\u0646\u0648\u0627\u0646.", "Nothing is saved here yet. Open a section and use title options.")));
@@ -6196,9 +6229,9 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     }
   }
   function showAccount() {
-    if (!state.account) return toast(x("\u0623\u0636\u0641 \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \u0623\u0648\u0644\u064B\u0627.", "Add a subscription first."));
-    const a = state.account, u = state.userInfo || {}, expiry = formatExpiry2(u, { locale: state.settings.language === "en" ? "en-GB" : "ar-SA-u-ca-gregory" }), box2 = node("div");
-    box2.append(node("p", "", x("\u0646\u0648\u0639 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: ", "Subscription type: ") + (a.mode || "")), node("p", "", x("\u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062A\u062E\u062F\u0645: ", "Username: ") + (a.username || a.name || x("\u063A\u064A\u0631 \u0645\u0637\u0644\u0648\u0628", "Not required"))), node("p", "", expiry.known ? x(expiry.text, `Subscription ends: ${expiry.date} \xB7 ${expiry.expired ? "Expired" : `${expiry.days} days left`}`) : x("\u0644\u0645 \u064A\u0631\u0633\u0644 \u0627\u0644\u0645\u0635\u062F\u0631 \u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621.", "No expiry date was supplied.")), node("p", "", x("\u0627\u0644\u062D\u0627\u0644\u0629: ", "Status: ") + (u.status || x(state.demo ? "\u062A\u062C\u0631\u0628\u0629" : "\u063A\u064A\u0631 \u0645\u062D\u062F\u062F\u0629", state.demo ? "Demo" : "Not supplied"))));
+    if (!state2.account) return toast(x("\u0623\u0636\u0641 \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \u0623\u0648\u0644\u064B\u0627.", "Add a subscription first."));
+    const a = state2.account, u = state2.userInfo || {}, expiry = formatExpiry2(u, { locale: state2.settings.language === "en" ? "en-GB" : "ar-SA-u-ca-gregory" }), box2 = node("div");
+    box2.append(node("p", "", x("\u0646\u0648\u0639 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643: ", "Subscription type: ") + (a.mode || "")), node("p", "", x("\u0627\u0633\u0645 \u0627\u0644\u0645\u0633\u062A\u062E\u062F\u0645: ", "Username: ") + (a.username || a.name || x("\u063A\u064A\u0631 \u0645\u0637\u0644\u0648\u0628", "Not required"))), node("p", "", expiry.known ? x(expiry.text, `Subscription ends: ${expiry.date} \xB7 ${expiry.expired ? "Expired" : `${expiry.days} days left`}`) : x("\u0644\u0645 \u064A\u0631\u0633\u0644 \u0627\u0644\u0645\u0635\u062F\u0631 \u062A\u0627\u0631\u064A\u062E \u0627\u0646\u062A\u0647\u0627\u0621.", "No expiry date was supplied.")), node("p", "", x("\u0627\u0644\u062D\u0627\u0644\u0629: ", "Status: ") + (u.status || x(state2.demo ? "\u062A\u062C\u0631\u0628\u0629" : "\u063A\u064A\u0631 \u0645\u062D\u062F\u062F\u0629", state2.demo ? "Demo" : "Not supplied"))));
     let revealed = false;
     const pass = node("p", "", x("\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631: ", "Password: ") + "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022");
     if (a.password) {
@@ -6208,9 +6241,9 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       }, "eye"));
     }
     box2.append(actions(btn(x("\u062A\u062D\u062F\u064A\u062B \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643", "Refresh subscription info"), async () => {
-      if (state.demo) return;
+      if (state2.demo) return;
       const auth = await api.authenticate(a, {});
-      state.userInfo = auth.userInfo || {};
+      state2.userInfo = auth.userInfo || {};
       persist();
       showAccount();
     }, "refresh")));
@@ -6218,8 +6251,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   function showAccounts() {
     const box2 = node("div");
-    if (!state.accounts.length) box2.append(node("p", "", x("\u0644\u0627 \u062A\u0648\u062C\u062F \u0627\u0634\u062A\u0631\u0627\u0643\u0627\u062A \u0645\u062D\u0641\u0648\u0638\u0629. \u0641\u0639\u0651\u0644 \u0627\u0644\u062D\u0641\u0638 \u0639\u0646\u062F \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644.", "No saved subscriptions. Enable saving when signing in.")));
-    for (const account of state.accounts) {
+    if (!state2.accounts.length) box2.append(node("p", "", x("\u0644\u0627 \u062A\u0648\u062C\u062F \u0627\u0634\u062A\u0631\u0627\u0643\u0627\u062A \u0645\u062D\u0641\u0648\u0638\u0629. \u0641\u0639\u0651\u0644 \u0627\u0644\u062D\u0641\u0638 \u0639\u0646\u062F \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644.", "No saved subscriptions. Enable saving when signing in.")));
+    for (const account of state2.accounts) {
       const row = node("div", "list-row"), words = node("div");
       words.append(node("h3", "", account.name || account.username || account.mode), node("p", "", account.mode));
       row.append(words, btn(x("\u062F\u062E\u0648\u0644", "Sign in"), async () => {
@@ -6233,7 +6266,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
           showAccounts();
         }
       }, "text"), btn(x("\u062D\u0630\u0641", "Delete"), () => confirmAction(x("\u062D\u0630\u0641 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643\u061F", "Delete subscription?"), x("\u0633\u064A\u064F\u062D\u0630\u0641 \u062D\u0641\u0638 \u0647\u0630\u0627 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0645\u0646 \u0627\u0644\u062C\u0647\u0627\u0632.", "This subscription will be removed from this device."), async () => {
-        state.accounts = state.accounts.filter((a) => a !== account);
+        state2.accounts = state2.accounts.filter((a) => a !== account);
         await persist();
         showAccounts();
       }), "delete"));
@@ -6247,25 +6280,25 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   function showProfiles() {
     const box2 = node("div");
-    for (const name of state.profiles) {
+    for (const name of state2.profiles) {
       const row = node("div", "list-row"), words = node("div");
-      words.append(node("h3", "", name), node("p", "", name === state.profile ? x("\u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u062D\u0627\u0644\u064A", "Current profile") : x("\u0645\u0641\u0636\u0644\u0629 \u0648\u0633\u062C\u0644 \u0648\u0625\u062E\u0641\u0627\u0621 \u0645\u0633\u062A\u0642\u0644\u0629", "Separate favorites, history and hidden items")));
+      words.append(node("h3", "", name), node("p", "", name === state2.profile ? x("\u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u062D\u0627\u0644\u064A", "Current profile") : x("\u0645\u0641\u0636\u0644\u0629 \u0648\u0633\u062C\u0644 \u0648\u0625\u062E\u0641\u0627\u0621 \u0645\u0633\u062A\u0642\u0644\u0629", "Separate favorites, history and hidden items")));
       row.append(words, btn(x("\u0627\u062E\u062A\u064A\u0627\u0631", "Select"), async () => {
         await closePlayer();
-        state.profile = name;
-        state.lastChannel = collection().lastChannel || null;
-        state.group = "";
-        state.family = "all";
+        state2.profile = name;
+        state2.lastChannel = collection().lastChannel || null;
+        state2.group = "";
+        state2.family = "all";
         await persist();
         setupDownloads();
         closeSheet();
-        if (state.page === "catalog") renderCatalog();
+        if (state2.page === "catalog") renderCatalog();
         toast(x("\u062A\u0645 \u062A\u063A\u064A\u064A\u0631 \u0627\u0644\u0645\u0644\u0641", "Profile changed"));
       }, "account"));
-      if (state.profiles.length > 1) row.append(btn(x("\u062D\u0630\u0641", "Delete"), () => confirmAction(x("\u062D\u0630\u0641 \u0627\u0644\u0645\u0644\u0641\u061F", "Delete profile?"), x("\u0633\u064A\u064F\u062D\u0630\u0641 \u0627\u0644\u0645\u0644\u0641 \u0648\u062A\u0641\u0636\u064A\u0644\u0627\u062A\u0647 \u0627\u0644\u0645\u062D\u0644\u064A\u0629.", "The profile and its local preferences will be deleted."), async () => {
-        state.profiles = state.profiles.filter((p) => p !== name);
-        for (const id of Object.keys(state.collections)) if (id.endsWith("|" + name)) delete state.collections[id];
-        if (state.profile === name) state.profile = state.profiles[0];
+      if (state2.profiles.length > 1) row.append(btn(x("\u062D\u0630\u0641", "Delete"), () => confirmAction(x("\u062D\u0630\u0641 \u0627\u0644\u0645\u0644\u0641\u061F", "Delete profile?"), x("\u0633\u064A\u064F\u062D\u0630\u0641 \u0627\u0644\u0645\u0644\u0641 \u0648\u062A\u0641\u0636\u064A\u0644\u0627\u062A\u0647 \u0627\u0644\u0645\u062D\u0644\u064A\u0629.", "The profile and its local preferences will be deleted."), async () => {
+        state2.profiles = state2.profiles.filter((p) => p !== name);
+        for (const id of Object.keys(state2.collections)) if (id.endsWith("|" + name)) delete state2.collections[id];
+        if (state2.profile === name) state2.profile = state2.profiles[0];
         await persist();
         showProfiles();
       }), "delete"));
@@ -6275,8 +6308,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       const values = await fieldsForm(x("\u0645\u0644\u0641 \u062C\u062F\u064A\u062F", "New profile"), [{ name: "name", label: x("\u0627\u0633\u0645 \u0627\u0644\u0645\u0644\u0641", "Profile name") }]);
       if (values) {
         const name = values.name.trim().slice(0, 50);
-        if (name && !state.profiles.includes(name)) {
-          state.profiles.push(name);
+        if (name && !state2.profiles.includes(name)) {
+          state2.profiles.push(name);
           await persist();
         }
         showProfiles();
@@ -6290,25 +6323,25 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     await pairSession?.close?.().catch(() => {
     });
     pairSession = null;
-    state.account = null;
-    state.userInfo = null;
-    state.demo = false;
-    state.catalogs = {};
-    state.current = null;
+    state2.account = null;
+    state2.userInfo = null;
+    state2.demo = false;
+    state2.catalogs = {};
+    state2.current = null;
     $("password").value = "";
     await persist();
     showPage("login");
   }
-  async function showGuide(channel = state.current?.kind === "live" ? state.current : null) {
+  async function showGuide(channel = state2.current?.kind === "live" ? state2.current : null) {
     if (!channel) {
-      if (!(state.catalogs.live || []).length) {
+      if (!(state2.catalogs.live || []).length) {
         try {
           await getCatalog("live");
         } catch (error) {
           return report(error);
         }
       }
-      const rows = filtered(state.catalogs.live || [], { kind: "live", family: "all", group: "", query: "" });
+      const rows = filtered(state2.catalogs.live || [], { kind: "live", family: "all", group: "", query: "" });
       if (!rows.length) return toast(x("\u0644\u0627 \u062A\u0648\u062C\u062F \u0642\u0646\u0648\u0627\u062A \u0645\u062A\u0627\u062D\u0629 \u0644\u0639\u0631\u0636 \u062F\u0644\u064A\u0644\u0647\u0627.", "No channels are available for the guide."));
       return choices(x("\u0627\u062E\u062A\u0631 \u0642\u0646\u0627\u0629 \u0644\u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C", "Choose a channel"), rows.slice(0, 300).map((item) => ({ label: item.name, value: item.id })), (id) => showGuide(rows.find((i) => i.id === id)));
     }
@@ -6317,12 +6350,12 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     sheet(x("\u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C: ", "Program guide: ") + channel.name, box2);
     try {
       let programs = [];
-      if (state.demo) programs = [{ title: x("\u0645\u0642\u0637\u0639 \u062A\u062C\u0631\u064A\u0628\u064A \u0645\u0645\u0644\u0648\u0643", "Owned demo clip"), description: x("\u0628\u064A\u0627\u0646\u0627\u062A \u062A\u0648\u0636\u064A\u062D\u064A\u0629 \u0644\u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C.", "Sample guide data."), start: Date.now() / 1e3, end: Date.now() / 1e3 + 1800 }];
-      else programs = await api.epg(state.account, channel, {});
+      if (state2.demo) programs = [{ title: x("\u0645\u0642\u0637\u0639 \u062A\u062C\u0631\u064A\u0628\u064A \u0645\u0645\u0644\u0648\u0643", "Owned demo clip"), description: x("\u0628\u064A\u0627\u0646\u0627\u062A \u062A\u0648\u0636\u064A\u062D\u064A\u0629 \u0644\u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C.", "Sample guide data."), start: Date.now() / 1e3, end: Date.now() / 1e3 + 1800 }];
+      else programs = await api.epg(state2.account, channel, {});
       if (!Array.isArray(programs)) programs = programs.programs || programs.epg_listings || [];
-      if (state.localEpg?.length) {
-        const mapping = state.settings.epg_mapping?.[channel.id] || channel.epgId || channel.name;
-        const local = state.localEpg.filter((p) => p.channel === mapping);
+      if (state2.localEpg?.length) {
+        const mapping = state2.settings.epg_mapping?.[channel.id] || channel.epgId || channel.name;
+        const local = state2.localEpg.filter((p) => p.channel === mapping);
         if (local.length) programs = local;
       }
       box2.replaceChildren();
@@ -6335,7 +6368,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         row.append(words);
         if (start > Date.now()) row.append(btn(x("\u062A\u0630\u0643\u064A\u0631", "Remind"), () => addReminder(channel, program, start), "notifications"));
         const replay = safeURL2(program.catchup_url || program.url || "");
-        if (replay && end < Date.now() && ["direct", "m3u", "m3u-file"].includes(state.account?.mode)) row.append(btn(x("\u0625\u0639\u0627\u062F\u0629", "Replay"), () => playItem({ ...channel, id: channel.id + ":catchup:" + start, kind: "movie", url: replay.href }), "history"));
+        if (replay && end < Date.now() && ["direct", "m3u", "m3u-file"].includes(state2.account?.mode)) row.append(btn(x("\u0625\u0639\u0627\u062F\u0629", "Replay"), () => playItem({ ...channel, id: channel.id + ":catchup:" + start, kind: "movie", url: replay.href }), "history"));
         box2.append(row);
       }
     } catch (error) {
@@ -6362,20 +6395,20 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   function guideTime(time) {
     if (!Number.isFinite(time)) return "\u2014";
-    const zone = state.settings.epg_timezone === "local" ? void 0 : state.settings.epg_timezone;
+    const zone = state2.settings.epg_timezone === "local" ? void 0 : state2.settings.epg_timezone;
     try {
-      return new Date(time + Number(state.settings.epg_offset_minutes || 0) * 6e4).toLocaleString(state.settings.language === "en" ? "en-GB" : "ar-SA", { hour: "2-digit", minute: "2-digit", timeZone: zone });
+      return new Date(time + Number(state2.settings.epg_offset_minutes || 0) * 6e4).toLocaleString(state2.settings.language === "en" ? "en-GB" : "ar-SA", { hour: "2-digit", minute: "2-digit", timeZone: zone });
     } catch {
       return new Date(time).toLocaleTimeString();
     }
   }
   async function guideSettings(channel) {
-    const values = await fieldsForm(x("\u0625\u0639\u062F\u0627\u062F\u0627\u062A \u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C", "Guide settings"), [{ name: "zone", label: x("\u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0632\u0645\u0646\u064A\u0629", "Time zone"), value: state.settings.epg_timezone || "local", options: [{ value: "local", label: x("\u062D\u0633\u0628 \u0627\u0644\u062C\u0647\u0627\u0632", "Device time zone") }, { value: "Asia/Riyadh", label: x("\u0627\u0644\u0631\u064A\u0627\u0636", "Riyadh") }, { value: "UTC", label: "UTC" }] }, { name: "offset", label: x("\u062A\u0635\u062D\u064A\u062D \u0627\u0644\u062A\u0648\u0642\u064A\u062A \u0628\u0627\u0644\u062F\u0642\u0627\u0626\u0642", "Time offset in minutes"), type: "number", value: state.settings.epg_offset_minutes || 0 }, { name: "mapping", label: x("\u0645\u0639\u0631\u0641 \u0642\u0646\u0627\u0629 XMLTV (\u0627\u062E\u062A\u064A\u0627\u0631\u064A)", "XMLTV channel ID (optional)"), value: state.settings.epg_mapping?.[channel.id] || channel.epgId || "", required: false }]);
+    const values = await fieldsForm(x("\u0625\u0639\u062F\u0627\u062F\u0627\u062A \u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C", "Guide settings"), [{ name: "zone", label: x("\u0627\u0644\u0645\u0646\u0637\u0642\u0629 \u0627\u0644\u0632\u0645\u0646\u064A\u0629", "Time zone"), value: state2.settings.epg_timezone || "local", options: [{ value: "local", label: x("\u062D\u0633\u0628 \u0627\u0644\u062C\u0647\u0627\u0632", "Device time zone") }, { value: "Asia/Riyadh", label: x("\u0627\u0644\u0631\u064A\u0627\u0636", "Riyadh") }, { value: "UTC", label: "UTC" }] }, { name: "offset", label: x("\u062A\u0635\u062D\u064A\u062D \u0627\u0644\u062A\u0648\u0642\u064A\u062A \u0628\u0627\u0644\u062F\u0642\u0627\u0626\u0642", "Time offset in minutes"), type: "number", value: state2.settings.epg_offset_minutes || 0 }, { name: "mapping", label: x("\u0645\u0639\u0631\u0641 \u0642\u0646\u0627\u0629 XMLTV (\u0627\u062E\u062A\u064A\u0627\u0631\u064A)", "XMLTV channel ID (optional)"), value: state2.settings.epg_mapping?.[channel.id] || channel.epgId || "", required: false }]);
     if (values) {
-      state.settings.epg_timezone = values.zone;
-      state.settings.epg_offset_minutes = Math.max(-1440, Math.min(1440, Number(values.offset) || 0));
-      state.settings.epg_mapping ??= {};
-      state.settings.epg_mapping[channel.id] = values.mapping;
+      state2.settings.epg_timezone = values.zone;
+      state2.settings.epg_offset_minutes = Math.max(-1440, Math.min(1440, Number(values.offset) || 0));
+      state2.settings.epg_mapping ??= {};
+      state2.settings.epg_mapping[channel.id] = values.mapping;
       saveSoon();
       showGuide(channel);
     }
@@ -6392,7 +6425,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         const xml = new DOMParser().parseFromString(await file.text(), "application/xml");
         if (xml.querySelector("parsererror")) throw Error(x("\u0645\u0644\u0641 XMLTV \u063A\u064A\u0631 \u0635\u0627\u0644\u062D.", "Invalid XMLTV file."));
         const programs = [...xml.querySelectorAll("programme")].slice(0, 1e5).map((p) => ({ channel: p.getAttribute("channel"), start: p.getAttribute("start"), stop: p.getAttribute("stop"), title: p.querySelector("title")?.textContent || "", description: p.querySelector("desc")?.textContent || "" }));
-        state.localEpg = programs;
+        state2.localEpg = programs;
         await vault.set("epg", programs);
         toast(x(`\u062A\u0645 \u0627\u0633\u062A\u064A\u0631\u0627\u062F ${programs.length} \u0628\u0631\u0646\u0627\u0645\u062C. \u0627\u062E\u062A\u0631 \u0645\u0639\u0631\u0641 \u0627\u0644\u0642\u0646\u0627\u0629 \u0641\u064A \u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0627\u0644\u062F\u0644\u064A\u0644.`, `Imported ${programs.length} programs. Map the channel ID in guide settings.`));
         guideSettings(channel);
@@ -6403,21 +6436,21 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     input.click();
   }
   async function addReminder(channel, program, time) {
-    state.reminders ??= [];
-    state.reminders.push({ channel: channel.name, title: decodeText(program.title || program.name), time });
-    await vault.set("reminders", state.reminders);
+    state2.reminders ??= [];
+    state2.reminders.push({ channel: channel.name, title: decodeText(program.title || program.name), time });
+    await vault.set("reminders", state2.reminders);
     scheduleReminders();
     toast(x("\u062A\u0645 \u0636\u0628\u0637 \u0627\u0644\u062A\u0630\u0643\u064A\u0631 \u0623\u062B\u0646\u0627\u0621 \u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0627\u0644\u062A\u0637\u0628\u064A\u0642. \u0644\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A \u062E\u0627\u0631\u062C \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0627\u0633\u062A\u062E\u062F\u0645 \u0623\u0630\u0648\u0646\u0627\u062A \u0627\u0644\u0622\u064A\u0641\u0648\u0646 \u0627\u0644\u0645\u062F\u0639\u0648\u0645\u0629.", "Reminder set while the app is active. Outside the app, iPhone notification support and permission apply."));
   }
   function scheduleReminders() {
-    for (const reminder of state.reminders || []) {
+    for (const reminder of state2.reminders || []) {
       if (reminder.scheduled || reminder.time < Date.now()) continue;
       const delay = reminder.time - Date.now();
       if (delay > 2147483e3) continue;
       reminder.scheduled = true;
       setTimeout(async () => {
         toast(reminder.channel + " \xB7 " + reminder.title);
-        if (state.settings.notifications) await deliverNotification({ id: reminder.channel + "|" + reminder.title + "|" + reminder.time, title: reminder.channel, body: reminder.title, url: location.origin + "/app" });
+        if (state2.settings.notifications) await deliverNotification({ id: reminder.channel + "|" + reminder.title + "|" + reminder.time, title: reminder.channel, body: reminder.title, url: location.origin + "/app" });
       }, delay);
     }
   }
@@ -6441,29 +6474,29 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     sheet(x("\u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A", "Notifications"), box2);
   }
   async function requestNotifications() {
-    if (state.settings.notifications) {
+    if (state2.settings.notifications) {
       const box2 = node("div");
       box2.append(node("p", "", x("\u0625\u0634\u0639\u0627\u0631\u0627\u062A \u0627\u0644\u0646\u0638\u0627\u0645 \u0645\u0641\u0639\u0651\u0644\u0629 \u0644\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A \u0627\u0644\u062C\u062F\u064A\u062F\u0629 \u0648\u0627\u0644\u062A\u0630\u0643\u064A\u0631\u0627\u062A \u0623\u062B\u0646\u0627\u0621 \u062A\u0634\u063A\u064A\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642.", "System alerts are enabled for new announcements and reminders while the app is running.")), actions(btn(x("\u0625\u0631\u0633\u0627\u0644 \u062A\u0646\u0628\u064A\u0647 \u062A\u062C\u0631\u064A\u0628\u064A", "Send a test notification"), async () => {
         const message2 = x("\u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A \u062A\u0639\u0645\u0644 \u0639\u0644\u0649 \u0647\u0630\u0627 \u0627\u0644\u062C\u0647\u0627\u0632.", "Notifications are working on this device.");
-        const result2 = await deliverNotification({ id: "notification-test", title: brandName(state.settings.language), body: message2, url: location.origin + "/app" });
+        const result2 = await deliverNotification({ id: "notification-test", title: brandName(state2.settings.language), body: message2, url: location.origin + "/app" });
         toast(result2.delivered ? x("\u0623\u064F\u0631\u0633\u0644 \u0627\u0644\u062A\u0646\u0628\u064A\u0647 \u0627\u0644\u062A\u062C\u0631\u064A\u0628\u064A.", "Test notification sent.") : x("\u0627\u0644\u062A\u0646\u0628\u064A\u0647 \u0645\u062A\u0627\u062D \u062F\u0627\u062E\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642. \u0631\u0627\u062C\u0639 \u0625\u0630\u0646 \u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A \u0641\u064A \u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0627\u0644\u062C\u0647\u0627\u0632.", "In-app alert shown. Check notification permission in device settings."));
       }, "notifications", "primary"), btn(x("\u0625\u064A\u0642\u0627\u0641 \u0625\u0634\u0639\u0627\u0631\u0627\u062A \u0627\u0644\u0646\u0638\u0627\u0645 \u0644\u0644\u062A\u0637\u0628\u064A\u0642", "Turn off app system alerts"), async () => {
         if (typeof globalThis.abunasserDesktop?.setNotificationsEnabled === "function") {
           const result2 = await globalThis.abunasserDesktop.setNotificationsEnabled(false);
           if (result2?.ok === false) throw Error("Notification preference failed");
         }
-        state.settings.notifications = false;
+        state2.settings.notifications = false;
         await persist();
         closeSheet();
-        if (state.page === "settings") renderSettings();
+        if (state2.page === "settings") renderSettings();
         toast(x("\u0623\u064F\u0648\u0642\u0641\u062A \u0625\u0634\u0639\u0627\u0631\u0627\u062A \u0627\u0644\u0646\u0638\u0627\u0645. \u062A\u0628\u0642\u0649 \u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A \u0645\u062A\u0627\u062D\u0629 \u062F\u0627\u062E\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642.", "System alerts are off. Announcements remain available inside the app."));
       }, "close")));
       return sheet(x("\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A", "Notifications"), box2);
     }
     const result = await requestNotificationPermission();
-    state.settings.notifications = result.granted === true;
+    state2.settings.notifications = result.granted === true;
     await persist();
-    if (state.page === "settings") renderSettings();
+    if (state2.page === "settings") renderSettings();
     if (result.granted) return toast(x("\u062A\u0645 \u0627\u0644\u0633\u0645\u0627\u062D \u0628\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A. \u064A\u0645\u0643\u0646\u0643 \u0625\u0631\u0633\u0627\u0644 \u062A\u0646\u0628\u064A\u0647 \u062A\u062C\u0631\u064A\u0628\u064A \u0645\u0646 \u0627\u0644\u062E\u064A\u0627\u0631 \u0646\u0641\u0633\u0647.", "Notifications enabled. Open this setting again to send a test alert."));
     const message = { denied: x("\u0644\u0645 \u064A\u064F\u0633\u0645\u062D \u0628\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A. \u063A\u064A\u0651\u0631 \u0627\u0644\u0625\u0630\u0646 \u0645\u0646 \u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0627\u0644\u062C\u0647\u0627\u0632 \u0623\u0648 \u0627\u0644\u0645\u062A\u0635\u0641\u062D \u0625\u0646 \u0631\u063A\u0628\u062A. \u062A\u0628\u0642\u0649 \u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A \u0645\u062A\u0627\u062D\u0629 \u062F\u0627\u062E\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642.", "Notifications were denied. You can change permission in device or browser settings. In-app announcements remain available."), dismissed: x("\u0644\u0645 \u064A\u0643\u062A\u0645\u0644 \u0627\u0644\u0633\u0645\u0627\u062D \u0628\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A. \u064A\u0645\u0643\u0646\u0643 \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629 \u0645\u062C\u062F\u062F\u064B\u0627.", "Notification permission was not granted. You can try again."), "install-required": x("\u0639\u0644\u0649 \u0627\u0644\u0622\u064A\u0641\u0648\u0646\u060C \u0623\u0636\u0641 \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0625\u0644\u0649 \u0627\u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629 \u0648\u0627\u0641\u062A\u062D\u0647 \u0645\u0646\u0647\u0627. \u0625\u0634\u0639\u0627\u0631\u0627\u062A \u0627\u0644\u0648\u064A\u0628 \u062A\u062D\u062A\u0627\u062C iOS 16.4 \u0623\u0648 \u0623\u062D\u062F\u062B.", "On iPhone, add the app to your Home Screen and open its icon. Web notifications require iOS 16.4 or later."), "insecure-context": x("\u0625\u0634\u0639\u0627\u0631\u0627\u062A \u0627\u0644\u0646\u0638\u0627\u0645 \u062A\u062D\u062A\u0627\u062C \u0645\u0648\u0642\u0639\u064B\u0627 \u0622\u0645\u0646\u064B\u0627 \u0639\u0628\u0631 HTTPS. \u062A\u0628\u0642\u0649 \u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A \u0645\u062A\u0627\u062D\u0629 \u062F\u0627\u062E\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642.", "System notifications need a secure HTTPS site. In-app announcements remain available."), unsupported: x("\u0647\u0630\u0627 \u0627\u0644\u062C\u0647\u0627\u0632 \u0644\u0627 \u064A\u0648\u0641\u0631 \u0625\u0634\u0639\u0627\u0631\u0627\u062A \u0627\u0644\u0646\u0638\u0627\u0645 \u0644\u0647\u0630\u0627 \u0627\u0644\u062A\u0637\u0628\u064A\u0642. \u062A\u0638\u0647\u0631 \u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A \u0623\u062B\u0646\u0627\u0621 \u0641\u062A\u062D \u0627\u0644\u062A\u0637\u0628\u064A\u0642.", "This device does not expose system notifications for this app. Announcements appear while the app is open.") }[result.reason] || x("\u062A\u0639\u0630\u0631 \u062A\u0641\u0639\u064A\u0644 \u0625\u0634\u0639\u0627\u0631\u0627\u062A \u0627\u0644\u0646\u0638\u0627\u0645. \u062A\u0638\u0647\u0631 \u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A \u062F\u0627\u062E\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642 \u0623\u062B\u0646\u0627\u0621 \u0641\u062A\u062D\u0647.", "System notifications could not be enabled. Announcements appear while the app is open.");
     sheet(x("\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A", "Notifications"), message);
@@ -6474,14 +6507,14 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       ["\u0627\u0644\u0645\u0638\u0647\u0631 \u0648\u0633\u0647\u0648\u0644\u0629 \u0627\u0644\u0648\u0635\u0648\u0644", "Appearance and accessibility", [["language", "\u0627\u0644\u0644\u063A\u0629", "Language"], ["palette", "\u0644\u0648\u0646 \u0627\u0644\u062A\u0645\u064A\u064A\u0632", "Accent color"], ["theme", "\u0627\u0644\u062B\u064A\u0645", "Theme"], ["motion", "\u062D\u0631\u0643\u0629 \u0627\u0644\u062E\u0644\u0641\u064A\u0629", "Background motion"], ["reduced", "\u062A\u0642\u0644\u064A\u0644 \u0627\u0644\u062D\u0631\u0643\u0629", "Reduce motion"], ["text", "\u062D\u062C\u0645 \u0627\u0644\u0646\u0635", "Text size"], ["contrast", "\u0627\u0644\u062A\u0628\u0627\u064A\u0646 \u0648\u0627\u0644\u062A\u062D\u062F\u064A\u062F", "Contrast and focus"], ["layout", "\u062A\u0631\u062A\u064A\u0628 \u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629", "Home layout"], ["start", "\u0634\u0627\u0634\u0629 \u0627\u0644\u0628\u062F\u0627\u064A\u0629", "Start screen"], ["screensaver", "\u0634\u0627\u0634\u0629 \u0627\u0644\u062A\u0648\u0642\u0641", "Screensaver"], ["timer", "\u0645\u0647\u0644\u0629 \u0634\u0627\u0634\u0629 \u0627\u0644\u062A\u0648\u0642\u0641", "Screensaver delay"]]],
       ["\u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629 \u0648\u0627\u0644\u0623\u062F\u0627\u0621", "Playback and performance", [["decoder", "\u0641\u0643 \u062A\u0631\u0645\u064A\u0632 \u0627\u0644\u0641\u064A\u062F\u064A\u0648", "Video decoding"], ["aspect", "\u0623\u0628\u0639\u0627\u062F \u0627\u0644\u0635\u0648\u0631\u0629", "Picture size"], ["buffer", "\u0627\u0644\u062A\u062E\u0632\u064A\u0646 \u0627\u0644\u0645\u0624\u0642\u062A", "Buffer"], ["seek", "\u0627\u0644\u062A\u0642\u062F\u064A\u0645 \u0648\u0627\u0644\u0625\u0631\u062C\u0627\u0639", "Seek interval"], ["next", "\u0627\u0644\u062D\u0644\u0642\u0629 \u0627\u0644\u062A\u0627\u0644\u064A\u0629", "Next episode"], ["data", "\u062A\u0648\u0641\u064A\u0631 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A", "Data saver"], ["categories", "\u062A\u0635\u0646\u064A\u0641 \u0627\u0644\u0642\u0646\u0648\u0627\u062A", "Channel categories"], ["refresh", "\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u0642\u0646\u0648\u0627\u062A", "Channel refresh"], ["guide", "\u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C", "Program guide"]]],
       ["\u0627\u0644\u062E\u0635\u0648\u0635\u064A\u0629 \u0648\u0627\u0644\u062A\u062D\u0643\u0645", "Privacy and control", [["pin", "\u0642\u0641\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642", "App PIN lock"], ["parental", "\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629", "Parental controls"], ["hidden", "\u0627\u0644\u0645\u062D\u062A\u0648\u0649 \u0627\u0644\u0645\u062E\u0641\u064A", "Hidden content"], ["privacy", "\u0648\u0636\u0639 \u0627\u0644\u062E\u0635\u0648\u0635\u064A\u0629", "Privacy mode"], ["history", "\u0645\u0633\u062D \u0633\u062C\u0644 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629", "Clear watch history"], ["backup", "\u0646\u0633\u062E\u0629 \u0645\u0634\u0641\u0631\u0629", "Encrypted backup"], ["restore", "\u0627\u0633\u062A\u064A\u0631\u0627\u062F \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A", "Import data"], ["delete", "\u062D\u0630\u0641 \u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A", "Delete data"]]],
-      ["\u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629 \u0648\u0627\u0644\u062A\u062D\u062F\u064A\u062B\u0627\u062A", "Help and updates", [["support", "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A", "Technical support"], ["network", "\u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0648\u0627\u0644\u0623\u062E\u0637\u0627\u0621", "Connection and errors"], ["tools", "\u0645\u0633\u0627\u0639\u062F \u0627\u0644\u0623\u0639\u0637\u0627\u0644", "Troubleshooting"], ["setup", "\u0625\u0639\u062F\u0627\u062F \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643", "Set up subscription"], ["demo", "\u062A\u062C\u0631\u0628\u0629 \u0627\u0644\u0648\u0627\u062C\u0647\u0629", "Try the interface"], ["update", "\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u062A\u0637\u0628\u064A\u0642", "App update"], ["notifications", "\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A", "Notifications"], ["help", "\u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629", "Help"], ...state.account ? [["logout", "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C", "Sign out"]] : []]]
+      ["\u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629 \u0648\u0627\u0644\u062A\u062D\u062F\u064A\u062B\u0627\u062A", "Help and updates", [["support", "\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A", "Technical support"], ["network", "\u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0648\u0627\u0644\u0623\u062E\u0637\u0627\u0621", "Connection and errors"], ["tools", "\u0645\u0633\u0627\u0639\u062F \u0627\u0644\u0623\u0639\u0637\u0627\u0644", "Troubleshooting"], ["setup", "\u0625\u0639\u062F\u0627\u062F \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643", "Set up subscription"], ["demo", "\u062A\u062C\u0631\u0628\u0629 \u0627\u0644\u0648\u0627\u062C\u0647\u0629", "Try the interface"], ["update", "\u062A\u062D\u062F\u064A\u062B \u0627\u0644\u062A\u0637\u0628\u064A\u0642", "App update"], ["notifications", "\u0627\u0644\u0625\u0634\u0639\u0627\u0631\u0627\u062A", "Notifications"], ["help", "\u0627\u0644\u0645\u0633\u0627\u0639\u062F\u0629", "Help"], ...state2.account ? [["logout", "\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062E\u0631\u0648\u062C", "Sign out"]] : []]]
     ];
   }
   function settingValue(id) {
-    const p = state.settings, yes = x("\u0645\u0641\u0639\u0651\u0644", "On"), no = x("\u0645\u062A\u0648\u0642\u0641", "Off");
+    const p = state2.settings, yes = x("\u0645\u0641\u0639\u0651\u0644", "On"), no = x("\u0645\u062A\u0648\u0642\u0641", "Off");
     const toggles = { reduced: "reduced_motion", contrast: "high_contrast", next: "auto_next", data: "data_saver", categories: "auto_categories", privacy: "privacy_mode", parental: "parental_enabled", notifications: "notifications" };
     if (toggles[id]) return p[toggles[id]] ? yes : no;
-    return { language: p.language === "en" ? "English" : "\u0627\u0644\u0639\u0631\u0628\u064A\u0629", palette: p.accent, theme: { dark: x("\u062F\u0627\u0643\u0646", "Dark"), light: x("\u0641\u0627\u062A\u062D", "Light"), sport: x("\u0631\u064A\u0627\u0636\u064A", "Sport"), cinema: x("\u0633\u064A\u0646\u0645\u0627\u0626\u064A", "Cinema") }[p.theme], motion: { standard: x("\u0648\u0627\u0636\u062D\u0629", "Visible"), fast: x("\u0633\u0631\u064A\u0639\u0629", "Fast"), off: x("\u062B\u0627\u0628\u062A\u0629", "Still") }[p.background_speed], text: Math.round(p.text_scale * 100) + "%", timer: p.screensaver_minutes + x(" \u062F\u0642\u0627\u0626\u0642", " minutes"), seek: p.seek_step_seconds + x(" \u062B\u0627\u0646\u064A\u0629", " seconds"), decoder: x("\u062A\u0644\u0642\u0627\u0626\u064A \u062D\u0633\u0628 \u0627\u0644\u0646\u0638\u0627\u0645", "Automatic by the system"), aspect: p.aspect_mode, buffer: [x("\u0645\u062A\u0648\u0627\u0632\u0646", "Balanced"), x("\u0632\u0645\u0646 \u0623\u0642\u0644", "Low latency"), x("\u062B\u0628\u0627\u062A \u0623\u0639\u0644\u0649", "Stable")][Number(p.buffer_mode) || 0], refresh: p.catalog_refresh_hours ? x(`\u0643\u0644 ${p.catalog_refresh_hours} \u0633\u0627\u0639\u0627\u062A`, `Every ${p.catalog_refresh_hours} hours`) : x("\u064A\u062F\u0648\u064A \u0641\u0642\u0637", "Manual only"), profiles: state.profile, pin: state.pin ? yes : no, remote: pairSession?.active ? x("\u062C\u0644\u0633\u0629 \u0645\u0631\u062A\u0628\u0637\u0629", "Active session") : x("\u0631\u0628\u0637 \u0645\u0624\u0642\u062A", "Temporary pairing"), update: APP_VERSION }[id] || "";
+    return { language: p.language === "en" ? "English" : "\u0627\u0644\u0639\u0631\u0628\u064A\u0629", palette: p.accent, theme: { dark: x("\u062F\u0627\u0643\u0646", "Dark"), light: x("\u0641\u0627\u062A\u062D", "Light"), sport: x("\u0631\u064A\u0627\u0636\u064A", "Sport"), cinema: x("\u0633\u064A\u0646\u0645\u0627\u0626\u064A", "Cinema") }[p.theme], motion: { standard: x("\u0648\u0627\u0636\u062D\u0629", "Visible"), fast: x("\u0633\u0631\u064A\u0639\u0629", "Fast"), off: x("\u062B\u0627\u0628\u062A\u0629", "Still") }[p.background_speed], text: Math.round(p.text_scale * 100) + "%", timer: p.screensaver_minutes + x(" \u062F\u0642\u0627\u0626\u0642", " minutes"), seek: p.seek_step_seconds + x(" \u062B\u0627\u0646\u064A\u0629", " seconds"), decoder: x("\u062A\u0644\u0642\u0627\u0626\u064A \u062D\u0633\u0628 \u0627\u0644\u0646\u0638\u0627\u0645", "Automatic by the system"), aspect: p.aspect_mode, buffer: [x("\u0645\u062A\u0648\u0627\u0632\u0646", "Balanced"), x("\u0632\u0645\u0646 \u0623\u0642\u0644", "Low latency"), x("\u062B\u0628\u0627\u062A \u0623\u0639\u0644\u0649", "Stable")][Number(p.buffer_mode) || 0], refresh: p.catalog_refresh_hours ? x(`\u0643\u0644 ${p.catalog_refresh_hours} \u0633\u0627\u0639\u0627\u062A`, `Every ${p.catalog_refresh_hours} hours`) : x("\u064A\u062F\u0648\u064A \u0641\u0642\u0637", "Manual only"), profiles: state2.profile, pin: state2.pin ? yes : no, remote: pairSession?.active ? x("\u062C\u0644\u0633\u0629 \u0645\u0631\u062A\u0628\u0637\u0629", "Active session") : x("\u0631\u0628\u0637 \u0645\u0624\u0642\u062A", "Temporary pairing"), update: APP_VERSION }[id] || "";
   }
   function renderSettings() {
     const root = $("settings-groups");
@@ -6506,23 +6539,23 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     intro.querySelector("span").textContent = x("\u0625\u0639\u062F\u0627\u062F\u0627\u062A \u0627\u0644\u062C\u0647\u0627\u0632 \u0648\u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0641\u064A \u0635\u0641\u062D\u0629 \u0648\u0627\u062D\u062F\u0629", "Device and subscription settings on one page");
   }
   function chooseSetting(keyName, title, options) {
-    choices(title, options.map(([value, ar, en]) => ({ value, label: x(ar, en), selected: state.settings[keyName] === value })), async (value) => {
-      state.settings[keyName] = value;
-      if (keyName === "language" && state.demo) state.catalogs = demoItems();
+    choices(title, options.map(([value, ar, en]) => ({ value, label: x(ar, en), selected: state2.settings[keyName] === value })), async (value) => {
+      state2.settings[keyName] = value;
+      if (keyName === "language" && state2.demo) state2.catalogs = demoItems();
       if (keyName === "privacy_mode" && value) {
         collection().history = [];
         collection().progress = {};
       }
       applyPreferences();
-      if (state.page === "settings") renderSettings();
-      if (state.page === "home") renderHome();
-      if (state.page === "catalog") renderCatalog();
+      if (state2.page === "settings") renderSettings();
+      if (state2.page === "home") renderHome();
+      if (state2.page === "catalog") renderCatalog();
       await persist();
     });
   }
   async function toggleSetting(keyName) {
-    state.settings[keyName] = !state.settings[keyName];
-    if (keyName === "privacy_mode" && state.settings[keyName]) {
+    state2.settings[keyName] = !state2.settings[keyName];
+    if (keyName === "privacy_mode" && state2.settings[keyName]) {
       collection().history = [];
       collection().progress = {};
     }
@@ -6551,9 +6584,9 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         box2.append(node("p", "", x("\u0627\u062E\u062A\u0631 \u0644\u0648\u0646 \u0627\u0644\u0623\u064A\u0642\u0648\u0646\u0627\u062A \u0648\u0627\u0644\u062A\u0645\u064A\u064A\u0632.", "Choose icon and focus color.")));
         const color2 = node("input");
         color2.type = "color";
-        color2.value = state.settings.accent;
+        color2.value = state2.settings.accent;
         color2.oninput = () => {
-          state.settings.accent = color2.value;
+          state2.settings.accent = color2.value;
           applyPreferences();
           saveSoon();
         };
@@ -6656,13 +6689,13 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     }
   }
   async function managePIN() {
-    if (state.pin) {
+    if (state2.pin) {
       const check = await fieldsForm(x("\u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u0631\u0645\u0632 \u0627\u0644\u062D\u0627\u0644\u064A", "Verify current PIN"), [{ name: "pin", label: x("\u0631\u0645\u0632 PIN \u0627\u0644\u062D\u0627\u0644\u064A", "Current PIN"), type: "password", inputmode: "numeric" }]);
       if (!check) return;
-      if (!await verifyPIN2(check.pin, state.pin)) throw Error(x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D.", "Incorrect PIN."));
+      if (!await verifyPIN2(check.pin, state2.pin)) throw Error(x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D.", "Incorrect PIN."));
       choices(x("\u0642\u0641\u0644 \u0627\u0644\u062A\u0637\u0628\u064A\u0642", "App lock"), [{ value: "change", label: x("\u062A\u063A\u064A\u064A\u0631 \u0627\u0644\u0631\u0645\u0632", "Change PIN") }, { value: "remove", label: x("\u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u0642\u0641\u0644", "Remove lock") }], async (value) => {
         if (value === "remove") {
-          state.pin = null;
+          state2.pin = null;
           await persist();
           renderSettings();
         } else await setPIN();
@@ -6673,30 +6706,30 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     const values = await fieldsForm(x("\u0631\u0645\u0632 PIN \u062C\u062F\u064A\u062F", "New PIN"), [{ name: "pin", label: x("\u0645\u0646 4 \u0625\u0644\u0649 8 \u0623\u0631\u0642\u0627\u0645", "4 to 8 digits"), type: "password", inputmode: "numeric" }, { name: "confirm", label: x("\u062A\u0623\u0643\u064A\u062F \u0627\u0644\u0631\u0645\u0632", "Confirm PIN"), type: "password", inputmode: "numeric" }]);
     if (!values) return;
     if (!/^\d{4,8}$/.test(values.pin) || values.pin !== values.confirm) throw Error(x("\u0623\u062F\u062E\u0644 \u0631\u0645\u0632\u064B\u0627 \u0645\u0646 4 \u0625\u0644\u0649 8 \u0623\u0631\u0642\u0627\u0645 \u0648\u0637\u0627\u0628\u0642 \u0627\u0644\u062A\u0623\u0643\u064A\u062F.", "Use matching 4 to 8 digit PINs."));
-    state.pin = await derivePIN2(values.pin);
+    state2.pin = await derivePIN2(values.pin);
     await persist();
     renderSettings();
     toast(x("\u062A\u0645 \u062D\u0641\u0638 \u0627\u0644\u0642\u0641\u0644", "App lock saved"));
   }
   async function parentalControls() {
-    if (state.pin) {
+    if (state2.pin) {
       const values = await fieldsForm(x("\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629", "Parental controls"), [{ name: "pin", label: x("\u0631\u0645\u0632 PIN", "PIN"), type: "password", inputmode: "numeric" }]);
       if (!values) return;
-      if (!await verifyPIN2(values.pin, state.pin)) throw Error(x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D.", "Incorrect PIN."));
+      if (!await verifyPIN2(values.pin, state2.pin)) throw Error(x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D.", "Incorrect PIN."));
     } else {
       const box2 = node("div");
       box2.append(node("p", "", x("\u0646\u0646\u0635\u062D \u0628\u062A\u0639\u064A\u064A\u0646 \u0631\u0645\u0632 PIN \u0644\u062D\u0645\u0627\u064A\u0629 \u062A\u063A\u064A\u064A\u0631 \u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629.", "Set a PIN to protect parental control changes.")), actions(btn(x("\u062A\u0639\u064A\u064A\u0646 \u0631\u0645\u0632", "Set PIN"), () => setPIN(), "pin"), btn(x("\u062A\u0641\u0639\u064A\u0644 \u0627\u0644\u062D\u062C\u0628 \u0627\u0644\u0622\u0646", "Enable blocking"), async () => {
-        state.settings.parental_enabled = true;
+        state2.settings.parental_enabled = true;
         await persist();
         closeSheet();
         renderSettings();
       }, "parental")));
       return sheet(x("\u0627\u0644\u0631\u0642\u0627\u0628\u0629 \u0627\u0644\u0623\u0628\u0648\u064A\u0629", "Parental controls"), box2);
     }
-    state.settings.parental_enabled = !state.settings.parental_enabled;
+    state2.settings.parental_enabled = !state2.settings.parental_enabled;
     await persist();
     renderSettings();
-    toast(state.settings.parental_enabled ? x("\u062A\u0645 \u062A\u0641\u0639\u064A\u0644 \u062D\u062C\u0628 \u062A\u0635\u0646\u064A\u0641\u0627\u062A \u0627\u0644\u0643\u0628\u0627\u0631", "Adult category blocking enabled") : x("\u062A\u0645 \u0625\u064A\u0642\u0627\u0641 \u0627\u0644\u062D\u062C\u0628", "Blocking disabled"));
+    toast(state2.settings.parental_enabled ? x("\u062A\u0645 \u062A\u0641\u0639\u064A\u0644 \u062D\u062C\u0628 \u062A\u0635\u0646\u064A\u0641\u0627\u062A \u0627\u0644\u0643\u0628\u0627\u0631", "Adult category blocking enabled") : x("\u062A\u0645 \u0625\u064A\u0642\u0627\u0641 \u0627\u0644\u062D\u062C\u0628", "Blocking disabled"));
   }
   function hiddenContent() {
     const c = collection(), known = allKnown(), box2 = node("div");
@@ -6750,8 +6783,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     } catch {
     }
     box2.replaceChildren(node("p", "", x(`\u062D\u0627\u0644\u0629 \u0627\u0644\u0634\u0628\u0643\u0629: ${navigator.onLine ? "\u0645\u062A\u0635\u0644" : "\u063A\u064A\u0631 \u0645\u062A\u0635\u0644"}`, `Network: ${navigator.onLine ? "online" : "offline"}`)), node("p", "", `HTTP ${status || "\u2014"} \xB7 ${Math.round(performance.now() - start)} ms`), node("p", "", x("\u0647\u0630\u0647 \u0627\u0644\u0623\u0631\u0642\u0627\u0645 \u0644\u0627\u062A\u0635\u0627\u0644 \u0627\u0644\u0645\u0648\u0642\u0639\u060C \u0648\u0644\u064A\u0633\u062A \u062F\u0644\u064A\u0644\u064B\u0627 \u0639\u0644\u0649 \u0642\u0628\u0648\u0644 \u0645\u0632\u0648\u062F \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0644\u0644\u0628\u062B.", "These numbers describe site connectivity, not provider playback authorization.")));
-    for (const [kind, timing] of Object.entries(state.timings)) box2.append(node("p", "", `${label(kind)} \xB7 ${JSON.stringify(timing)}`));
-    for (const error of state.errorLog.slice(0, 8)) box2.append(node("p", "", `${new Date(error.at).toLocaleTimeString()} \xB7 ${error.code} \xB7 HTTP ${error.http || "\u2014"}`));
+    for (const [kind, timing] of Object.entries(state2.timings)) box2.append(node("p", "", `${label(kind)} \xB7 ${JSON.stringify(timing)}`));
+    for (const error of state2.errorLog.slice(0, 8)) box2.append(node("p", "", `${new Date(error.at).toLocaleTimeString()} \xB7 ${error.code} \xB7 HTTP ${error.http || "\u2014"}`));
     box2.append(btn(x("\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A", "Technical support"), () => contact(x("\u0627\u0644\u062F\u0639\u0645 \u0627\u0644\u0641\u0646\u064A", "Technical support"), true), "support"));
   }
   function troubleshoot() {
@@ -6783,7 +6816,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       if (!update.releaseUnavailable && !update.available && !update.webAvailable) box2.append(node("p", "", x("\u062A\u0633\u062A\u062E\u062F\u0645 \u0623\u062D\u062F\u062B \u0625\u0635\u062F\u0627\u0631 \u0645\u062A\u0627\u062D.", "You are using the latest available version.")));
       if (isNative2()) box2.append(node("p", "muted", x("\u062A\u062D\u062F\u064A\u062B \u063A\u0644\u0627\u0641 \u0627\u0644\u0622\u064A\u0641\u0648\u0646 \u0627\u0644\u0623\u0635\u0644\u064A \u064A\u062A\u0645 \u0645\u0646 App Store \u0623\u0648 TestFlight \u062D\u0633\u0628 \u0637\u0631\u064A\u0642\u0629 \u062A\u062B\u0628\u064A\u062A\u0647.", "Updates to the native iPhone shell are delivered through App Store or TestFlight.")));
     } catch (error) {
-      box2.replaceChildren(node("p", "inline-error", errorText(error, state.settings.language)), btn(x("\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629", "Retry"), checkUpdates, "refresh"));
+      box2.replaceChildren(node("p", "inline-error", errorText(error, state2.settings.language)), btn(x("\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0645\u062D\u0627\u0648\u0644\u0629", "Retry"), checkUpdates, "refresh"));
     }
   }
   function appFetch(url, options = {}) {
@@ -6843,19 +6876,19 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     const status = node("p", "muted", x("\u062C\u0627\u0631\u064D \u0625\u0646\u0634\u0627\u0621 \u062C\u0644\u0633\u0629 \u0627\u0644\u0631\u0628\u0637\u2026", "Creating a pairing session\u2026"));
     sheet(x("\u0631\u0628\u0637 \u0647\u0630\u0627 \u0627\u0644\u062C\u0647\u0627\u0632", "Pair this device"), status);
     try {
-      const invitation = await pairSession.create({ deviceName: brandName(state.settings.language) + (isNative2() ? " \xB7 iPhone" : " \xB7 Web") });
-      state.pairStatus = "waiting";
+      const invitation = await pairSession.create({ deviceName: brandName(state2.settings.language) + (isNative2() ? " \xB7 iPhone" : " \xB7 Web") });
+      state2.pairStatus = "waiting";
       pairSession.startReceiving({ onAccount: async (account) => {
         await doLogin(account, { remember: $("remember-account").checked });
-        if (!state.account) throw Error(x("\u0644\u0645 \u064A\u0646\u062C\u062D \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643.", "Subscription validation failed."));
-        state.pairStatus = "received";
+        if (!state2.account) throw Error(x("\u0644\u0645 \u064A\u0646\u062C\u062D \u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643.", "Subscription validation failed."));
+        state2.pairStatus = "received";
         closeSheet();
         toast(x("\u062A\u0645 \u0627\u0633\u062A\u0642\u0628\u0627\u0644 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0648\u0627\u0644\u062A\u062D\u0642\u0642 \u0645\u0646\u0647", "Subscription received and validated"));
       }, onStatus: (value) => {
-        state.pairStatus = value.status;
+        state2.pairStatus = value.status;
         const label2 = $("pair-status");
         if (label2) label2.textContent = value.status === "received" ? x("\u062A\u0645 \u0627\u0644\u0631\u0628\u0637. \u064A\u0645\u0643\u0646\u0643 \u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0627\u0644\u0631\u064A\u0645\u0648\u062A \u0645\u0646 \u0627\u0644\u062C\u0647\u0627\u0632 \u0627\u0644\u0622\u062E\u0631.", "Connected. The other device can now control playback.") : x("\u0641\u064A \u0627\u0646\u062A\u0638\u0627\u0631 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0645\u0646 \u0627\u0644\u062C\u0647\u0627\u0632 \u0627\u0644\u0622\u062E\u0631\u2026", "Waiting for subscription details from the other device\u2026");
-      }, onError: report, onCommand: applyRemoteCommand, getState: () => ({ currentTitle: state.current?.name || "", ...playerSnapshot(), isPlaying: !!controller?.getState?.().playing, remoteActions: ["up", "down", "left", "right", "ok", "back", "home", "play_pause", "volume_down", "volume_up", "previous_channel", "next_channel", "seek", "search"] }) });
+      }, onError: report, onCommand: applyRemoteCommand, getState: () => ({ currentTitle: state2.current?.name || "", ...playerSnapshot(), isPlaying: !!controller?.getState?.().playing, remoteActions: ["up", "down", "left", "right", "ok", "back", "home", "play_pause", "volume_down", "volume_up", "previous_channel", "next_channel", "seek", "search"] }) });
       await showPairing(invitation);
     } catch (error) {
       await pairSession?.close().catch(() => {
@@ -6869,7 +6902,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     const box2 = node("div");
     box2.append(node("p", "", x("\u0627\u0645\u0633\u062D \u0627\u0644\u0631\u0645\u0632 \u0628\u0627\u0644\u062C\u0647\u0627\u0632 \u0627\u0644\u0622\u062E\u0631 \u0648\u0623\u062F\u062E\u0644 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0634\u062A\u0631\u0627\u0643\u0643 \u0647\u0646\u0627\u0643. \u0644\u0627 \u062A\u0634\u0627\u0631\u0643 \u0627\u0644\u0631\u0645\u0632 \u0639\u0644\u0646\u064B\u0627.", "Scan this code with your other device and enter the subscription there. Do not publish this code.")));
     box2.append(await qrPicture(invitation.url));
-    const status = node("p", "muted", state.pairStatus === "received" ? x("\u062A\u0645 \u0627\u0644\u0631\u0628\u0637", "Connected") : x("\u0641\u064A \u0627\u0646\u062A\u0638\u0627\u0631 \u0627\u0644\u062C\u0647\u0627\u0632 \u0627\u0644\u0622\u062E\u0631\u2026", "Waiting for the other device\u2026"));
+    const status = node("p", "muted", state2.pairStatus === "received" ? x("\u062A\u0645 \u0627\u0644\u0631\u0628\u0637", "Connected") : x("\u0641\u064A \u0627\u0646\u062A\u0638\u0627\u0631 \u0627\u0644\u062C\u0647\u0627\u0632 \u0627\u0644\u0622\u062E\u0631\u2026", "Waiting for the other device\u2026"));
     status.id = "pair-status";
     box2.append(status, node("p", "", x("\u062A\u0646\u062A\u0647\u064A \u0627\u0644\u062C\u0644\u0633\u0629 \u062E\u0644\u0627\u0644 20 \u062F\u0642\u064A\u0642\u0629. \u064A\u0645\u0643\u0646\u0643 \u0625\u0646\u0647\u0627\u0624\u0647\u0627 \u0627\u0644\u0622\u0646 \u0645\u0646 \u0627\u0644\u0632\u0631 \u0623\u062F\u0646\u0627\u0647.", "The session expires within 20 minutes. You can end it using the button below.")), actions(btn(x("\u0646\u0633\u062E \u0631\u0627\u0628\u0637 \u0627\u0644\u0631\u0628\u0637", "Copy pairing link"), () => copyText(invitation.url), "copy"), btn(x("\u0625\u0646\u0647\u0627\u0621 \u0627\u0644\u0631\u0628\u0637", "End pairing"), async () => {
       await pairSession?.close();
@@ -6976,8 +7009,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     if (file.size > 64 * 1024 * 1024) throw Error(x("\u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0623\u0643\u0628\u0631 \u0645\u0646 64 \u0645\u064A\u063A\u0627\u0628\u0627\u064A\u062A.", "Playlist exceeds 64 MB."));
     const items = parseM3U2(await file.text(), globalThis.ABUNASSER_CONFIG?.apiOrigin || location.href);
     await doLogin({ mode: "m3u-file", name: file.name, items }, { remember: $("remember-account").checked });
-    if (state.account?.mode === "m3u-file") {
-      state.catalogs = Object.fromEntries(["live", "movie", "series"].map((kind) => [kind, items.filter((item) => item.kind === kind)]));
+    if (state2.account?.mode === "m3u-file") {
+      state2.catalogs = Object.fromEntries(["live", "movie", "series"].map((kind) => [kind, items.filter((item) => item.kind === kind)]));
       await persist();
       renderHome();
     }
@@ -7002,16 +7035,16 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       closePlayer().catch(report);
       return;
     }
-    if (state.page === "details") {
+    if (state2.page === "details") {
       showPage("catalog");
       renderCatalog();
       return;
     }
-    if (state.page === "settings") {
-      showPage(state.account ? "home" : "login");
+    if (state2.page === "settings") {
+      showPage(state2.account ? "home" : "login");
       return;
     }
-    showPage(state.account ? "home" : "login");
+    showPage(state2.account ? "home" : "login");
   }
   function moveFocus(direction) {
     const active2 = document.activeElement;
@@ -7051,7 +7084,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     if (["up", "down", "left", "right"].includes(command.action)) return moveFocus(command.action);
     switch (command.action) {
       case "ok":
-        if (!$("player-page").hidden && state.current?.kind === "live" && ($("receiver-panel").hidden || !$("receiver-panel").contains(document.activeElement))) toggleReceiver();
+        if (!$("player-page").hidden && state2.current?.kind === "live" && ($("receiver-panel").hidden || !$("receiver-panel").contains(document.activeElement))) toggleReceiver();
         else document.activeElement?.click?.();
         break;
       case "back":
@@ -7059,7 +7092,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         break;
       case "home":
         await closePlayer();
-        showPage(state.account ? "home" : "login");
+        showPage(state2.account ? "home" : "login");
         break;
       case "play_pause":
         if (controller?.getState?.().playing) await controller.pause();
@@ -7078,28 +7111,28 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         $("video").volume = Math.max(0, $("video").volume - 0.1);
         break;
       case "seek":
-        if (state.current?.kind !== "live") await controller?.seek?.(Math.max(0, Number(value?.positionMs ?? value) || 0) / 1e3);
+        if (state2.current?.kind !== "live") await controller?.seek?.(Math.max(0, Number(value?.positionMs ?? value) || 0) / 1e3);
         break;
       case "search":
         if (!$("receiver-panel").hidden) {
           $("receiver-search").value = String(value?.query ?? value ?? "").slice(0, 300);
           renderReceiver();
-        } else if (state.page === "catalog") {
+        } else if (state2.page === "catalog") {
           $("catalog-search").value = String(value?.query ?? value ?? "").slice(0, 300);
-          state.query = $("catalog-search").value;
+          state2.query = $("catalog-search").value;
           renderCatalog();
         }
         break;
     }
   }
   function runStartScreen() {
-    const start = state.settings.start_screen;
-    if (start === "last_channel" && state.lastChannel) {
-      playItem(state.lastChannel).catch(report);
+    const start = state2.settings.start_screen;
+    if (start === "last_channel" && state2.lastChannel) {
+      playItem(state2.lastChannel).catch(report);
       return;
     }
-    if (start === "last_section" && ["live", "movie", "series"].includes(state.settings.last_section)) {
-      state.settings.last_section === "live" ? openLive() : openCatalog(state.settings.last_section);
+    if (start === "last_section" && ["live", "movie", "series"].includes(state2.settings.last_section)) {
+      state2.settings.last_section === "live" ? openLive() : openCatalog(state2.settings.last_section);
       return;
     }
     if (["live", "movie", "series"].includes(start)) {
@@ -7112,17 +7145,17 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
   }
   function tickIdle() {
     const now = Date.now();
-    if (state.settings.screensaver_mode !== "off" && now - lastActive > Number(state.settings.screensaver_minutes || 5) * 6e4 && $("player-page").hidden && !$("sheet").open && $("screen-lock").hidden) {
+    if (state2.settings.screensaver_mode !== "off" && now - lastActive > Number(state2.settings.screensaver_minutes || 5) * 6e4 && $("player-page").hidden && !$("sheet").open && $("screen-lock").hidden) {
       $("screensaver").hidden = false;
-      $("screensaver").querySelector("time").hidden = state.settings.screensaver_mode === "black";
-      $("screensaver").querySelector("time").textContent = (/* @__PURE__ */ new Date()).toLocaleTimeString(state.settings.language === "en" ? "en" : "ar-SA", { hour: "2-digit", minute: "2-digit" });
+      $("screensaver").querySelector("time").hidden = state2.settings.screensaver_mode === "black";
+      $("screensaver").querySelector("time").textContent = (/* @__PURE__ */ new Date()).toLocaleTimeString(state2.settings.language === "en" ? "en" : "ar-SA", { hour: "2-digit", minute: "2-digit" });
     }
-    const hours = Number(state.settings.catalog_refresh_hours) || 0;
-    if (hours > 0 && state.account && !state.demo && document.visibilityState === "visible" && now - (state.lastRefresh || now) > hours * 36e5 && !state.loading) {
-      state.lastRefresh = now;
+    const hours = Number(state2.settings.catalog_refresh_hours) || 0;
+    if (hours > 0 && state2.account && !state2.demo && document.visibilityState === "visible" && now - (state2.lastRefresh || now) > hours * 36e5 && !state2.loading) {
+      state2.lastRefresh = now;
       api.memory?.clear();
-      state.catalogs = {};
-      if (state.page === "catalog") openCatalog(state.kind, { force: true }).catch(report);
+      state2.catalogs = {};
+      if (state2.page === "catalog") openCatalog(state2.kind, { force: true }).catch(report);
     }
   }
   function bindActions() {
@@ -7153,32 +7186,32 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     $("backup-file").onchange = () => importBackupFile($("backup-file").files[0]).catch(report);
     $("qr-image").onchange = () => decodeQRImage($("qr-image").files[0]).catch(report);
     $("catalog-search").oninput = () => {
-      state.query = $("catalog-search").value;
-      state.limit = 60;
+      state2.query = $("catalog-search").value;
+      state2.limit = 60;
       renderCatalog();
     };
     $("catalog-more").onclick = () => {
-      state.limit += 60;
+      state2.limit += 60;
       renderCatalog();
     };
-    $("catalog-refresh").onclick = () => openCatalog(state.kind, { force: true }).catch(report);
+    $("catalog-refresh").onclick = () => openCatalog(state2.kind, { force: true }).catch(report);
     $("catalog-favorites").onclick = () => {
-      state.view = state.view === "favorites" ? "all" : "favorites";
+      state2.view = state2.view === "favorites" ? "all" : "favorites";
       renderCatalog();
     };
-    $("catalog-sort").onclick = () => choices(x("\u062A\u0631\u062A\u064A\u0628 \u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Sort content"), [["source", "\u062A\u0631\u062A\u064A\u0628 \u0627\u0644\u0645\u0635\u062F\u0631", "Source order"], ["name", "\u0623\u0628\u062C\u062F\u064A \u062A\u0635\u0627\u0639\u062F\u064A", "A\u2013Z"], ["za", "\u0623\u0628\u062C\u062F\u064A \u062A\u0646\u0627\u0632\u0644\u064A", "Z\u2013A"], ["recent", "\u0627\u0644\u0623\u062D\u062F\u062B", "Newest"]].map(([value, ar, en]) => ({ value, label: x(ar, en), selected: state.sort === value })), (value) => {
-      state.sort = value;
+    $("catalog-sort").onclick = () => choices(x("\u062A\u0631\u062A\u064A\u0628 \u0627\u0644\u0645\u062D\u062A\u0648\u0649", "Sort content"), [["source", "\u062A\u0631\u062A\u064A\u0628 \u0627\u0644\u0645\u0635\u062F\u0631", "Source order"], ["name", "\u0623\u0628\u062C\u062F\u064A \u062A\u0635\u0627\u0639\u062F\u064A", "A\u2013Z"], ["za", "\u0623\u0628\u062C\u062F\u064A \u062A\u0646\u0627\u0632\u0644\u064A", "Z\u2013A"], ["recent", "\u0627\u0644\u0623\u062D\u062F\u062B", "Newest"]].map(([value, ar, en]) => ({ value, label: x(ar, en), selected: state2.sort === value })), (value) => {
+      state2.sort = value;
       renderCatalog();
     });
     $("catalog-filters").onclick = () => advancedFilters().catch(report);
     $("close-player").onclick = () => closePlayer().catch(report);
     $("previous-channel").onclick = () => changeChannel(-1).catch(report);
     $("next-channel").onclick = () => changeChannel(1).catch(report);
-    $("last-channel").onclick = () => state.lastChannel ? playItem(state.lastChannel).catch(report) : toast(x("\u0644\u0627 \u062A\u0648\u062C\u062F \u0642\u0646\u0627\u0629 \u0633\u0627\u0628\u0642\u0629", "No previous channel"));
+    $("last-channel").onclick = () => state2.lastChannel ? playItem(state2.lastChannel).catch(report) : toast(x("\u0644\u0627 \u062A\u0648\u062C\u062F \u0642\u0646\u0627\u0629 \u0633\u0627\u0628\u0642\u0629", "No previous channel"));
     $("channel-number").onclick = async () => {
       const values = await fieldsForm(x("\u0631\u0642\u0645 \u0627\u0644\u0642\u0646\u0627\u0629", "Channel number"), [{ name: "number", label: x("\u0631\u0642\u0645 \u0627\u0644\u0642\u0646\u0627\u0629 \u062D\u0633\u0628 \u062A\u0631\u062A\u064A\u0628 \u0627\u0644\u0645\u0635\u062F\u0631", "Channel number in source order"), type: "number", inputmode: "numeric" }]);
       if (values) {
-        const item = (state.catalogs.live || [])[Number(values.number) - 1];
+        const item = (state2.catalogs.live || [])[Number(values.number) - 1];
         if (item) await playItem(item);
         else toast(x("\u0631\u0642\u0645 \u0627\u0644\u0642\u0646\u0627\u0629 \u063A\u064A\u0631 \u0645\u062A\u0627\u062D", "Channel number is unavailable"));
       }
@@ -7191,8 +7224,8 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     $("rate-button").onclick = () => chooseRate().catch(report);
     $("subtitle-button").onclick = () => showTracks().catch(report);
     $("player-options").onclick = playerOptions;
-    $("seek-back").onclick = () => controller?.seek?.(Math.max(0, (controller.getState().position || 0) - Number(state.settings.seek_step_seconds || 10)));
-    $("seek-forward").onclick = () => controller?.seek?.((controller.getState().position || 0) + Number(state.settings.seek_step_seconds || 10));
+    $("seek-back").onclick = () => controller?.seek?.(Math.max(0, (controller.getState().position || 0) - Number(state2.settings.seek_step_seconds || 10)));
+    $("seek-forward").onclick = () => controller?.seek?.((controller.getState().position || 0) + Number(state2.settings.seek_step_seconds || 10));
     $("pip-button").onclick = () => Promise.resolve(controller?.togglePiP?.()).then((ok) => {
       if (!ok) toast(x("\u0635\u0648\u0631\u0629 \u062F\u0627\u062E\u0644 \u0635\u0648\u0631\u0629 \u063A\u064A\u0631 \u0645\u062A\u0627\u062D\u0629 \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0648\u0636\u0639.", "Picture in picture is unavailable in this mode."));
     }).catch(report);
@@ -7203,13 +7236,13 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     $("unlock-form").onsubmit = async (event) => {
       event.preventDefault();
       try {
-        if (await verifyPIN2($("unlock-pin").value, state.pin)) {
+        if (await verifyPIN2($("unlock-pin").value, state2.pin)) {
           $("screen-lock").hidden = true;
           $("unlock-pin").value = "";
           $("unlock-error").textContent = "";
           localActivity();
-          if (state.startAfterUnlock) {
-            state.startAfterUnlock = false;
+          if (state2.startAfterUnlock) {
+            state2.startAfterUnlock = false;
             runStartScreen();
           }
         } else $("unlock-error").textContent = x("\u0627\u0644\u0631\u0645\u0632 \u063A\u064A\u0631 \u0635\u062D\u064A\u062D", "Incorrect PIN");
@@ -7227,7 +7260,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       }
       if (!$("screen-lock").hidden) return;
       const text2 = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName);
-      if (!text2 && event.key === "Enter" && !$("player-page").hidden && state.current?.kind === "live" && ["BODY", "VIDEO"].includes(document.activeElement?.tagName)) {
+      if (!text2 && event.key === "Enter" && !$("player-page").hidden && state2.current?.kind === "live" && ["BODY", "VIDEO"].includes(document.activeElement?.tagName)) {
         event.preventDefault();
         toggleReceiver();
         return;
@@ -7237,13 +7270,13 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     globalThis.addEventListener("abunasser:native", (event) => {
       const value = event.detail;
       if (value?.type === "channelRequested") {
-        const item = (state.catalogs.live || []).find((row) => row.id === value.id || row.id === value.itemId);
+        const item = (state2.catalogs.live || []).find((row) => row.id === value.id || row.id === value.itemId);
         if (item) playItem(item).catch(report);
       }
     });
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
-        if (state.pin) {
+        if (state2.pin) {
           $("screen-lock").hidden = false;
           controller?.pause?.();
         }
@@ -7269,13 +7302,13 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     });
   }
   async function advancedFilters() {
-    if (state.kind === "live") return;
-    const rows = state.catalogs[state.kind] || [], unique = (field) => [...new Set(rows.map((item) => String(item[field] || "").trim()).filter(Boolean))].sort();
+    if (state2.kind === "live") return;
+    const rows = state2.catalogs[state2.kind] || [], unique = (field) => [...new Set(rows.map((item) => String(item[field] || "").trim()).filter(Boolean))].sort();
     const options = (items, title) => [{ value: "", label: title }, ...items.slice(0, 150).map((value) => ({ value, label: value }))];
-    const values = await fieldsForm(x("\u0641\u0644\u0627\u062A\u0631 \u0627\u0644\u0623\u0641\u0644\u0627\u0645 \u0648\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062A", "Movie and series filters"), [{ name: "year", label: x("\u0633\u0646\u0629 \u0627\u0644\u0625\u0635\u062F\u0627\u0631", "Release year"), value: state.filters.year || "", options: options(unique("year"), x("\u0643\u0644 \u0627\u0644\u0633\u0646\u0648\u0627\u062A", "All years")), required: false }, { name: "genre", label: x("\u0627\u0644\u0646\u0648\u0639", "Genre"), value: state.filters.genre || "", options: options(unique("genre"), x("\u0643\u0644 \u0627\u0644\u0623\u0646\u0648\u0627\u0639", "All genres")), required: false }, { name: "language", label: x("\u0627\u0644\u0644\u063A\u0629", "Language"), value: state.filters.language || "", options: options(unique("language"), x("\u0643\u0644 \u0627\u0644\u0644\u063A\u0627\u062A", "All languages")), required: false }, { name: "ratingFloor", label: x("\u0623\u0642\u0644 \u062A\u0642\u064A\u064A\u0645", "Minimum rating"), value: String(state.filters.ratingFloor || ""), options: [{ value: "", label: x("\u0643\u0644 \u0627\u0644\u062A\u0642\u064A\u064A\u0645\u0627\u062A", "Any rating") }, ...[5, 6, 7, 8, 9].map((value) => ({ value: String(value), label: `${value}+` }))], required: false }], { description: x("\u062A\u0633\u062A\u062E\u062F\u0645 \u0627\u0644\u0641\u0644\u0627\u062A\u0631 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0645\u0632\u0648\u062F \u0627\u0644\u0645\u062A\u0627\u062D\u0629 \u0648\u0644\u0627 \u062A\u0641\u062A\u0631\u0636 \u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0644\u0645 \u064A\u0648\u0641\u0631\u0647\u0627.", "Filters use available provider metadata and do not invent missing information.") });
+    const values = await fieldsForm(x("\u0641\u0644\u0627\u062A\u0631 \u0627\u0644\u0623\u0641\u0644\u0627\u0645 \u0648\u0627\u0644\u0645\u0633\u0644\u0633\u0644\u0627\u062A", "Movie and series filters"), [{ name: "year", label: x("\u0633\u0646\u0629 \u0627\u0644\u0625\u0635\u062F\u0627\u0631", "Release year"), value: state2.filters.year || "", options: options(unique("year"), x("\u0643\u0644 \u0627\u0644\u0633\u0646\u0648\u0627\u062A", "All years")), required: false }, { name: "genre", label: x("\u0627\u0644\u0646\u0648\u0639", "Genre"), value: state2.filters.genre || "", options: options(unique("genre"), x("\u0643\u0644 \u0627\u0644\u0623\u0646\u0648\u0627\u0639", "All genres")), required: false }, { name: "language", label: x("\u0627\u0644\u0644\u063A\u0629", "Language"), value: state2.filters.language || "", options: options(unique("language"), x("\u0643\u0644 \u0627\u0644\u0644\u063A\u0627\u062A", "All languages")), required: false }, { name: "ratingFloor", label: x("\u0623\u0642\u0644 \u062A\u0642\u064A\u064A\u0645", "Minimum rating"), value: String(state2.filters.ratingFloor || ""), options: [{ value: "", label: x("\u0643\u0644 \u0627\u0644\u062A\u0642\u064A\u064A\u0645\u0627\u062A", "Any rating") }, ...[5, 6, 7, 8, 9].map((value) => ({ value: String(value), label: `${value}+` }))], required: false }], { description: x("\u062A\u0633\u062A\u062E\u062F\u0645 \u0627\u0644\u0641\u0644\u0627\u062A\u0631 \u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0645\u0632\u0648\u062F \u0627\u0644\u0645\u062A\u0627\u062D\u0629 \u0648\u0644\u0627 \u062A\u0641\u062A\u0631\u0636 \u0645\u0639\u0644\u0648\u0645\u0627\u062A \u0644\u0645 \u064A\u0648\u0641\u0631\u0647\u0627.", "Filters use available provider metadata and do not invent missing information.") });
     if (values) {
-      state.filters = { ...values, ratingFloor: Number(values.ratingFloor) || 0 };
-      state.limit = 60;
+      state2.filters = { ...values, ratingFloor: Number(values.ratingFloor) || 0 };
+      state2.limit = 60;
       renderCatalog();
     }
   }
@@ -7286,31 +7319,31 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     try {
       const data = await vault.get("ui", null);
       if (data && typeof data === "object") {
-        state.accounts = Array.isArray(data.accounts) ? data.accounts.filter((a) => a && typeof a === "object").slice(0, 100) : [];
-        state.profiles = Array.isArray(data.profiles) && data.profiles.length ? data.profiles.filter((value) => typeof value === "string" && value.length < 100).slice(0, 50) : ["Default"];
-        state.profile = state.profiles.includes(data.profile) ? data.profile : state.profiles[0] || "Default";
-        state.settings = { ...DEFAULT_SETTINGS2, ...data.settings || {} };
-        state.collections = data.collections && typeof data.collections === "object" ? data.collections : {};
-        state.pin = data.pin || null;
-        state.lastChannel = data.lastChannel || null;
-        state.account = data.account && typeof data.account === "object" ? data.account : null;
-        state.userInfo = data.userInfo || {};
-        if (state.account?.mode === "m3u-file") state.catalogs = Object.fromEntries(["live", "movie", "series"].map((kind) => [kind, (state.account.items || []).filter((item) => item.kind === kind)]));
+        state2.accounts = Array.isArray(data.accounts) ? data.accounts.filter((a) => a && typeof a === "object").slice(0, 100) : [];
+        state2.profiles = Array.isArray(data.profiles) && data.profiles.length ? data.profiles.filter((value) => typeof value === "string" && value.length < 100).slice(0, 50) : ["Default"];
+        state2.profile = state2.profiles.includes(data.profile) ? data.profile : state2.profiles[0] || "Default";
+        state2.settings = { ...DEFAULT_SETTINGS2, ...data.settings || {} };
+        state2.collections = data.collections && typeof data.collections === "object" ? data.collections : {};
+        state2.pin = data.pin || null;
+        state2.lastChannel = data.lastChannel || null;
+        state2.account = data.account && typeof data.account === "object" ? data.account : null;
+        state2.userInfo = data.userInfo || {};
+        if (state2.account?.mode === "m3u-file") state2.catalogs = Object.fromEntries(["live", "movie", "series"].map((kind) => [kind, (state2.account.items || []).filter((item) => item.kind === kind)]));
       }
-      state.reminders = await vault.get("reminders", []);
-      state.localEpg = await vault.get("epg", []);
+      state2.reminders = await vault.get("reminders", []);
+      state2.localEpg = await vault.get("epg", []);
     } catch (error) {
       report(error);
     }
-    state.settings = mergeVaultPreferences(state.settings, readPreferences());
+    state2.settings = mergeVaultPreferences(state2.settings, readPreferences());
     await syncDesktopNotifications();
-    state.lastRefresh = Date.now();
+    state2.lastRefresh = Date.now();
     applyPreferences();
-    showPage(state.account ? "home" : "login", { remember: false });
-    if (state.pin) $("screen-lock").hidden = false;
-    if (state.account) {
+    showPage(state2.account ? "home" : "login", { remember: false });
+    if (state2.pin) $("screen-lock").hidden = false;
+    if (state2.account) {
       await setupDownloads();
-      if (state.pin) state.startAfterUnlock = true;
+      if (state2.pin) state2.startAfterUnlock = true;
       else runStartScreen();
     }
     scheduleReminders();
@@ -7322,16 +7355,16 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
     updateMonitor = createUpdateMonitor({ check: () => checkForUpdates({ fetcher: appFetch }), onUpdate: async (update) => {
       const message = x(`\u064A\u062A\u0648\u0641\u0631 \u062A\u062D\u062F\u064A\u062B ${update.latestVersion}. \u0627\u0641\u062A\u062D \u0627\u0644\u0625\u0639\u062F\u0627\u062F\u0627\u062A \u062B\u0645 \u062A\u062D\u062F\u064A\u062B \u0627\u0644\u062A\u0637\u0628\u064A\u0642.`, `Update ${update.latestVersion} is available. Open Settings, then App update.`);
       toast(message);
-      if (state.settings.notifications && !globalThis.abunasserDesktop?.nativeUpdates) await deliverNotification({ id: "release-" + update.latestVersion, title: brandName(state.settings.language), body: message, url: location.origin + "/app" });
+      if (state2.settings.notifications && !globalThis.abunasserDesktop?.nativeUpdates) await deliverNotification({ id: "release-" + update.latestVersion, title: brandName(state2.settings.language), body: message, url: location.origin + "/app" });
     } });
     updateMonitor.start();
-    announcementMonitor = createAnnouncementMonitor({ fetcher: appFetch, endpoint: new URL("/api/announcements", globalThis.ABUNASSER_CONFIG?.apiOrigin || location.origin).href, isEnabled: () => true, shouldDeliver: () => state.settings.notifications === true && !globalThis.abunasserDesktop?.nativeAnnouncements, onMessage: (message) => toast([message.title, message.body].filter(Boolean).join(" \xB7 ")) });
+    announcementMonitor = createAnnouncementMonitor({ fetcher: appFetch, endpoint: new URL("/api/announcements", globalThis.ABUNASSER_CONFIG?.apiOrigin || location.origin).href, isEnabled: () => true, shouldDeliver: () => state2.settings.notifications === true && !globalThis.abunasserDesktop?.nativeAnnouncements, onMessage: (message) => toast([message.title, message.body].filter(Boolean).join(" \xB7 ")) });
     void announcementMonitor.start();
     document.documentElement.dataset.appReady = "true";
   }
-  var isNative2, nativeRequest2, $, x, api, vault, APP_VERSION, state, playbackOwner, updateMonitor, announcementMonitor, controller, downloads, savedTick, toastTick, loadAbort, sleepTick, idleTick, lastActive, watchSession, pairSession, lastPlayerPage, detailGeneration, NAMES, label, node, HOME_TOOLS, qrScript, scanScript, cameraStream, cameraFrame, appReady;
+  var isNative2, nativeRequest2, $, x, api, vault, APP_VERSION, state2, playbackOwner, updateMonitor, announcementMonitor, controller, downloads, savedTick, toastTick, loadAbort, sleepTick, idleTick, lastActive, watchSession, pairSession, lastPlayerPage, detailGeneration, NAMES, label, node, HOME_TOOLS, qrScript, scanScript, cameraStream, cameraFrame, appReady;
   var init_ui = __esm({
-    "tv/samsung/app/ui.js?release=1.2.2"() {
+    "tv/samsung/app/ui.js?release=1.2.3"() {
       init_desktop_updates();
       init_tv_network();
       init_glitch();
@@ -7345,11 +7378,11 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       init_connect();
       ({ isNative: isNative2, nativeRequest: nativeRequest2 } = native_exports);
       $ = (id) => document.getElementById(id);
-      x = (ar, en) => state.settings.language === "en" ? en : ar;
+      x = (ar, en) => state2.settings.language === "en" ? en : ar;
       api = new ApiClient2();
       vault = new Vault({ namespace: "interface-v1" });
       APP_VERSION = $("app-version")?.textContent || "\u2014";
-      state = { page: "login", previous: "home", account: null, userInfo: null, accounts: [], profile: "Default", profiles: ["Default"], settings: { ...DEFAULT_SETTINGS2, ...preferenceValues() }, collections: {}, catalogs: {}, kind: "movie", group: "", family: "all", query: "", view: "all", sort: "source", filters: {}, limit: 60, demo: false, current: null, lastChannel: null, playingSource: null, detail: null, episodes: [], generation: 0, loading: false, errorLog: [], timings: {}, pin: null, pair: null, watch: null };
+      state2 = { page: "login", previous: "home", account: null, userInfo: null, accounts: [], profile: "Default", profiles: ["Default"], settings: { ...DEFAULT_SETTINGS2, ...preferenceValues() }, collections: {}, catalogs: {}, kind: "movie", group: "", family: "all", query: "", view: "all", sort: "source", filters: {}, limit: 60, demo: false, current: null, lastChannel: null, playingSource: null, detail: null, episodes: [], generation: 0, loading: false, errorLog: [], timings: {}, pin: null, pair: null, watch: null };
       playbackOwner = null;
       updateMonitor = null;
       announcementMonitor = null;
@@ -7374,7 +7407,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
         return el;
       };
       globalThis.addEventListener("abbeedo:preferences", () => {
-        state.settings.accent = preferenceValues().accent;
+        state2.settings.accent = preferenceValues().accent;
       });
       HOME_TOOLS = [["refresh", "\u062A\u062D\u062F\u064A\u062B", "Refresh", "refresh"], ["notifications", "\u0627\u0644\u062A\u0646\u0628\u064A\u0647\u0627\u062A", "Notifications", "notifications"], ["account", "\u062D\u0633\u0627\u0628\u064A", "My account", "account"], ["accounts", "\u0627\u0644\u062D\u0633\u0627\u0628\u0627\u062A", "Accounts", "accounts"], ["downloads", "\u0627\u0644\u062A\u0646\u0632\u064A\u0644\u0627\u062A", "Downloads", "download"], ["favorites", "\u0627\u0644\u0645\u0641\u0636\u0644\u0629", "Favorites", "heart"], ["watchlist", "\u0623\u0631\u064A\u062F \u0645\u0634\u0627\u0647\u062F\u062A\u0647", "Watchlist", "bookmark"], ["continue", "\u0645\u062A\u0627\u0628\u0639\u0629 \u0627\u0644\u0645\u0634\u0627\u0647\u062F\u0629", "Continue watching", "history"], ["last", "\u0622\u062E\u0631 \u0642\u0646\u0627\u0629", "Last channel", "live"], ["recent", "\u0627\u0644\u0645\u0636\u0627\u0641 \u062D\u062F\u064A\u062B\u064B\u0627", "Recently added", "calendar"], ["recommend", "\u0645\u0642\u062A\u0631\u062D\u0627\u062A \u0645\u062D\u0644\u064A\u0629", "Local suggestions", "star"], ["epg", "\u062F\u0644\u064A\u0644 \u0627\u0644\u0628\u0631\u0627\u0645\u062C", "Program guide", "calendar"]];
       qrScript = null;
@@ -7383,7 +7416,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       cameraFrame = 0;
       window.addEventListener("abunasser:native", (event) => {
         const data = event.detail || {};
-        if (data.type === "stopped" && data.userDismissed && !$("player-page").hidden && (!(data.itemId || data.id) || (data.itemId || data.id) === state.current?.id)) closePlayer().catch(report);
+        if (data.type === "stopped" && data.userDismissed && !$("player-page").hidden && (!(data.itemId || data.id) || (data.itemId || data.id) === state2.current?.id)) closePlayer().catch(report);
       });
       appReady = boot().catch((error) => {
         report(error);
@@ -7620,7 +7653,7 @@ ${JSON.stringify({ timings: state.timings, errors: state.errorLog.slice(0, 5) })
       }
     });
     document.getElementById("copy-install-link").addEventListener("click", async () => {
-      const address = new URL("/app", location.href).href;
+      const address = appearanceHandoffURL(new URL("/app", location.href).href);
       let copied = false;
       try {
         if (navigator.clipboard?.writeText) {

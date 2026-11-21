@@ -32,6 +32,7 @@ export async function prepareSamsung({projectRoot=root}={}){
    let text=await fs.readFile(file,'utf8');
    if(relative.endsWith('.css'))text=text.replaceAll('dvh','vh').replaceAll('dvw','vw').replace(/url\((['"]?)\//g,'url($1./');
    if(relative.endsWith('.js'))text=text.replaceAll("'/brand.png'","'brand.png'").replaceAll('"/brand.png"','"brand.png"').replaceAll("'/app-icon.png'","'app-icon.png'").replaceAll('"/app-icon.png"','"app-icon.png"').replaceAll("'/jsqr.js'","'jsqr.js'");
+   if(relative==='app/preferences.js')text=text.replaceAll('new URL(import.meta.url)','new URL(document.baseURI)');
    if(relative==='app/player.js')text=text.replace("new URL('../hls.min.js', import.meta.url)","new URL('hls.min.js', document.baseURI)").replace("new URL('../mpegts.min.js', import.meta.url)","new URL('mpegts.min.js', document.baseURI)");
    // Chromium 94 predates structuredClone. Only encrypted storage records use
    // this fallback, whose binary fields must remain binary rather than JSON.
@@ -46,6 +47,8 @@ export async function prepareSamsung({projectRoot=root}={}){
  const original=await fs.readFile(path.join(source,'app/entry.js'),'utf8'),imports=original.match(/^import[^;\n]+;$/gm)||[],body=original.replace(/^import[^;\n]+;$/gm,'');
  const wrapped=imports.join('\n')+"\nimport {installPackagedTVNetwork} from './tv-network.js';\n(async function(){const tv=installPackagedTVNetwork(globalThis);if(!tv.installed)throw Error('Native Samsung TV application context is required.');\n"+body+"\n})().catch(function(error){console.error('TV startup failed');var e=document.getElementById('install-heading');if(e)e.textContent='تعذر فتح التطبيق · Could not open the app';});\n";
  const entry=path.join(source,'app/tv-entry.mjs');await fs.writeFile(entry,wrapped);
+ await fs.mkdir(path.join(source,'assets'),{recursive:true});
+ await build({entryPoints:[path.join(publicDir,'app/appearance-bootstrap.js')],outfile:path.join(source,'assets/appearance-bootstrap.js'),bundle:true,format:'iife',platform:'browser',target:'chrome94',minify:true});
  await build({entryPoints:[entry],outfile:path.join(source,'tv-app.js'),bundle:true,format:'iife',platform:'browser',target:'chrome94',minify:false,legalComments:'inline'});
  let html=await fs.readFile(path.join(publicDir,'index.html'),'utf8');
  html=html.replace(/<link\b[^>]*rel="manifest"[^>]*>/g,'').replace(/<script\b[^>]*type="module"[^>]*src="\/app\/entry\.js[^"]*"[^>]*><\/script>/,'<script src="tv-app.js" defer></script>');

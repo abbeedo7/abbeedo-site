@@ -1,0 +1,209 @@
+{
+  "phase": "baseline",
+  "at": "2026-11-21T03:59:44.278Z",
+  "checks": [
+    {
+      "name": "legacy-real-worker-controls-profile",
+      "pass": true,
+      "evidence": {
+        "accent": "#ff242d",
+        "ready": "true",
+        "controller": "http://127.0.0.1:9024/sw.js",
+        "registrations": [
+          {
+            "scope": "http://127.0.0.1:9024/",
+            "active": "activated",
+            "scriptURL": "http://127.0.0.1:9024/sw.js"
+          }
+        ],
+        "cacheKeys": [
+          "abunasser-apple-web-1-9292e58ab816"
+        ],
+        "preferences": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#ff242d",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795233585918
+        },
+        "shared": null
+      }
+    },
+    {
+      "name": "legacy-unshared-preferences-really-cached",
+      "pass": true,
+      "evidence": {
+        "found": true,
+        "unshared": true,
+        "length": 17695
+      }
+    },
+    {
+      "name": "bug-reproduced-new-entry-old-preferences-wrong-accent",
+      "pass": true,
+      "evidence": {
+        "accent": "#ff242d",
+        "ready": "true",
+        "controller": "http://127.0.0.1:9024/sw.js",
+        "registrations": [
+          {
+            "scope": "http://127.0.0.1:9024/",
+            "active": "activated",
+            "scriptURL": "http://127.0.0.1:9024/sw.js"
+          }
+        ],
+        "cacheKeys": [
+          "abunasser-apple-web-1-9292e58ab816"
+        ],
+        "preferences": {
+          "version": 1,
+          "values": {
+            "language": "ar",
+            "accent": "#ff242d",
+            "theme": "dark",
+            "text_scale": 1,
+            "background_speed": "standard",
+            "reduced_motion": false,
+            "high_contrast": false
+          },
+          "chosenLanguage": true,
+          "updatedAt": 1795233585918
+        },
+        "shared": {
+          "version": 1,
+          "accent": "#1357df",
+          "updatedAt": 1795233586646
+        }
+      }
+    },
+    {
+      "name": "bug-reproduced-legacy-worker-serves-old-preferences",
+      "pass": true,
+      "evidence": [
+        {
+          "url": "/app/entry.js?release=1.2.2",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 11647
+        },
+        {
+          "url": "/app/preferences.js",
+          "fromSW": true,
+          "status": 200,
+          "hasSharedAccent": false,
+          "hasHandoff": false,
+          "length": 17695
+        },
+        {
+          "url": "/app/shared-accent.js",
+          "fromSW": false,
+          "status": 200,
+          "hasSharedAccent": true,
+          "hasHandoff": false,
+          "length": 2192
+        }
+      ]
+    }
+  ],
+  "responses": [
+    {
+      "url": "/app/entry.js?release=1.2.2",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 11647
+    },
+    {
+      "url": "/app/preferences.js",
+      "fromSW": true,
+      "status": 200,
+      "hasSharedAccent": false,
+      "hasHandoff": false,
+      "length": 17695
+    },
+    {
+      "url": "/app/shared-accent.js",
+      "fromSW": false,
+      "status": 200,
+      "hasSharedAccent": true,
+      "hasHandoff": false,
+      "length": 2192
+    }
+  ],
+  "errors": [],
+  "legacy": {
+    "accent": "#ff242d",
+    "ready": "true",
+    "controller": "http://127.0.0.1:9024/sw.js",
+    "registrations": [
+      {
+        "scope": "http://127.0.0.1:9024/",
+        "active": "activated",
+        "scriptURL": "http://127.0.0.1:9024/sw.js"
+      }
+    ],
+    "cacheKeys": [
+      "abunasser-apple-web-1-9292e58ab816"
+    ],
+    "preferences": {
+      "version": 1,
+      "values": {
+        "language": "ar",
+        "accent": "#ff242d",
+        "theme": "dark",
+        "text_scale": 1,
+        "background_speed": "standard",
+        "reduced_motion": false,
+        "high_contrast": false
+      },
+      "chosenLanguage": true,
+      "updatedAt": 1795233585918
+    },
+    "shared": null
+  },
+  "current": {
+    "accent": "#ff242d",
+    "ready": "true",
+    "controller": "http://127.0.0.1:9024/sw.js",
+    "registrations": [
+      {
+        "scope": "http://127.0.0.1:9024/",
+        "active": "activated",
+        "scriptURL": "http://127.0.0.1:9024/sw.js"
+      }
+    ],
+    "cacheKeys": [
+      "abunasser-apple-web-1-9292e58ab816"
+    ],
+    "preferences": {
+      "version": 1,
+      "values": {
+        "language": "ar",
+        "accent": "#ff242d",
+        "theme": "dark",
+        "text_scale": 1,
+        "background_speed": "standard",
+        "reduced_motion": false,
+        "high_contrast": false
+      },
+      "chosenLanguage": true,
+      "updatedAt": 1795233585918
+    },
+    "shared": {
+      "version": 1,
+      "accent": "#1357df",
+      "updatedAt": 1795233586646
+    }
+  },
+  "status": "passed"
+}

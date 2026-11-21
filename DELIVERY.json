@@ -1,10 +1,10 @@
 {
-  "file": "/workspace/artifacts/abbeedo-site-2.1.2-source.zip",
-  "bytes": 19030281,
-  "sha256": "b861f34149f846e3c587c15bc11b508116aa49b4a14ebd578722f1dfb4f464a5",
-  "source_files": 293,
+  "file": "/workspace/artifacts/abbeedo-site-2.1.3-source.zip",
+  "bytes": 20205995,
+  "sha256": "d61723f390ebd83907bfbd0bbb108d6ee046ff6444a92ea0d59bf8e40e2a05f7",
+  "source_files": 307,
   "domain": "https://abbeedo.com",
-  "revision": "web-33dcbd689ec6d193",
+  "revision": "web-99b55f94da47a3b7",
   "live_domain_changed": true,
   "vercel_account_setup_required": false,
   "github_initial_publication_required": false
