@@ -5,6 +5,6 @@
   "installCommand": "npm ci",
   "outputDirectory": ".vercel/output/static",
   "regions": [
-    "fra1"
+    "cdg1"
   ]
 }
