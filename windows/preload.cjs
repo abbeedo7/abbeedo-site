@@ -4,13 +4,19 @@ const {contextBridge, ipcRenderer} = require('electron');
 const argument = name => process.argv.find(value => value.startsWith(name + '='))?.slice(name.length + 1);
 let updateListener=null;
 
-// Only bounded presentation choices reach the main process. No filesystem,
-// shell, account data, arbitrary IPC channel or signing key reaches the page.
+// Named, bounded capabilities reach main. The renderer cannot choose an IPC
+// channel, filesystem path, raw fetch destination or signing key.
 if (process.isMainFrame) {
   contextBridge.exposeInMainWorld('abunasserDesktop', Object.freeze({
     isDesktop: true,
     platform: process.platform,
-    version: '1.2.0',
+    version: '1.2.1',
+    nativeProvider: true,
+    clientRequest: payload => {
+      if (!payload || typeof payload !== 'object' || Array.isArray(payload) || !['auth', 'catalog', 'details', 'epg', 'resolve'].includes(payload.op)) return Promise.resolve({status:400,headers:{'content-type':'application/json'},body:'{"code":"OP","error":"Unsupported operation"}'});
+      try {if (JSON.stringify(payload).length > 32768) throw new Error();} catch {return Promise.resolve({status:413,headers:{'content-type':'application/json'},body:'{"code":"INPUT_SIZE","error":"Request too large"}'});}
+      return ipcRenderer.invoke('abbeedo:client-request', payload);
+    },
     language: argument('--abbeedo-language') || 'ar',
     systemLanguage: argument('--abbeedo-system-language') || 'ar',
     nativeAnnouncements: true,

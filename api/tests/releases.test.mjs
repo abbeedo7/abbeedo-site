@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ASSET_NAMES,releaseFeedURL,configuredSource,readFeed,loadReleases,createReleasesHandler} from '../releases.mjs';
-import {createDownloadHandler,requestedFile} from '../download.mjs';
+import {createDownloadHandler,requestedFile,resolvePublicDownload} from '../download.mjs';
 const configuration={provider:'github',github:{owner:'abbeedo7',repository:'abbeedo-site',tag:'latest'}};
 const base='https://github.com/abbeedo7/abbeedo-site',hash='a'.repeat(64);
 const manifest=()=>({schemaVersion:1,tag:'v1.2.0',webVersion:'2.1.0',android:{version:'3.9.3',versionCode:28,filename:ASSET_NAMES.android,sha256:hash,size:5000000},windows:{version:'1.2.0',setup:{filename:ASSET_NAMES.windows,sha256:hash,size:120000000},portable:{filename:ASSET_NAMES.portable,sha256:hash,size:119000000}}});
@@ -10,6 +10,11 @@ function fetcher(record=manifest()){
   assert.equal(options.cache,'no-store');assert.equal(options.redirect,'manual');assert.ok(options.signal instanceof AbortSignal);
   if(url===releaseFeedURL(configuration))return Response.redirect(base+'/releases/download/v1.2.0/releases.json');
   if(url===base+'/releases/download/v1.2.0/releases.json')return Response.redirect('https://release-assets.githubusercontent.com/github-production-release-asset/123/manifest?signature=owned-fixture');
+  if(Object.values(ASSET_NAMES).some(name=>url===base+'/releases/download/v1.2.0/'+name)){
+   assert.equal(options.method,'GET');assert.equal(options.headers.Range,'bytes=0-0');
+   assert.equal(options.headers.Authorization,undefined);assert.equal(options.headers.Cookie,undefined);
+   return Response.redirect('https://release-assets.githubusercontent.com/github-production-release-asset/123/'+new URL(url).pathname.split('/').pop()+'?signature=owned-fixture');
+  }
   assert.equal(new URL(url).hostname,'release-assets.githubusercontent.com');return Response.json(record);
  };
 }
@@ -56,8 +61,19 @@ test('public release metadata is uncached; GET, HEAD and OPTIONS use correct emp
  const handler=createReleasesHandler({configuration,fetcher:fetcher()});for(const method of ['GET','HEAD','OPTIONS']){const out=response();await handler({method},out);assert.equal(out.statusCode,method==='OPTIONS'?204:200);assert.equal(out.headers['vercel-cdn-cache-control'],'no-store');if(method!=='GET')assert.equal(out.body,'');}
  const out=response();await handler({method:'POST'},out);assert.equal(out.statusCode,405);
 });
-test('download aliases redirect only to validated own-repository assets and retain GET/HEAD semantics',async()=>{
- const handler=createDownloadHandler({configuration,fetcher:fetcher()});for(const [file,name]of Object.entries(ASSET_NAMES))for(const method of ['GET','HEAD']){const out=response();await handler({method,url:'/api/download?file='+file},out);assert.equal(out.statusCode,307);assert.equal(out.headers.location,base+'/releases/download/v1.2.0/'+name);assert.equal(out.body,'');assert.equal(out.headers['cache-control'],'no-store, max-age=0');}
+test('download aliases resolve public files on the server and never navigate customers through GitHub sign-in UI',async()=>{
+ const handler=createDownloadHandler({configuration,fetcher:fetcher()});for(const [file,name]of Object.entries(ASSET_NAMES))for(const method of ['GET','HEAD']){const out=response();await handler({method,url:'/api/download?file='+file},out);assert.equal(out.statusCode,307);assert.equal(out.headers.location,'https://release-assets.githubusercontent.com/github-production-release-asset/123/'+name+'?signature=owned-fixture');assert.equal(out.body,'');assert.equal(out.headers['cache-control'],'no-store, max-age=0');}
+});
+test('public file redirects reject login pages, external/private hosts, credentials and HTML instead of silently requesting an account',async()=>{
+ const target=base+'/releases/download/v1.2.0/'+ASSET_NAMES.android;
+ for(const location of ['https://github.com/login','https://evil.test/file.apk','http://release-assets.githubusercontent.com/github-production-release-asset/123/a','https://127.0.0.1/file.apk','https://user:pass@release-assets.githubusercontent.com/github-production-release-asset/123/a']){
+  await assert.rejects(resolvePublicDownload(target,'android',{configuration,fetcher:async()=>Response.redirect(location)}));
+ }
+ await assert.rejects(resolvePublicDownload(target,'android',{configuration,fetcher:async()=>new Response('<html>Sign in</html>',{headers:{'Content-Type':'text/html'}})}));
+ await assert.rejects(resolvePublicDownload('https://github.com/unrelated/repo/releases/download/v1.2.0/'+ASSET_NAMES.android,'android',{configuration,fetcher:async()=>{throw Error('must not fetch');}}));
+});
+test('a public binary resolution timeout aborts its request without retaining a signed link',async()=>{
+ let aborted=false;await assert.rejects(resolvePublicDownload(base+'/releases/download/v1.2.0/'+ASSET_NAMES.android,'android',{configuration,timeoutMs:10,fetcher:async(url,{signal})=>new Promise((resolve,reject)=>signal.addEventListener('abort',()=>{aborted=true;reject(signal.reason);},{once:true}))}));assert.equal(aborted,true);
 });
 test('arbitrary and duplicate file parameters fail before any network request',async()=>{
  const handler=createDownloadHandler({configuration,fetcher:async()=>{throw Error('Must not fetch');}});for(const url of ['/api/download?file=http://evil.test','/api/download?file=android&file=portable','/api/download?file=android&url=https://evil.test','/api/download']){const out=response();await handler({method:'GET',url},out);assert.equal(out.statusCode,400);}

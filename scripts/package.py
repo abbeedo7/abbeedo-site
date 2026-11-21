@@ -31,7 +31,12 @@ assert digest(ROOT / 'release-assets/abbeedo-TV-Android.apk') == android['sha256
 android_validation = load('validation/android-3.9.4-build-info.json')
 assert android_validation['passed'] and android_validation['sha256'] == android['sha256']
 assert android_validation['original_certificate_preserved'] and android_validation['in_app_update']
-windows_validation = load('validation/windows-artifacts-1.2.json')
+windows_version = load('windows/package.json')['version']
+windows_validation = load(f'validation/windows-artifacts-{windows_version}.json')
+windows_log = (ROOT / f'validation/windows-tests-{windows_version}.log').read_text()
+windows_pass = re.search(r'(?m)^ℹ pass (\d+)$', windows_log)
+assert windows_pass and re.search(r'(?m)^ℹ fail 0$', windows_log)
+assert windows_validation['version'] == windows_version
 assert windows_validation['passed'] and windows_validation['archiveIntegrityVerified']
 tv = load('tv/dist/package-report.json')
 for artifact in tv['artifacts']:
@@ -41,6 +46,7 @@ hosting = load('validation/hosting-status-2.1.json')
 info = {
     'prepared_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
     'version': VERSION, 'application_version': load('application/application.json')['version'],
+    'windows_version': windows_version,
     'android_version': android['version'], 'android_version_code': android['versionCode'],
     'domain': 'https://abbeedo.com', 'current_primary_domain': 'https://www.abbeedo.com',
     'website_name': 'ابوناصر', 'application_name': 'ابوناصر TV',
@@ -56,7 +62,7 @@ info = {
     'revision': load('.vercel/output/static/site-version.json')['revision'],
     'tests': {'source_node_tests': int(matched[1]), 'storefront_browser_checks': browser_checks,
               'desktop_pwa_updater_browser_checks': review_checks,
-              'windows_tests': 28,
+              'windows_tests': int(windows_pass[1]),
               'android_focused_tests': android_validation['focused_tests']['tests'],
               'physical_devices_tested': False},
     'samsung_package_signed': False,

@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "checkedAtUTC": "2026-11-21T17:51:29.267Z",
+  "version": "1.2.1",
+  "platform": "Windows 10/11 x64",
+  "electron": "45.2.3",
+  "builder": "26.18.0",
+  "archiveIntegrityVerified": true,
+  "setupAndPortableIncludeRealPayload": true,
+  "setupPortableAndUnpackedAsarMatch": true,
+  "runtimeSourceFilesMatched": [
+    "app-config.json",
+    "assets/icon.png",
+    "assets/abbeedo.otf",
+    "error.html",
+    "error.js",
+    "main.cjs",
+    "preload.cjs",
+    "security.cjs",
+    "presentation.cjs",
+    "update-monitor.cjs",
+    "window-state.cjs",
+    "updater.cjs",
+    "client-provider.cjs",
+    "provider-fetch.cjs",
+    "client-worker/client-api.mjs",
+    "client-worker/watch-party.mjs",
+    "client-worker/media-sniff.mjs"
+  ],
+  "packagedProviderWorkerImportVerified": true,
+  "brandIconAndVersionVerified": true,
+  "brandedInstallerImagesMatched": true,
+  "appExecutableMachine": "0x8664",
+  "portableDistributionFiles": [
+    "abbeedo-TV-Portable.exe"
+  ],
+  "installerLanguageSelectorConfigured": true,
+  "installerLanguageSelector": "locale selected before UI; no popup",
+  "installerLanguages": [
+    "ar_SA",
+    "en_US"
+  ],
+  "preservedProfileDirectory": "Abunasser TV",
+  "authenticodeSigned": false,
+  "physicalWindowsTested": false,
+  "appOrigin": "https://www.abbeedo.com",
+  "artifacts": [
+    {
+      "kind": "setup",
+      "path": "/workspace/publish/abbeedo-site-git/windows/dist/abbeedo-TV-Setup.exe",
+      "bytes": 120576516,
+      "sha256": "c1e013b51ad0ee1c11030795123e43017f6f9d521b884d374317f33843d1b32a",
+      "archiveIntegrityVerified": true,
+      "embeddedRuntimeVerified": true,
+      "sourceAsarMatched": true
+    },
+    {
+      "kind": "portable",
+      "path": "/workspace/publish/abbeedo-site-git/windows/dist/abbeedo-TV-Portable.exe",
+      "bytes": 109413343,
+      "sha256": "4a7e22fb081344f3c58b517546b03e893240c3ef17ee2329bce9d995afbe8931",
+      "archiveIntegrityVerified": true,
+      "embeddedRuntimeVerified": true,
+      "sourceAsarMatched": true
+    }
+  ]
+}

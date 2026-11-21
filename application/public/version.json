@@ -1,6 +1,6 @@
 {
   "name": "ابوناصر TV",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "platforms": [
     "iOS",
     "web",
@@ -11,7 +11,7 @@
   "webInstallable": true,
   "name_en": "abbeedo TV",
   "windows": {
-    "version": "1.2.0",
+    "version": "1.2.1",
     "setup": "https://www.abbeedo.com/downloads/windows.exe",
     "portable": "https://www.abbeedo.com/downloads/windows-portable.exe"
   },

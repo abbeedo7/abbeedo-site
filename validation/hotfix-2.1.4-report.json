@@ -1,0 +1,713 @@
+{
+  "passed": true,
+  "status": "passed",
+  "checkedAt": "2026-11-21T17:45:30.367585+00:00",
+  "website": "2.1.4",
+  "application": "1.2.4",
+  "windows": "1.2.1",
+  "revision": "web-b33eecb65c65da2c",
+  "sourceNodeTests": 83,
+  "nativeWindowsTests": 58,
+  "checks": [
+    {
+      "kind": "website-version",
+      "name": "ابوناصر",
+      "name_en": "abbeedo",
+      "version": "2.1.4",
+      "revision": "web-b33eecb65c65da2c",
+      "builtAt": "2026-11-21T12:06:30.100Z",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "public-release-metadata",
+      "status": 200,
+      "android": {
+        "available": true,
+        "version": "3.9.4",
+        "versionCode": 29,
+        "url": "/downloads/android.apk",
+        "size": 5434630,
+        "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+        "notes": "تنزيل التحديث والتحقق من سلامته وتثبيته من داخل التطبيق عبر مثبت أندرويد، وروابط abbeedo.com وGitHub."
+      },
+      "windows": {
+        "setup": {
+          "available": true,
+          "version": "1.2.0",
+          "url": "/downloads/windows.exe",
+          "size": 121472646,
+          "sha256": "d21fe3a8fd85ae9853e3d2cc7969df4599829fc774569b52a32e9a10e9cab6bd",
+          "assetUrl": "https://github.com/abbeedo7/abbeedo-site/releases/download/build-4-1-ac439581/abbeedo-TV-Setup.exe"
+        },
+        "portable": {
+          "available": true,
+          "version": "1.2.0",
+          "url": "/downloads/windows-portable.exe",
+          "size": 110421571,
+          "sha256": "6fdc62dc71d5ac34c6aaefb7b624b4c885dad58776af182acbc920cca4fee266",
+          "assetUrl": "https://github.com/abbeedo7/abbeedo-site/releases/download/build-4-1-ac439581/abbeedo-TV-Portable.exe"
+        }
+      },
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "alias-first-response-direct-cdn",
+      "file": "android",
+      "status": 307,
+      "location": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "cacheControl": "no-store, max-age=0",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "direct-cdn-attachment",
+      "file": "android",
+      "status": 200,
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "contentType": "application/vnd.android.package-archive",
+      "contentDisposition": "attachment; filename=abbeedo-TV-Android.apk",
+      "contentLength": "5434630",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "alias-first-response-direct-cdn",
+      "file": "windows",
+      "status": 307,
+      "location": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/127c7711-ba77-4b08-ba00-87eb32abbe2b"
+      },
+      "cacheControl": "no-store, max-age=0",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "direct-cdn-attachment",
+      "file": "windows",
+      "status": 200,
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/127c7711-ba77-4b08-ba00-87eb32abbe2b"
+      },
+      "contentType": "application/octet-stream",
+      "contentDisposition": "attachment; filename=abbeedo-TV-Setup.exe",
+      "contentLength": "121472646",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "alias-first-response-direct-cdn",
+      "file": "portable",
+      "status": 307,
+      "location": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/3ae0b6fb-abdb-4b72-ae58-32fbf92327d1"
+      },
+      "cacheControl": "no-store, max-age=0",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "direct-cdn-attachment",
+      "file": "portable",
+      "status": 200,
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/3ae0b6fb-abdb-4b72-ae58-32fbf92327d1"
+      },
+      "contentType": "application/octet-stream",
+      "contentDisposition": "attachment; filename=abbeedo-TV-Portable.exe",
+      "contentLength": "110421571",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "fresh-browser-no-cookies",
+      "engine": "chromium",
+      "cookies": 0,
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "download-page-load",
+      "engine": "chromium",
+      "status": 200,
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "actual-apk-download-size-hash",
+      "engine": "chromium",
+      "suggestedFilename": "abbeedo-TV-Android.apk",
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "path": "/workspace/artifacts/qa/login-download-2.1.4/chromium-abbeedo-TV-Android.apk",
+      "size": 5434630,
+      "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+      "failure": null,
+      "requests": [
+        {
+          "method": "GET",
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "method": "GET",
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "responses": [
+        {
+          "status": 307,
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "cookiesAfter": [],
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "browser-never-navigates-github-or-login",
+      "engine": "chromium",
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "downloadURL": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "download-file-signature",
+      "engine": "chromium",
+      "signature": "504b0304",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "fresh-browser-no-cookies",
+      "engine": "webkit",
+      "cookies": 0,
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "download-page-load",
+      "engine": "webkit",
+      "status": 200,
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "actual-apk-download-size-hash",
+      "engine": "webkit",
+      "suggestedFilename": "abbeedo-TV-Android.apk",
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "path": "/workspace/artifacts/qa/login-download-2.1.4/webkit-abbeedo-TV-Android.apk",
+      "size": 5434630,
+      "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+      "failure": null,
+      "requests": [
+        {
+          "method": "GET",
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "method": "GET",
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "responses": [
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        },
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "cookiesAfter": [],
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "browser-never-navigates-github-or-login",
+      "engine": "webkit",
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "downloadURL": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "kind": "download-file-signature",
+      "engine": "webkit",
+      "signature": "504b0304",
+      "pass": true,
+      "suite": "public-download"
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-ipc",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-ipc",
+      "language": "ar",
+      "kind": "fixture-auth-reaches-home-over-desktop-bridge",
+      "homeVisible": true,
+      "loginHidden": true,
+      "cards": 3,
+      "passwordCleared": true,
+      "remember": false,
+      "bridgeOperations": [
+        {
+          "op": "auth",
+          "mode": "provider"
+        }
+      ],
+      "errorHidden": true,
+      "networkClientRequests": [],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-ipc",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-ipc",
+      "language": "en",
+      "kind": "fixture-auth-reaches-home-over-desktop-bridge",
+      "homeVisible": true,
+      "loginHidden": true,
+      "cards": 3,
+      "passwordCleared": true,
+      "remember": false,
+      "bridgeOperations": [
+        {
+          "op": "auth",
+          "mode": "provider"
+        }
+      ],
+      "errorHidden": true,
+      "networkClientRequests": [],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "ios-blocked",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "ios-blocked",
+      "language": "ar",
+      "kind": "source-protection-error-before-login",
+      "message": "حماية مصدر الاشتراك منعت الاتصال قبل إتمام تسجيل الدخول (HTTP 403). تواصل مع مزود الاشتراك للسماح بالاتصال أو توفير رابط HTTPS متوافق.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "ios-blocked",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "ios-blocked",
+      "language": "en",
+      "kind": "source-protection-error-before-login",
+      "message": "The subscription source blocked the connection before sign-in could complete (HTTP 403). Ask the provider to permit the connection or supply a compatible HTTPS address.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-legacy",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-legacy",
+      "language": "ar",
+      "kind": "legacy-windows-update-instruction",
+      "message": "حدّث تطبيق ويندوز إلى الإصدار 1.2.1 أو أحدث لتسجيل الدخول باتصال مباشر من جهازك.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-legacy",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-legacy",
+      "language": "en",
+      "kind": "legacy-windows-update-instruction",
+      "message": "Update the Windows app to version 1.2.1 or later to sign in directly from your device.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "chromium",
+      "mode": "appearance",
+      "language": "en",
+      "kind": "language-and-accent-preserved-disclosure-closes",
+      "initialFocus": "settings-close",
+      "accent": "#ffffff",
+      "pickerOpen": false,
+      "dialogOpen": true,
+      "active": "settings-close",
+      "visibleSelects": 0,
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-ipc",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-ipc",
+      "language": "ar",
+      "kind": "fixture-auth-reaches-home-over-desktop-bridge",
+      "homeVisible": true,
+      "loginHidden": true,
+      "cards": 3,
+      "passwordCleared": true,
+      "remember": false,
+      "bridgeOperations": [
+        {
+          "op": "auth",
+          "mode": "provider"
+        }
+      ],
+      "errorHidden": true,
+      "networkClientRequests": [],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-ipc",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-ipc",
+      "language": "en",
+      "kind": "fixture-auth-reaches-home-over-desktop-bridge",
+      "homeVisible": true,
+      "loginHidden": true,
+      "cards": 3,
+      "passwordCleared": true,
+      "remember": false,
+      "bridgeOperations": [
+        {
+          "op": "auth",
+          "mode": "provider"
+        }
+      ],
+      "errorHidden": true,
+      "networkClientRequests": [],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "ios-blocked",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "ios-blocked",
+      "language": "ar",
+      "kind": "source-protection-error-before-login",
+      "message": "حماية مصدر الاشتراك منعت الاتصال قبل إتمام تسجيل الدخول (HTTP 403). تواصل مع مزود الاشتراك للسماح بالاتصال أو توفير رابط HTTPS متوافق.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "ios-blocked",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "ios-blocked",
+      "language": "en",
+      "kind": "source-protection-error-before-login",
+      "message": "The subscription source blocked the connection before sign-in could complete (HTTP 403). Ask the provider to permit the connection or supply a compatible HTTPS address.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-legacy",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-legacy",
+      "language": "ar",
+      "kind": "legacy-windows-update-instruction",
+      "message": "حدّث تطبيق ويندوز إلى الإصدار 1.2.1 أو أحدث لتسجيل الدخول باتصال مباشر من جهازك.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-legacy",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-legacy",
+      "language": "en",
+      "kind": "legacy-windows-update-instruction",
+      "message": "Update the Windows app to version 1.2.1 or later to sign in directly from your device.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true,
+      "suite": "fixture-login"
+    },
+    {
+      "engine": "webkit",
+      "mode": "appearance",
+      "language": "en",
+      "kind": "language-and-accent-preserved-disclosure-closes",
+      "initialFocus": "settings-close",
+      "accent": "#ffffff",
+      "pickerOpen": false,
+      "dialogOpen": true,
+      "active": "settings-close",
+      "visibleSelects": 0,
+      "pass": true,
+      "suite": "fixture-login"
+    }
+  ],
+  "reports": [
+    "validation/hotfix-2.1.4/public-download-report.json",
+    "validation/hotfix-2.1.4/fixture-login-report.json"
+  ],
+  "nativeReports": [
+    "validation/windows-artifacts-1.2.1.json",
+    "validation/windows-electron-protocol-1.2.1.json"
+  ],
+  "limitations": [
+    "Browser sign-in uses fixture IPC, no real account tested.",
+    "Electron media smoke uses real Linux runtime and fixture video; physical Windows not tested.",
+    "HTTP source policy rejects Vercel before credentials. iPhone login remains dependent on provider permitting the connection or supplying a compatible HTTPS source.",
+    "Samsung WGT is unsigned; no physical TV testing."
+  ],
+  "nativeRegressions": [
+    {
+      "suite": "native-live-playback",
+      "name": "active-live-manifest-survives-9000-segment-tokens-with-8192-cache-bound",
+      "pass": true
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 /* Shared HTML media controller. It remuxes supported containers; it never claims to transcode codecs. */
+import {hasDesktopClient} from './native.js';
 const VENDOR = {hls: new URL('../hls.min.js', import.meta.url).href, ts: new URL('../mpegts.min.js', import.meta.url).href};
 const scripts = new Map();
 const MIME_HLS = /(?:mpegurl|^hls$)/i;
@@ -22,6 +23,7 @@ export function mediaType(source = {}) {
 export function validMediaURL(value, {offline = false, base = globalThis.location?.href || 'https://app.invalid/'} = {}) {
   try { const url = new URL(String(value), base);
     if (offline && url.protocol === 'blob:') return url.href;
+    if (url.protocol === 'abbeedo-media:') return hasDesktopClient() && url.hostname === 'stream' && !url.port && !url.username && !url.password && !url.search && !url.hash && /^\/[a-zA-Z0-9_-]{43}$/.test(url.pathname) ? url.href : null;
     if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) return null;
     if (globalThis.location?.protocol === 'https:' && url.protocol === 'http:') return null;
     return url.href;
@@ -84,6 +86,7 @@ export function createPlayer({video, onStatus, onProgress, onEnded, onError} = {
   let generation = 0, item = null, source = null, context = {}, candidates = [], attempt = 0, engine = null, engineKind = '', listeners = [];
   let rate = 1, position = 0, playing = false, nativeMode = false, nativeAttempted = false, progressTimer = null, sleepTimer = null, startTimer = null, objectURL = null;
   let recorder = null, recordingPromise = null, recordingTimer = null;
+  let desktopCrossOrigin;
   let configuration = {aspect: 'fit', buffer: 'balanced', dataSaver: false, language: 'ar', nativeFallback: true};
   const state = () => ({item, position: nativeMode ? position : Number(video.currentTime) || 0, duration: nativeMode ? Number(context.nativeDuration) || 0 : Number.isFinite(video.duration) ? video.duration : 0, rate, playing, native: nativeMode, live: item?.kind === 'live', engine: engineKind});
   const status = text => safeInvoke(onStatus, text);
@@ -97,6 +100,11 @@ export function createPlayer({video, onStatus, onProgress, onEnded, onError} = {
     for (const [event, listener] of listeners) video.removeEventListener(event, listener); listeners = [];
     try {if (engineKind === 'hls') engine?.destroy(); else {engine?.pause?.();engine?.unload?.();engine?.detachMediaElement?.();engine?.destroy?.();}} catch {}
     engine = null; engineKind = ''; video.pause?.(); video.removeAttribute?.('src'); video.load?.();
+    if (desktopCrossOrigin !== undefined) {
+      if (desktopCrossOrigin === null) video.removeAttribute?.('crossorigin');
+      else video.setAttribute?.('crossorigin', desktopCrossOrigin);
+      desktopCrossOrigin = undefined;
+    }
     if (objectURL) {URL.revokeObjectURL(objectURL); objectURL = null;}
   }
   function applySettings() {
@@ -137,6 +145,11 @@ export function createPlayer({video, onStatus, onProgress, onEnded, onError} = {
     const current = () => token === generation && transport === transportGeneration;
     nativeMode = false; const candidate = candidates[attempt], kind = mediaType(candidate); let resumed = false;
     if(candidate.offline&&candidate.url.startsWith('blob:'))objectURL=candidate.url;
+    // Native protocol authorization requires the requesting page's Origin.
+    if (candidate.url.startsWith('abbeedo-media:')) {
+      desktopCrossOrigin = video.getAttribute?.('crossorigin') ?? null;
+      video.setAttribute?.('crossorigin', 'anonymous');
+    }
     // Native HLS can load signed media directly; an opaque bundle Origin must not force CORS.
     if(nativeAvailable())video.removeAttribute?.('crossorigin');
     video.playsInline = true; video.setAttribute?.('playsinline', ''); video.setAttribute?.('webkit-playsinline', ''); video.preload = 'metadata';

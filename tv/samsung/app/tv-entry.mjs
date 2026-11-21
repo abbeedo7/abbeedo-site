@@ -54,7 +54,7 @@ window.addEventListener('pageshow',refreshSharedAccent);window.addEventListener(
 // Migrate only public settings from an existing encrypted installation. Never expose account data.
 if(!readPreferences().chosenLanguage&&isAppContext()){
   gate.hidden=true;
-  try{const {Vault}=await import('./core.js?release=1.2.3');const vault=new Vault({namespace:'interface-v1'});const saved=await vault.get('ui',null);migrateVaultPreferences(saved?.settings);}catch{}
+  try{const {Vault}=await import('./core.js?release=1.2.4');const vault=new Vault({namespace:'interface-v1'});const saved=await vault.get('ui',null);migrateVaultPreferences(saved?.settings);}catch{}
   applyClientPreferences();
 }
 if(!readPreferences().chosenLanguage)await chooseInitialLanguage();
@@ -64,7 +64,7 @@ function openIfInstalled(){
   if(starting)return true;
   starting=true;gate.hidden=true;shell.hidden=false;shell.inert=true;
   document.documentElement.dataset.launchContext='app';
-  import('./ui.js?release=1.2.3').then(async module=>{await module.appReady;shell.inert=false;}).catch(()=>{
+  import('./ui.js?release=1.2.4').then(async module=>{await module.appReady;shell.inert=false;}).catch(()=>{
     starting=false;loadFailed=true;gate.hidden=false;shell.hidden=true;shell.inert=true;
     document.getElementById('install-instructions').hidden=true;document.getElementById('install-note').hidden=true;renderGate();
   });

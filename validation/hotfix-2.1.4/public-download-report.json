@@ -1,0 +1,397 @@
+{
+  "at": "2026-11-21T12:06:55.374Z",
+  "base": "http://127.0.0.1:9021",
+  "checks": [
+    {
+      "kind": "website-version",
+      "name": "ابوناصر",
+      "name_en": "abbeedo",
+      "version": "2.1.4",
+      "revision": "web-b33eecb65c65da2c",
+      "builtAt": "2026-11-21T12:06:30.100Z",
+      "pass": true
+    },
+    {
+      "kind": "public-release-metadata",
+      "status": 200,
+      "android": {
+        "available": true,
+        "version": "3.9.4",
+        "versionCode": 29,
+        "url": "/downloads/android.apk",
+        "size": 5434630,
+        "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+        "notes": "تنزيل التحديث والتحقق من سلامته وتثبيته من داخل التطبيق عبر مثبت أندرويد، وروابط abbeedo.com وGitHub."
+      },
+      "windows": {
+        "setup": {
+          "available": true,
+          "version": "1.2.0",
+          "url": "/downloads/windows.exe",
+          "size": 121472646,
+          "sha256": "d21fe3a8fd85ae9853e3d2cc7969df4599829fc774569b52a32e9a10e9cab6bd",
+          "assetUrl": "https://github.com/abbeedo7/abbeedo-site/releases/download/build-4-1-ac439581/abbeedo-TV-Setup.exe"
+        },
+        "portable": {
+          "available": true,
+          "version": "1.2.0",
+          "url": "/downloads/windows-portable.exe",
+          "size": 110421571,
+          "sha256": "6fdc62dc71d5ac34c6aaefb7b624b4c885dad58776af182acbc920cca4fee266",
+          "assetUrl": "https://github.com/abbeedo7/abbeedo-site/releases/download/build-4-1-ac439581/abbeedo-TV-Portable.exe"
+        }
+      },
+      "pass": true
+    },
+    {
+      "kind": "alias-first-response-direct-cdn",
+      "file": "android",
+      "status": 307,
+      "location": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "cacheControl": "no-store, max-age=0",
+      "pass": true
+    },
+    {
+      "kind": "direct-cdn-attachment",
+      "file": "android",
+      "status": 200,
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "contentType": "application/vnd.android.package-archive",
+      "contentDisposition": "attachment; filename=abbeedo-TV-Android.apk",
+      "contentLength": "5434630",
+      "pass": true
+    },
+    {
+      "kind": "alias-first-response-direct-cdn",
+      "file": "windows",
+      "status": 307,
+      "location": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/127c7711-ba77-4b08-ba00-87eb32abbe2b"
+      },
+      "cacheControl": "no-store, max-age=0",
+      "pass": true
+    },
+    {
+      "kind": "direct-cdn-attachment",
+      "file": "windows",
+      "status": 200,
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/127c7711-ba77-4b08-ba00-87eb32abbe2b"
+      },
+      "contentType": "application/octet-stream",
+      "contentDisposition": "attachment; filename=abbeedo-TV-Setup.exe",
+      "contentLength": "121472646",
+      "pass": true
+    },
+    {
+      "kind": "alias-first-response-direct-cdn",
+      "file": "portable",
+      "status": 307,
+      "location": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/3ae0b6fb-abdb-4b72-ae58-32fbf92327d1"
+      },
+      "cacheControl": "no-store, max-age=0",
+      "pass": true
+    },
+    {
+      "kind": "direct-cdn-attachment",
+      "file": "portable",
+      "status": 200,
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/3ae0b6fb-abdb-4b72-ae58-32fbf92327d1"
+      },
+      "contentType": "application/octet-stream",
+      "contentDisposition": "attachment; filename=abbeedo-TV-Portable.exe",
+      "contentLength": "110421571",
+      "pass": true
+    },
+    {
+      "kind": "fresh-browser-no-cookies",
+      "engine": "chromium",
+      "cookies": 0,
+      "pass": true
+    },
+    {
+      "kind": "download-page-load",
+      "engine": "chromium",
+      "status": 200,
+      "pass": true
+    },
+    {
+      "kind": "actual-apk-download-size-hash",
+      "engine": "chromium",
+      "suggestedFilename": "abbeedo-TV-Android.apk",
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "path": "/workspace/artifacts/qa/login-download-2.1.4/chromium-abbeedo-TV-Android.apk",
+      "size": 5434630,
+      "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+      "failure": null,
+      "requests": [
+        {
+          "method": "GET",
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "method": "GET",
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "responses": [
+        {
+          "status": 307,
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "cookiesAfter": [],
+      "pass": true
+    },
+    {
+      "kind": "browser-never-navigates-github-or-login",
+      "engine": "chromium",
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "downloadURL": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "pass": true
+    },
+    {
+      "kind": "download-file-signature",
+      "engine": "chromium",
+      "signature": "504b0304",
+      "pass": true
+    },
+    {
+      "kind": "fresh-browser-no-cookies",
+      "engine": "webkit",
+      "cookies": 0,
+      "pass": true
+    },
+    {
+      "kind": "download-page-load",
+      "engine": "webkit",
+      "status": 200,
+      "pass": true
+    },
+    {
+      "kind": "actual-apk-download-size-hash",
+      "engine": "webkit",
+      "suggestedFilename": "abbeedo-TV-Android.apk",
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "path": "/workspace/artifacts/qa/login-download-2.1.4/webkit-abbeedo-TV-Android.apk",
+      "size": 5434630,
+      "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+      "failure": null,
+      "requests": [
+        {
+          "method": "GET",
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "method": "GET",
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "responses": [
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        },
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "cookiesAfter": [],
+      "pass": true
+    },
+    {
+      "kind": "browser-never-navigates-github-or-login",
+      "engine": "webkit",
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "downloadURL": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "pass": true
+    },
+    {
+      "kind": "download-file-signature",
+      "engine": "webkit",
+      "signature": "504b0304",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "browserVersions": {
+    "chromium": "156.0.8078.79",
+    "webkit": "27.2"
+  },
+  "downloads": [
+    {
+      "engine": "chromium",
+      "suggestedFilename": "abbeedo-TV-Android.apk",
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "path": "/workspace/artifacts/qa/login-download-2.1.4/chromium-abbeedo-TV-Android.apk",
+      "size": 5434630,
+      "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+      "failure": null,
+      "requests": [
+        {
+          "method": "GET",
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "method": "GET",
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "responses": [
+        {
+          "status": 307,
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "cookiesAfter": []
+    },
+    {
+      "engine": "webkit",
+      "suggestedFilename": "abbeedo-TV-Android.apk",
+      "url": {
+        "host": "release-assets.githubusercontent.com",
+        "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+      },
+      "path": "/workspace/artifacts/qa/login-download-2.1.4/webkit-abbeedo-TV-Android.apk",
+      "size": 5434630,
+      "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+      "failure": null,
+      "requests": [
+        {
+          "method": "GET",
+          "host": "127.0.0.1",
+          "path": "/downloads/android.apk"
+        },
+        {
+          "method": "GET",
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "responses": [
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        },
+        {
+          "status": 200,
+          "host": "release-assets.githubusercontent.com",
+          "path": "/github-production-release-asset/1457415368/566f9c8a-57d3-4a50-8dc1-065a18c8580e"
+        }
+      ],
+      "githubAttempts": [],
+      "finalPage": "http://127.0.0.1:9021/apps",
+      "cookiesAfter": []
+    }
+  ],
+  "limitations": [
+    "Actual public Android APK bytes are saved and hashed in fresh Chromium and WebKit contexts. No GitHub session, provider credentials or customer account is used.",
+    "Local preview runs the real download handler; production deployment and physical iPhone/Windows device behavior are outside this run.",
+    "Windows aliases are checked through the direct CDN attachment headers; large EXE bodies are not downloaded in this browser run."
+  ],
+  "revision": {
+    "name": "ابوناصر",
+    "name_en": "abbeedo",
+    "version": "2.1.4",
+    "revision": "web-b33eecb65c65da2c",
+    "builtAt": "2026-11-21T12:06:30.100Z"
+  },
+  "releases": {
+    "app": "ابوناصر TV",
+    "name": "abbeedo TV",
+    "checkedAt": "2026-11-21T12:06:55.412Z",
+    "configurationRequired": false,
+    "webVersion": "2.1.3",
+    "android": {
+      "available": true,
+      "version": "3.9.4",
+      "versionCode": 29,
+      "url": "/downloads/android.apk",
+      "size": 5434630,
+      "sha256": "5aefa0a7376546074fa674c3c1314e69c1d8ffa0b4cb47acdd6f398ac3ab1a24",
+      "notes": "تنزيل التحديث والتحقق من سلامته وتثبيته من داخل التطبيق عبر مثبت أندرويد، وروابط abbeedo.com وGitHub."
+    },
+    "windows": {
+      "setup": {
+        "available": true,
+        "version": "1.2.0",
+        "url": "/downloads/windows.exe",
+        "size": 121472646,
+        "sha256": "d21fe3a8fd85ae9853e3d2cc7969df4599829fc774569b52a32e9a10e9cab6bd",
+        "assetUrl": "https://github.com/abbeedo7/abbeedo-site/releases/download/build-4-1-ac439581/abbeedo-TV-Setup.exe"
+      },
+      "portable": {
+        "available": true,
+        "version": "1.2.0",
+        "url": "/downloads/windows-portable.exe",
+        "size": 110421571,
+        "sha256": "6fdc62dc71d5ac34c6aaefb7b624b4c885dad58776af182acbc920cca4fee266",
+        "assetUrl": "https://github.com/abbeedo7/abbeedo-site/releases/download/build-4-1-ac439581/abbeedo-TV-Portable.exe"
+      }
+    }
+  },
+  "summary": {
+    "checks": 18,
+    "passed": 18,
+    "failed": 0,
+    "pageErrors": 0
+  },
+  "status": "passed"
+}

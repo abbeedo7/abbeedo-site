@@ -1,6 +1,6 @@
 {
   "name": "abunasser-tv-windows",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "description": "abbeedo TV for Windows",
   "author": "Abunasser",
@@ -36,7 +36,14 @@
       "assets/abbeedo.otf",
       "update-monitor.cjs",
       "window-state.cjs",
-      "updater.cjs"
+      "updater.cjs",
+      "client-provider.cjs",
+      "provider-fetch.cjs",
+      {
+        "from": "../application/worker",
+        "to": "client-worker",
+        "filter": ["client-api.mjs", "watch-party.mjs", "media-sniff.mjs"]
+      }
     ],
     "asar": true,
     "compression": "normal",

@@ -58,7 +58,7 @@ test('native offline page follows the selected language without displaying an En
 
 test('both Windows distributions are executable artifacts and installer language choice is enabled', () => {
   const pkg = require('../package.json');
-  assert.equal(pkg.version, '1.2.0');
+  assert.equal(pkg.version, '1.2.1');
   assert.equal(pkg.build.appId, APP_ID);
   assert.equal(pkg.build.productName, appName('en'));
   assert.deepEqual(pkg.build.win.target, ['nsis', 'portable']);

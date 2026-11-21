@@ -1,0 +1,91 @@
+{
+  "passed": true,
+  "checkedAtUTC": "2026-11-21T11:59:58.454Z",
+  "validation": "Linux headless Electron custom protocol smoke; no physical Windows testing",
+  "platform": "linux",
+  "electron": "45.2.3",
+  "physicalWindowsTested": false,
+  "realAccountsTested": false,
+  "productionHelper": "windows/client-provider.cjs#createMediaProtocolHandler",
+  "runtimeOfficialSHA256": "a87fe741f6d121285117e574da6c9a2e65210d410123bbc04713b099add0263b",
+  "results": {
+    "trusted": {
+      "xhr": {
+        "status": 206,
+        "bytes": 16
+      },
+      "fetch": {
+        "status": 206,
+        "bytes": 10
+      },
+      "video": {
+        "duration": 1,
+        "readyState": 4
+      }
+    },
+    "workerRuntime": {
+      "authStatus": 200,
+      "resolveStatus": 200,
+      "networkRequests": 0,
+      "webCryptoMediaSealVerified": true
+    },
+    "foreignOriginForgedHeaderStatus": 403,
+    "browserProcessMissingInitiatorStatus": 403,
+    "inactiveTrustedWindowStatus": 403
+  },
+  "observations": [
+    {
+      "token": "a",
+      "initiatorOrigin": "https://127.0.0.1:38673",
+      "originHeader": null,
+      "range": "bytes=0-9"
+    },
+    {
+      "token": "b",
+      "initiatorOrigin": "https://127.0.0.1:38673",
+      "originHeader": null,
+      "range": "bytes=0-15"
+    },
+    {
+      "token": "c",
+      "initiatorOrigin": "https://127.0.0.1:38673",
+      "originHeader": null,
+      "range": "bytes=0-"
+    },
+    {
+      "token": "d",
+      "initiatorOrigin": "https://localhost:38673",
+      "originHeader": null,
+      "range": null
+    },
+    {
+      "token": "e",
+      "initiatorOrigin": null,
+      "originHeader": null,
+      "range": null
+    },
+    {
+      "token": "f",
+      "initiatorOrigin": "https://127.0.0.1:38673",
+      "originHeader": null,
+      "range": null
+    }
+  ],
+  "forwarded": [
+    {
+      "token": "a",
+      "origin": "https://127.0.0.1:38673",
+      "range": "bytes=0-9"
+    },
+    {
+      "token": "b",
+      "origin": "https://127.0.0.1:38673",
+      "range": "bytes=0-15"
+    },
+    {
+      "token": "c",
+      "origin": "https://127.0.0.1:38673",
+      "range": "bytes=0-"
+    }
+  ]
+}

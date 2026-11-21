@@ -672,6 +672,8 @@
     return writePreferences({ ...cleanPreferenceValues(settings), ...record2.values }, { chooseLanguage: LANGUAGES.some((row) => row.code === settings?.language), storage, notify: false });
   }
   function errorText(error, language = preferenceValues().language) {
+    if (String(error?.code || "") === "UPSTREAM_BLOCKED" && globalThis.abunasserDesktop?.isDesktop === true && typeof globalThis.abunasserDesktop.clientRequest !== "function") return text("\u062D\u062F\u0651\u062B \u062A\u0637\u0628\u064A\u0642 \u0648\u064A\u0646\u062F\u0648\u0632 \u0625\u0644\u0649 \u0627\u0644\u0625\u0635\u062F\u0627\u0631 1.2.1 \u0623\u0648 \u0623\u062D\u062F\u062B \u0644\u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644 \u0628\u0627\u062A\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631 \u0645\u0646 \u062C\u0647\u0627\u0632\u0643.", "Update the Windows app to version 1.2.1 or later to sign in directly from your device.", language);
+    if (String(error?.code || "") === "UPSTREAM_BLOCKED") return text("\u062D\u0645\u0627\u064A\u0629 \u0645\u0635\u062F\u0631 \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0645\u0646\u0639\u062A \u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0642\u0628\u0644 \u0625\u062A\u0645\u0627\u0645 \u062A\u0633\u062C\u064A\u0644 \u0627\u0644\u062F\u062E\u0648\u0644 (HTTP 403). \u062A\u0648\u0627\u0635\u0644 \u0645\u0639 \u0645\u0632\u0648\u062F \u0627\u0644\u0627\u0634\u062A\u0631\u0627\u0643 \u0644\u0644\u0633\u0645\u0627\u062D \u0628\u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u0623\u0648 \u062A\u0648\u0641\u064A\u0631 \u0631\u0627\u0628\u0637 HTTPS \u0645\u062A\u0648\u0627\u0641\u0642.", "The subscription source blocked the connection before sign-in could complete (HTTP 403). Ask the provider to permit the connection or supply a compatible HTTPS address.", language);
     const raw = String(error?.message || error || ""), arabic = /[\u0600-\u06ff]/.test(raw);
     if (raw && (language === "en" && !arabic || language !== "en" && arabic)) return raw;
     const code = String(error?.code || ""), http = Number(error?.httpStatus || error?.status) || Number(raw.match(/HTTP\s*(\d{3})/i)?.[1]) || 0;
@@ -997,10 +999,53 @@
   var native_exports = {};
   __export(native_exports, {
     capabilities: () => capabilities,
+    desktopClientFetch: () => desktopClientFetch,
+    hasDesktopClient: () => hasDesktopClient,
     isNative: () => isNative,
     nativeFetch: () => nativeFetch,
     nativeRequest: () => nativeRequest
   });
+  async function desktopClientFetch(input, options = {}) {
+    if (!hasDesktopClient()) throw new Error("Desktop provider connection is unavailable");
+    const source = input instanceof Request ? input : null;
+    const base = globalThis.location?.href || "https://www.abbeedo.com/app";
+    const url = new URL(source ? source.url : String(input), base);
+    if (url.origin !== new URL(base).origin || url.protocol !== "https:" || url.pathname !== "/api/client" || url.search || url.hash || url.username || url.password) throw new TypeError("Desktop client destination is not allowed");
+    const method = String(options.method || source?.method || "GET").toUpperCase();
+    const headers = new Headers(options.headers || source?.headers);
+    if (method !== "POST" || !/^application\/json(?:\s*;|$)/i.test(headers.get("content-type") || "")) throw new TypeError("Desktop client requires a JSON operation");
+    const signal = options.signal || source?.signal;
+    if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+    const body = options.body ?? (source ? await source.clone().text() : "");
+    if (typeof body !== "string" || new TextEncoder().encode(body).byteLength > 32768) throw new TypeError("Desktop client operation is too large");
+    const payload = JSON.parse(body);
+    if (!payload || typeof payload !== "object" || Array.isArray(payload) || !["auth", "catalog", "details", "epg", "resolve"].includes(payload.op)) throw new TypeError("Desktop client operation is not allowed");
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const complete = (callback, value) => {
+        if (settled) return;
+        settled = true;
+        signal?.removeEventListener("abort", abort);
+        callback(value);
+      };
+      const abort = () => complete(reject, new DOMException("Aborted", "AbortError"));
+      signal?.addEventListener("abort", abort, { once: true });
+      if (signal?.aborted) {
+        abort();
+        return;
+      }
+      Promise.resolve().then(() => globalThis.abunasserDesktop.clientRequest(payload)).then((data) => {
+        if (settled) return;
+        try {
+          const status = Number(data?.status);
+          if (!Number.isInteger(status) || status < 200 || status > 599 || typeof data.body !== "string") throw new TypeError("Desktop client response is invalid");
+          complete(resolve, new Response([204, 205, 304].includes(status) ? null : data.body, { status, headers: data.headers || {} }));
+        } catch (error) {
+          complete(reject, error);
+        }
+      }, (error) => complete(reject, error));
+    });
+  }
   function nativeRequest(method, payload = {}) {
     if (!isNative()) return Promise.reject(Object.assign(new Error("\u0647\u0630\u0647 \u0627\u0644\u0648\u0638\u064A\u0641\u0629 \u062A\u062D\u062A\u0627\u062C \u062A\u0637\u0628\u064A\u0642 \u0627\u0644\u0622\u064A\u0641\u0648\u0646. \u064A\u0645\u0643\u0646\u0643 \u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0627\u0644\u062E\u064A\u0627\u0631\u0627\u062A \u0627\u0644\u0645\u062A\u0627\u062D\u0629 \u0641\u064A \u0627\u0644\u0645\u062A\u0635\u0641\u062D."), { code: "NATIVE_UNAVAILABLE" }));
     if (!/^[A-Za-z][A-Za-z0-9]{0,40}$/.test(method)) return Promise.reject(new TypeError("Invalid native method"));
@@ -1120,12 +1165,13 @@
       }, failure);
     });
   }
-  var pending, serial, isNative, capabilities, requestSerial;
+  var pending, serial, isNative, hasDesktopClient, capabilities, requestSerial;
   var init_native = __esm({
     "tv/samsung/app/native.js"() {
       pending = /* @__PURE__ */ new Map();
       serial = 0;
       isNative = () => Boolean(globalThis.webkit?.messageHandlers?.abunasser);
+      hasDesktopClient = () => globalThis.abunasserDesktop?.isDesktop === true && typeof globalThis.abunasserDesktop.clientRequest === "function";
       capabilities = Object.freeze({
         native: isNative(),
         keychain: isNative(),
@@ -1506,7 +1552,7 @@
     }
   });
 
-  // tv/samsung/app/core.js?release=1.2.3
+  // tv/samsung/app/core.js?release=1.2.4
   var core_exports = {};
   __export(core_exports, {
     ACCOUNT_MODES: () => ACCOUNT_MODES,
@@ -1851,10 +1897,10 @@
   }
   var BRAND, PROVIDER, ACCOUNT_MODES, DEFAULT_SETTINGS, LIVE_FAMILIES, ADULT, textCache, clamp, ApiError, nativeAPIFetch, providerRequestSerial, ApiClient, UserLibrary;
   var init_core = __esm({
-    "tv/samsung/app/core.js?release=1.2.3"() {
+    "tv/samsung/app/core.js?release=1.2.4"() {
       init_storage();
       init_native();
-      BRAND = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.3", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
+      BRAND = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.4", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
       PROVIDER = "http://maglobalxx.xyz:2052";
       ACCOUNT_MODES = Object.freeze(["provider", "xtream", "m3u", "m3u-file", "auto", "direct", "stalker"]);
       DEFAULT_SETTINGS = Object.freeze({
@@ -1926,7 +1972,8 @@
         constructor({ base = globalThis.ABUNASSER_CONFIG?.apiBase || (globalThis.ABUNASSER_CONFIG?.apiOrigin ? globalThis.ABUNASSER_CONFIG.apiOrigin.replace(/\/$/, "") + "/api/client" : "/api/client"), fetch: fetchImpl = null, vault: vault2 = null, timeout = 7e3, onStatus = () => {
         } } = {}) {
           this.base = base;
-          this.fetch = fetchImpl || (isNative() ? nativeAPIFetch : globalThis.fetch?.bind(globalThis));
+          this.desktopClient = !fetchImpl && hasDesktopClient();
+          this.fetch = fetchImpl || (this.desktopClient ? desktopClientFetch : isNative() ? nativeAPIFetch : globalThis.fetch?.bind(globalThis));
           this.vault = vault2 || new Vault({ namespace: "catalog-cache" });
           this.timeout = timeout;
           this.onStatus = onStatus;
@@ -1941,6 +1988,7 @@
         }
         async _response(payload, clock) {
           if (!this.fetch) throw new ApiError("\u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u063A\u064A\u0631 \u0645\u062A\u0627\u062D \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u062C\u0647\u0627\u0632.", { code: "FETCH_UNAVAILABLE" });
+          if (this.desktopClient && payload.op === "catalog") clock.extend(9e4);
           let response;
           try {
             response = await clock.race(this.fetch(this.base, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json, application/x-ndjson" }, body: JSON.stringify(payload), signal: clock.signal, credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" }));
@@ -1955,7 +2003,7 @@
               data = await clock.race(response.json());
             } catch {
             }
-            if (data.code === "HOST_NOT_ALLOWED" && data.canDirect) return this._directResponse(payload, clock);
+            if (data.code === "HOST_NOT_ALLOWED" && data.canDirect && !this.desktopClient) return this._directResponse(payload, clock);
             throw new ApiError(data.error || data.message || `\u0631\u0641\u0636 \u0627\u0644\u0645\u0635\u062F\u0631 \u0627\u0644\u0637\u0644\u0628 (HTTP ${response.status}).`, { status: response.status, code: data.code || `HTTP_${response.status}`, canDirect: !!data.canDirect });
           }
           return response;
@@ -2722,7 +2770,7 @@
     "tv/samsung/app/core.js?release=1.2"() {
       init_storage();
       init_native();
-      BRAND2 = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.3", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
+      BRAND2 = Object.freeze({ name: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_ar: "\u0627\u0628\u0648\u0646\u0627\u0635\u0631 TV", name_en: "abbeedo TV", phone: "0571514382", whatsapp: "https://wa.me/966571514382", version: "1.2.4", tagline: "\u0639\u0627\u0644\u0645\u0643 \u0645\u0646 \u0627\u0644\u062A\u0631\u0641\u064A\u0647" });
       PROVIDER2 = "http://maglobalxx.xyz:2052";
       ACCOUNT_MODES2 = Object.freeze(["provider", "xtream", "m3u", "m3u-file", "auto", "direct", "stalker"]);
       DEFAULT_SETTINGS2 = Object.freeze({
@@ -2794,7 +2842,8 @@
         constructor({ base = globalThis.ABUNASSER_CONFIG?.apiBase || (globalThis.ABUNASSER_CONFIG?.apiOrigin ? globalThis.ABUNASSER_CONFIG.apiOrigin.replace(/\/$/, "") + "/api/client" : "/api/client"), fetch: fetchImpl = null, vault: vault2 = null, timeout = 7e3, onStatus = () => {
         } } = {}) {
           this.base = base;
-          this.fetch = fetchImpl || (isNative() ? nativeAPIFetch2 : globalThis.fetch?.bind(globalThis));
+          this.desktopClient = !fetchImpl && hasDesktopClient();
+          this.fetch = fetchImpl || (this.desktopClient ? desktopClientFetch : isNative() ? nativeAPIFetch2 : globalThis.fetch?.bind(globalThis));
           this.vault = vault2 || new Vault({ namespace: "catalog-cache" });
           this.timeout = timeout;
           this.onStatus = onStatus;
@@ -2809,6 +2858,7 @@
         }
         async _response(payload, clock) {
           if (!this.fetch) throw new ApiError2("\u0627\u0644\u0627\u062A\u0635\u0627\u0644 \u063A\u064A\u0631 \u0645\u062A\u0627\u062D \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u062C\u0647\u0627\u0632.", { code: "FETCH_UNAVAILABLE" });
+          if (this.desktopClient && payload.op === "catalog") clock.extend(9e4);
           let response;
           try {
             response = await clock.race(this.fetch(this.base, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json, application/x-ndjson" }, body: JSON.stringify(payload), signal: clock.signal, credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer" }));
@@ -2823,7 +2873,7 @@
               data = await clock.race(response.json());
             } catch {
             }
-            if (data.code === "HOST_NOT_ALLOWED" && data.canDirect) return this._directResponse(payload, clock);
+            if (data.code === "HOST_NOT_ALLOWED" && data.canDirect && !this.desktopClient) return this._directResponse(payload, clock);
             throw new ApiError2(data.error || data.message || `\u0631\u0641\u0636 \u0627\u0644\u0645\u0635\u062F\u0631 \u0627\u0644\u0637\u0644\u0628 (HTTP ${response.status}).`, { status: response.status, code: data.code || `HTTP_${response.status}`, canDirect: !!data.canDirect });
           }
           return response;
@@ -3802,6 +3852,7 @@
     try {
       const url = new URL(String(value), base);
       if (offline && url.protocol === "blob:") return url.href;
+      if (url.protocol === "abbeedo-media:") return hasDesktopClient() && url.hostname === "stream" && !url.port && !url.username && !url.password && !url.search && !url.hash && /^\/[a-zA-Z0-9_-]{43}$/.test(url.pathname) ? url.href : null;
       if (!["https:", "http:"].includes(url.protocol) || url.username || url.password) return null;
       if (globalThis.location?.protocol === "https:" && url.protocol === "http:") return null;
       return url.href;
@@ -3889,6 +3940,7 @@
     let generation = 0, item = null, source = null, context = {}, candidates = [], attempt = 0, engine = null, engineKind = "", listeners = [];
     let rate = 1, position = 0, playing = false, nativeMode = false, nativeAttempted = false, progressTimer = null, sleepTimer2 = null, startTimer = null, objectURL = null;
     let recorder = null, recordingPromise = null, recordingTimer = null;
+    let desktopCrossOrigin;
     let configuration = { aspect: "fit", buffer: "balanced", dataSaver: false, language: "ar", nativeFallback: true };
     const state3 = () => ({ item, position: nativeMode ? position : Number(video.currentTime) || 0, duration: nativeMode ? Number(context.nativeDuration) || 0 : Number.isFinite(video.duration) ? video.duration : 0, rate, playing, native: nativeMode, live: item?.kind === "live", engine: engineKind });
     const status = (text2) => safeInvoke(onStatus, text2);
@@ -3924,6 +3976,11 @@
       video.pause?.();
       video.removeAttribute?.("src");
       video.load?.();
+      if (desktopCrossOrigin !== void 0) {
+        if (desktopCrossOrigin === null) video.removeAttribute?.("crossorigin");
+        else video.setAttribute?.("crossorigin", desktopCrossOrigin);
+        desktopCrossOrigin = void 0;
+      }
       if (objectURL) {
         URL.revokeObjectURL(objectURL);
         objectURL = null;
@@ -3994,6 +4051,10 @@
       const candidate = candidates[attempt], kind = mediaType(candidate);
       let resumed = false;
       if (candidate.offline && candidate.url.startsWith("blob:")) objectURL = candidate.url;
+      if (candidate.url.startsWith("abbeedo-media:")) {
+        desktopCrossOrigin = video.getAttribute?.("crossorigin") ?? null;
+        video.setAttribute?.("crossorigin", "anonymous");
+      }
       if (nativeAvailable()) video.removeAttribute?.("crossorigin");
       video.playsInline = true;
       video.setAttribute?.("playsinline", "");
@@ -4413,6 +4474,7 @@
   var VENDOR, scripts, MIME_HLS, MIME_TS, RATES, OFFLINE_CACHE, downloadsDB, DownloadManager;
   var init_player = __esm({
     "tv/samsung/app/player.js?release=1.1"() {
+      init_native();
       VENDOR = { hls: new URL("hls.min.js", document.baseURI).href, ts: new URL("mpegts.min.js", document.baseURI).href };
       scripts = /* @__PURE__ */ new Map();
       MIME_HLS = /(?:mpegurl|^hls$)/i;
@@ -5169,7 +5231,7 @@
     }
   });
 
-  // tv/samsung/app/ui.js?release=1.2.3
+  // tv/samsung/app/ui.js?release=1.2.4
   var ui_exports = {};
   __export(ui_exports, {
     appReady: () => appReady
@@ -7364,7 +7426,7 @@ ${JSON.stringify({ timings: state2.timings, errors: state2.errorLog.slice(0, 5) 
   }
   var isNative2, nativeRequest2, $, x, api, vault, APP_VERSION, state2, playbackOwner, updateMonitor, announcementMonitor, controller, downloads, savedTick, toastTick, loadAbort, sleepTick, idleTick, lastActive, watchSession, pairSession, lastPlayerPage, detailGeneration, NAMES, label, node, HOME_TOOLS, qrScript, scanScript, cameraStream, cameraFrame, appReady;
   var init_ui = __esm({
-    "tv/samsung/app/ui.js?release=1.2.3"() {
+    "tv/samsung/app/ui.js?release=1.2.4"() {
       init_desktop_updates();
       init_tv_network();
       init_glitch();

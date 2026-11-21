@@ -51,7 +51,7 @@ test('locale bridge is limited to the exact trusted main frame', () => {
   assert.equal(canSetLanguage(accepted, contents, policy), false);
 });
 
-test('preload exposes only bounded language and notification preference requests', async () => {
+test('preload exposes only named preferences, updates and bounded provider operations', async () => {
   const source = fs.readFileSync(path.join(__dirname, '../preload.cjs'), 'utf8');
   const calls = [];
   let exposed;
@@ -62,7 +62,7 @@ test('preload exposes only bounded language and notification preference requests
   const processInfo = {isMainFrame: true, platform: 'win32', argv: ['app.exe', '--abbeedo-language=en', '--abbeedo-system-language=ar']};
   const run = () => vm.runInNewContext(source, {process: processInfo, require: name => {assert.equal(name, 'electron'); return electron;}});
   run();
-  assert.deepEqual(Object.keys(exposed).sort(), ['cancelUpdate','checkForUpdates','downloadUpdate','getNotificationsEnabled','getUpdateStatus','installUpdate','isDesktop','language','nativeAnnouncements','nativeUpdater','nativeUpdates','notificationsEnabled','onUpdateStatus','platform','setLanguage','setNotificationsEnabled','systemLanguage','version']);
+  assert.deepEqual(Object.keys(exposed).sort(), ['cancelUpdate','checkForUpdates','clientRequest','downloadUpdate','getNotificationsEnabled','getUpdateStatus','installUpdate','isDesktop','language','nativeAnnouncements','nativeProvider','nativeUpdater','nativeUpdates','notificationsEnabled','onUpdateStatus','platform','setLanguage','setNotificationsEnabled','systemLanguage','version']);
   assert.equal(Object.isFrozen(exposed), true);
   assert.equal(exposed.language, 'en'); assert.equal(exposed.systemLanguage, 'ar');
   await exposed.setLanguage('ar');
@@ -74,6 +74,14 @@ test('preload exposes only bounded language and notification preference requests
   await exposed.setNotificationsEnabled(true);await exposed.getNotificationsEnabled();
   assert.deepEqual(calls.slice(1),[['abbeedo:notifications-set',true],['abbeedo:notifications-get']]);
   assert.equal(exposed.nativeAnnouncements,true);assert.equal(exposed.nativeUpdates,true);
+  assert.equal(exposed.nativeProvider,true);assert.equal(exposed.version,'1.2.1');
+  const beforeClient=calls.length;
+  assert.equal((await exposed.clientRequest({op:'fetch',url:'file:///private'})).status,400);
+  assert.equal((await exposed.clientRequest({op:'auth',account:{password:'x'.repeat(32768)}})).status,413);
+  assert.equal(calls.length,beforeClient);
+  const fixture={op:'auth',account:{mode:'provider',username:'fixture',password:'fixture'}};
+  await exposed.clientRequest(fixture);
+  assert.deepEqual(calls.at(-1),['abbeedo:client-request',fixture]);
   processInfo.isMainFrame = false; exposed = null; run();
   assert.equal(exposed, null);
 });

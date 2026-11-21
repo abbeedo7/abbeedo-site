@@ -4,15 +4,18 @@ const path = require('node:path');
 const fs = require('node:fs');
 const {spawn}=require('node:child_process');
 const {pathToFileURL} = require('node:url');
-const {app, BrowserWindow, Menu, shell, ipcMain, screen, net, Notification} = require('electron');
+const {app, BrowserWindow, Menu, shell, ipcMain, screen, net, Notification, protocol} = require('electron');
 const {createPolicy, windowPreferences, isUserActivation, canSetLanguage} = require('./security.cjs');
 const {APP_ID, legacyProfilePath, normalizeLanguage, chooseLanguage, appName, readLanguage, writeLanguage} = require('./presentation.cjs');
 const {fitWindow,readWindowState,writeWindowState}=require('./window-state.cjs');
 const {createDesktopMonitor}=require('./update-monitor.cjs');
 const {createUpdater}=require('./updater.cjs');
+const {createClientProvider, createMediaProtocolHandler, MEDIA_SCHEME}=require('./client-provider.cjs');
 const config = require('./app-config.json');
 const policy = createPolicy(config.appURL);
 const supportedLanguages = config.supportedLanguages || ['ar', 'en'];
+const clientProvider = createClientProvider({origin: policy.origin});
+protocol?.registerSchemesAsPrivileged([{scheme: MEDIA_SCHEME, privileges: {standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true}}]);
 
 // Keep the established profile when the visible product name changes. This
 // preserves accounts, IndexedDB, cookies and preferences from version 1.0.
@@ -33,6 +36,20 @@ let boundsTimer=null;
 const activeNotifications=new Set();
 const userActed = () => Date.now() - lastUserInput < 1500;
 const localErrorURL = pathToFileURL(path.join(__dirname, 'error.html')).href;
+const clientPage = value => {
+  if (!policy.trusted(value)) return false;
+  const url = new URL(value), application = new URL(policy.appURL);
+  return url.pathname === application.pathname || url.pathname === '/app.html';
+};
+
+ipcMain.handle('abbeedo:client-request', async (event, ...args) => {
+  let trusted = false;
+  if (window && canSetLanguage(event, window.webContents, policy)) {
+    trusted = clientPage(event.senderFrame.url);
+  }
+  if (!trusted || args.length !== 1) return {status: 403, headers: {'content-type': 'application/json'}, body: JSON.stringify({code: 'ORIGIN', error: 'هذا الاتصال غير مسموح.'})};
+  return clientProvider.clientRequest(args[0]);
+});
 
 ipcMain.handle('abbeedo:presentation-language', async (event, code) => {
   if (!window || !canSetLanguage(event, window.webContents, policy)) return {ok: false};
@@ -151,6 +168,7 @@ if (!app.requestSingleInstanceLock()) {
     window.focus();
   });
   app.whenReady().then(() => {
+    protocol?.handle(MEDIA_SCHEME, createMediaProtocolHandler({provider: clientProvider, origin: policy.origin, trusted: () => Boolean(window && !window.webContents.isDestroyed() && clientPage(window.webContents.getURL()))}));
     systemLanguage = normalizeLanguage(app.getLocale(), supportedLanguages) || 'ar';
     selectedLanguage = chooseLanguage({saved: readLanguage(profileDirectory, supportedLanguages), locale: systemLanguage, supported: supportedLanguages});
     app.setAppUserModelId(APP_ID);
@@ -163,6 +181,6 @@ if (!app.requestSingleInstanceLock()) {
     createWindow();
     desktopMonitor.start();
   });
-  app.on('before-quit',()=>{desktopMonitor?.stop();updater?.stop();clearTimeout(boundsTimer);});
+  app.on('before-quit',()=>{desktopMonitor?.stop();updater?.stop();clientProvider.stop();clearTimeout(boundsTimer);});
   app.on('window-all-closed', () => app.quit());
 }

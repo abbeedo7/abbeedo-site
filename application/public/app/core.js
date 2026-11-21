@@ -1,8 +1,8 @@
 import {Vault, VaultError} from './storage.js';
-import {isNative, nativeRequest, nativeFetch} from './native.js';
+import {isNative, nativeRequest, nativeFetch, hasDesktopClient, desktopClientFetch} from './native.js';
 export {Vault, VaultError};
 
-export const BRAND = Object.freeze({name: 'ابوناصر TV', name_ar: 'ابوناصر TV', name_en: 'abbeedo TV', phone: '0571514382', whatsapp: 'https://wa.me/966571514382', version: '1.2.3', tagline: 'عالمك من الترفيه'});
+export const BRAND = Object.freeze({name: 'ابوناصر TV', name_ar: 'ابوناصر TV', name_en: 'abbeedo TV', phone: '0571514382', whatsapp: 'https://wa.me/966571514382', version: '1.2.4', tagline: 'عالمك من الترفيه'});
 export function brandName(language = 'ar') { return language === 'ar' ? BRAND.name_ar : BRAND.name_en; }
 export const PROVIDER = 'http://maglobalxx.xyz:2052';
 export const ACCOUNT_MODES = Object.freeze(['provider', 'xtream', 'm3u', 'm3u-file', 'auto', 'direct', 'stalker']);
@@ -178,15 +178,18 @@ function nativeProviderFetch(url, options = {}) {
 
 export class ApiClient {
   constructor({base = globalThis.ABUNASSER_CONFIG?.apiBase || (globalThis.ABUNASSER_CONFIG?.apiOrigin ? globalThis.ABUNASSER_CONFIG.apiOrigin.replace(/\/$/, '') + '/api/client' : '/api/client'), fetch: fetchImpl = null, vault = null, timeout = 7000, onStatus = () => {}} = {}) {
-    this.base = base; this.fetch = fetchImpl || (isNative() ? nativeAPIFetch : globalThis.fetch?.bind(globalThis)); this.vault = vault || new Vault({namespace: 'catalog-cache'}); this.timeout = timeout; this.onStatus = onStatus; this.memory = new Map(); this.detailsCache = new Map(); this.lastStatus = {}; this.timings = {};
+    this.base = base; this.desktopClient = !fetchImpl && hasDesktopClient(); this.fetch = fetchImpl || (this.desktopClient ? desktopClientFetch : isNative() ? nativeAPIFetch : globalThis.fetch?.bind(globalThis)); this.vault = vault || new Vault({namespace: 'catalog-cache'}); this.timeout = timeout; this.onStatus = onStatus; this.memory = new Map(); this.detailsCache = new Map(); this.lastStatus = {}; this.timings = {};
   }
   _status(kind, value) { this.lastStatus[kind] = {...this.lastStatus[kind], ...value}; this.onStatus(kind, this.lastStatus[kind]); }
   async _response(payload, clock) {
     if (!this.fetch) throw new ApiError('الاتصال غير متاح في هذا الجهاز.', {code: 'FETCH_UNAVAILABLE'});
+    // Desktop IPC returns a bounded complete catalogue; allow its main process
+    // read deadline before the renderer starts parsing the returned NDJSON.
+    if (this.desktopClient && payload.op === 'catalog') clock.extend(90000);
     let response;
     try { response = await clock.race(this.fetch(this.base, {method: 'POST', headers: {'Content-Type': 'application/json', 'Accept': 'application/json, application/x-ndjson'}, body: JSON.stringify(payload), signal: clock.signal, credentials: 'omit', cache: 'no-store', referrerPolicy: 'no-referrer'})); }
     catch (error) { if (error instanceof ApiError) throw error; if (clock.signal.aborted) throw clock.timedOut ? new ApiError('تأخر المصدر. حاول مجددًا.', {code: 'TIMEOUT'}) : abortError(); throw new ApiError('تعذر الاتصال بالمصدر. تحقق من الاتصال وعنوان الاشتراك.', {code: 'NETWORK', cause: error}); }
-    if (!response.ok) { let data = {}; try { data = await clock.race(response.json()); } catch {} if (data.code === 'HOST_NOT_ALLOWED' && data.canDirect) return this._directResponse(payload, clock); throw new ApiError(data.error || data.message || `رفض المصدر الطلب (HTTP ${response.status}).`, {status: response.status, code: data.code || `HTTP_${response.status}`, canDirect: !!data.canDirect}); }
+    if (!response.ok) { let data = {}; try { data = await clock.race(response.json()); } catch {} if (data.code === 'HOST_NOT_ALLOWED' && data.canDirect && !this.desktopClient) return this._directResponse(payload, clock); throw new ApiError(data.error || data.message || `رفض المصدر الطلب (HTTP ${response.status}).`, {status: response.status, code: data.code || `HTTP_${response.status}`, canDirect: !!data.canDirect}); }
     return response;
   }
   async request(op, account, extra = {}, {signal, timeout = this.timeout} = {}) {

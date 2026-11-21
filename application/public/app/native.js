@@ -1,7 +1,42 @@
-// Native bridge is present only in the signed iOS shell. Browser paths use web APIs.
+// iOS features and the limited desktop provider transport have separate bridges.
 const pending = new Map();
 let serial = 0;
 export const isNative = () => Boolean(globalThis.webkit?.messageHandlers?.abunasser);
+// This capability only transports provider operations. iOS-only features keep
+// using isNative(), so a desktop shell never advertises Keychain or AVPlayer.
+export const hasDesktopClient = () => globalThis.abunasserDesktop?.isDesktop === true && typeof globalThis.abunasserDesktop.clientRequest === 'function';
+/** The desktop bridge accepts one bounded client operation, never a fetch URL. */
+export async function desktopClientFetch(input, options = {}) {
+  if (!hasDesktopClient()) throw new Error('Desktop provider connection is unavailable');
+  const source = input instanceof Request ? input : null;
+  const base = globalThis.location?.href || 'https://www.abbeedo.com/app';
+  const url = new URL(source ? source.url : String(input), base);
+  if (url.origin !== new URL(base).origin || url.protocol !== 'https:' || url.pathname !== '/api/client' || url.search || url.hash || url.username || url.password) throw new TypeError('Desktop client destination is not allowed');
+  const method = String(options.method || source?.method || 'GET').toUpperCase();
+  const headers = new Headers(options.headers || source?.headers);
+  if (method !== 'POST' || !/^application\/json(?:\s*;|$)/i.test(headers.get('content-type') || '')) throw new TypeError('Desktop client requires a JSON operation');
+  const signal = options.signal || source?.signal;
+  if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+  const body = options.body ?? (source ? await source.clone().text() : '');
+  if (typeof body !== 'string' || new TextEncoder().encode(body).byteLength > 32768) throw new TypeError('Desktop client operation is too large');
+  const payload = JSON.parse(body);
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload) || !['auth', 'catalog', 'details', 'epg', 'resolve'].includes(payload.op)) throw new TypeError('Desktop client operation is not allowed');
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const complete = (callback, value) => {if (settled) return; settled = true; signal?.removeEventListener('abort', abort); callback(value);};
+    const abort = () => complete(reject, new DOMException('Aborted', 'AbortError'));
+    signal?.addEventListener('abort', abort, {once: true});
+    if (signal?.aborted) {abort(); return;}
+    Promise.resolve().then(() => globalThis.abunasserDesktop.clientRequest(payload)).then(data => {
+      if (settled) return;
+      try {
+        const status = Number(data?.status);
+        if (!Number.isInteger(status) || status < 200 || status > 599 || typeof data.body !== 'string') throw new TypeError('Desktop client response is invalid');
+        complete(resolve, new Response([204, 205, 304].includes(status) ? null : data.body, {status, headers: data.headers || {}}));
+      } catch (error) {complete(reject, error);}
+    }, error => complete(reject, error));
+  });
+}
 export const capabilities = Object.freeze({
   native: isNative(), keychain: isNative(), nativePlayer: isNative(),
   backgroundDownloads: isNative(), nativeFileImport: isNative(), qrCamera: isNative(),

@@ -1,0 +1,456 @@
+{
+  "at": "2026-11-21T12:07:10.532Z",
+  "origin": "https://qa.abbeedo.invalid",
+  "staticRoot": "/workspace/publish/abbeedo-site-git/.vercel/output/static",
+  "checks": [
+    {
+      "engine": "chromium",
+      "mode": "desktop-ipc",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-ipc",
+      "language": "ar",
+      "kind": "fixture-auth-reaches-home-over-desktop-bridge",
+      "homeVisible": true,
+      "loginHidden": true,
+      "cards": 3,
+      "passwordCleared": true,
+      "remember": false,
+      "bridgeOperations": [
+        {
+          "op": "auth",
+          "mode": "provider"
+        }
+      ],
+      "errorHidden": true,
+      "networkClientRequests": [],
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-ipc",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-ipc",
+      "language": "en",
+      "kind": "fixture-auth-reaches-home-over-desktop-bridge",
+      "homeVisible": true,
+      "loginHidden": true,
+      "cards": 3,
+      "passwordCleared": true,
+      "remember": false,
+      "bridgeOperations": [
+        {
+          "op": "auth",
+          "mode": "provider"
+        }
+      ],
+      "errorHidden": true,
+      "networkClientRequests": [],
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "ios-blocked",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "ios-blocked",
+      "language": "ar",
+      "kind": "source-protection-error-before-login",
+      "message": "حماية مصدر الاشتراك منعت الاتصال قبل إتمام تسجيل الدخول (HTTP 403). تواصل مع مزود الاشتراك للسماح بالاتصال أو توفير رابط HTTPS متوافق.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "ios-blocked",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "ios-blocked",
+      "language": "en",
+      "kind": "source-protection-error-before-login",
+      "message": "The subscription source blocked the connection before sign-in could complete (HTTP 403). Ask the provider to permit the connection or supply a compatible HTTPS address.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-legacy",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-legacy",
+      "language": "ar",
+      "kind": "legacy-windows-update-instruction",
+      "message": "حدّث تطبيق ويندوز إلى الإصدار 1.2.1 أو أحدث لتسجيل الدخول باتصال مباشر من جهازك.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-legacy",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "desktop-legacy",
+      "language": "en",
+      "kind": "legacy-windows-update-instruction",
+      "message": "Update the Windows app to version 1.2.1 or later to sign in directly from your device.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "appearance",
+      "language": "en",
+      "kind": "language-and-accent-preserved-disclosure-closes",
+      "initialFocus": "settings-close",
+      "accent": "#ffffff",
+      "pickerOpen": false,
+      "dialogOpen": true,
+      "active": "settings-close",
+      "visibleSelects": 0,
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-ipc",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-ipc",
+      "language": "ar",
+      "kind": "fixture-auth-reaches-home-over-desktop-bridge",
+      "homeVisible": true,
+      "loginHidden": true,
+      "cards": 3,
+      "passwordCleared": true,
+      "remember": false,
+      "bridgeOperations": [
+        {
+          "op": "auth",
+          "mode": "provider"
+        }
+      ],
+      "errorHidden": true,
+      "networkClientRequests": [],
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-ipc",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-ipc",
+      "language": "en",
+      "kind": "fixture-auth-reaches-home-over-desktop-bridge",
+      "homeVisible": true,
+      "loginHidden": true,
+      "cards": 3,
+      "passwordCleared": true,
+      "remember": false,
+      "bridgeOperations": [
+        {
+          "op": "auth",
+          "mode": "provider"
+        }
+      ],
+      "errorHidden": true,
+      "networkClientRequests": [],
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "ios-blocked",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "ios-blocked",
+      "language": "ar",
+      "kind": "source-protection-error-before-login",
+      "message": "حماية مصدر الاشتراك منعت الاتصال قبل إتمام تسجيل الدخول (HTTP 403). تواصل مع مزود الاشتراك للسماح بالاتصال أو توفير رابط HTTPS متوافق.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "ios-blocked",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "ios-blocked",
+      "language": "en",
+      "kind": "source-protection-error-before-login",
+      "message": "The subscription source blocked the connection before sign-in could complete (HTTP 403). Ask the provider to permit the connection or supply a compatible HTTPS address.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-legacy",
+      "language": "ar",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-legacy",
+      "language": "ar",
+      "kind": "legacy-windows-update-instruction",
+      "message": "حدّث تطبيق ويندوز إلى الإصدار 1.2.1 أو أحدث لتسجيل الدخول باتصال مباشر من جهازك.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-legacy",
+      "language": "en",
+      "kind": "fresh-installed-login",
+      "status": 200,
+      "loginVisible": true,
+      "launch": "app",
+      "version": "1.2.4",
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "desktop-legacy",
+      "language": "en",
+      "kind": "legacy-windows-update-instruction",
+      "message": "Update the Windows app to version 1.2.1 or later to sign in directly from your device.",
+      "loginVisible": true,
+      "homeHidden": true,
+      "enabled": true,
+      "bridgeOperations": [],
+      "networkClientRequests": [
+        {
+          "method": "POST",
+          "host": "qa.abbeedo.invalid"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "appearance",
+      "language": "en",
+      "kind": "language-and-accent-preserved-disclosure-closes",
+      "initialFocus": "settings-close",
+      "accent": "#ffffff",
+      "pickerOpen": false,
+      "dialogOpen": true,
+      "active": "settings-close",
+      "visibleSelects": 0,
+      "pass": true
+    }
+  ],
+  "pageErrors": [],
+  "blockedExternalRequests": [],
+  "screenshots": [
+    "/workspace/artifacts/qa/login-download-2.1.4/chromium-desktop-ipc-ar-authenticated-home.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/chromium-desktop-ipc-en-authenticated-home.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/chromium-ios-blocked-ar-expected-error.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/chromium-ios-blocked-en-expected-error.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/chromium-desktop-legacy-ar-expected-error.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/chromium-desktop-legacy-en-expected-error.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/chromium-appearance-en-closed-disclosure-white-accent.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/webkit-desktop-ipc-ar-authenticated-home.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/webkit-desktop-ipc-en-authenticated-home.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/webkit-ios-blocked-ar-expected-error.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/webkit-ios-blocked-en-expected-error.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/webkit-desktop-legacy-ar-expected-error.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/webkit-desktop-legacy-en-expected-error.png",
+    "/workspace/artifacts/qa/login-download-2.1.4/webkit-appearance-en-closed-disclosure-white-accent.png"
+  ],
+  "browsers": {
+    "chromium": "156.0.8078.79",
+    "webkit": "27.2"
+  },
+  "limits": [
+    "Browser UI fixtures only. No real account, credential, provider request, Vercel authentication, or customer state was used.",
+    "Built static output is served from disk through Playwright routes at an isolated HTTPS origin; API behavior is simulated.",
+    "Desktop clientRequest is a bounded fixture bridge, not Electron IPC. Native Electron protocol checks are covered separately.",
+    "iOS standalone state, user agent, viewport and touch are emulated; no physical iPhone or Windows device claim.",
+    "Fresh browser contexts and blocked service workers isolate these checks from prior cookies and cached sessions."
+  ],
+  "siteVersion": {
+    "name": "ابوناصر",
+    "name_en": "abbeedo",
+    "version": "2.1.4",
+    "revision": "web-b33eecb65c65da2c",
+    "builtAt": "2026-11-21T12:06:30.100Z"
+  },
+  "appVersion": {
+    "name": "ابوناصر TV",
+    "version": "1.2.4",
+    "platforms": [
+      "iOS",
+      "web",
+      "Windows"
+    ],
+    "androidBaseline": "3.9.4",
+    "nativeDistribution": "Samsung store package / Windows installer / iPhone Home Screen",
+    "webInstallable": true,
+    "name_en": "abbeedo TV",
+    "windows": {
+      "version": "1.2.1",
+      "setup": "https://www.abbeedo.com/downloads/windows.exe",
+      "portable": "https://www.abbeedo.com/downloads/windows-portable.exe"
+    },
+    "android": {
+      "version": "3.9.4",
+      "versionCode": 29,
+      "downloadUrl": "https://www.abbeedo.com/downloads/android.apk"
+    }
+  },
+  "summary": {
+    "checks": 26,
+    "passed": 26,
+    "failed": 0,
+    "pageErrors": 0,
+    "blockedExternalRequests": 0
+  },
+  "status": "passed"
+}
