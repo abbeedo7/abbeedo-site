@@ -2,7 +2,7 @@ import * as blob from '@vercel/blob';
 import {createBlobBucket} from './blob-bucket.mjs';
 import {resolveRuntimeSecrets} from '../../netlify/lib/runtime-secrets.mjs';
 
-const names=['CLIENT_SECRET','RELAY_KEY','CLIENT_ALLOWED_HOSTS','WATCH_ALLOWED_HOSTS','ADMIN_LOGIN_EMAIL','ADMIN_PASSWORD_HASH','ADMIN_PASSWORD_SALT'];
+const names=['CLIENT_SECRET','RELAY_KEY','CLIENT_ALLOWED_HOSTS','CLIENT_FALLBACK_ORIGIN','WATCH_ALLOWED_HOSTS','ADMIN_LOGIN_EMAIL','ADMIN_PASSWORD_HASH','ADMIN_PASSWORD_SALT'];
 let bootstrap;
 export async function runtimeEnvironment(){
   // Vercel injects this token after a PRIVATE Blob store is connected in Storage.

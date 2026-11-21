@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "resolveStatus": 200,
+  "providerHTTPStatus": 200,
+  "bodyBytes": 24,
+  "contentType": "application/json",
+  "providerReturnedAccountRejectionJSON": true,
+  "elapsedMilliseconds": 692,
+  "realAccountUsed": false,
+  "randomUnusableProbeAccount": true,
+  "oldSiteModified": false
+}

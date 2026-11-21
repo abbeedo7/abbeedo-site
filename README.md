@@ -1,6 +1,6 @@
 # ابوناصر — abbeedo
 
-المستودع العام لموقع **ابوناصر / abbeedo 2.1.4** وتطبيق **ابوناصر TV / abbeedo TV 1.2.4**.
+المستودع العام لموقع **ابوناصر / abbeedo 2.1.5** وتطبيق **ابوناصر TV / abbeedo TV 1.2.4**.
 
 - الموقع الحي: [www.abbeedo.com](https://www.abbeedo.com/)
 - التطبيق: [www.abbeedo.com/app](https://www.abbeedo.com/app)

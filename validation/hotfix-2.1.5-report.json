@@ -1,0 +1,374 @@
+{
+  "passed": true,
+  "checkedAtUTC": "2026-11-21T18:15:47.682837+00:00",
+  "websiteVersion": "2.1.5",
+  "applicationVersion": "1.2.4",
+  "revision": "web-aff785e30fa7c595",
+  "sourceNodeTests": 94,
+  "checks": [
+    {
+      "kind": "actual-owned-direct-resolution",
+      "status": 200,
+      "source": {
+        "host": "abunasser-apple-web.m05871268.chatgpt.site",
+        "path": "/watch-demo.m3u8",
+        "currentEncrypted": false
+      },
+      "result": {
+        "host": "abunasser-apple-web.m05871268.chatgpt.site",
+        "path": "/api/media",
+        "currentEncrypted": false
+      },
+      "code": null,
+      "pass": true,
+      "suite": "actual-owned-demo-playback.json"
+    },
+    {
+      "kind": "actual-owned-manifest-current-origin-encrypted",
+      "status": 200,
+      "type": "application/vnd.apple.mpegurl",
+      "segments": 8,
+      "allCurrentOrigin": true,
+      "allEncrypted": true,
+      "legacyHostnameAbsent": true,
+      "pass": true,
+      "suite": "actual-owned-demo-playback.json"
+    },
+    {
+      "kind": "actual-owned-segment-head",
+      "status": 200,
+      "type": "video/mp2t",
+      "length": "118252",
+      "bytes": 0,
+      "pass": true,
+      "suite": "actual-owned-demo-playback.json"
+    },
+    {
+      "kind": "actual-owned-segment-range",
+      "status": 206,
+      "type": "video/mp2t",
+      "range": "bytes 0-1023/118252",
+      "length": 1024,
+      "transportSync": true,
+      "sha256": "d606c4600a37f64ad118c0d415a0f6fd4f255ebfa6a520c1f3690cb42d516293",
+      "pass": true,
+      "suite": "actual-owned-demo-playback.json"
+    },
+    {
+      "kind": "invalid-range-rejected",
+      "status": 416,
+      "code": "RANGE",
+      "pass": true,
+      "suite": "actual-owned-demo-playback.json"
+    },
+    {
+      "kind": "tampered-current-token-rejected",
+      "status": 403,
+      "code": "MEDIA_TOKEN",
+      "pass": true,
+      "suite": "actual-owned-demo-playback.json"
+    },
+    {
+      "kind": "actual-owned-relay-video-playback",
+      "engine": "webkit",
+      "events": [
+        {
+          "name": "waiting",
+          "time": 0,
+          "ready": 0,
+          "error": null
+        },
+        {
+          "name": "loadstart",
+          "time": 0,
+          "ready": 0,
+          "error": null
+        },
+        {
+          "name": "loadedmetadata",
+          "time": 0,
+          "ready": 1,
+          "error": null
+        },
+        {
+          "name": "loadeddata",
+          "time": 0.001015748,
+          "ready": 3,
+          "error": null
+        },
+        {
+          "name": "canplay",
+          "time": 0.001015748,
+          "ready": 3,
+          "error": null
+        },
+        {
+          "name": "playing",
+          "time": 0.001015748,
+          "ready": 3,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.250404303,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.500464008,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.750549682,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.000589095,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.250621745,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.500651244,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.750601524,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 2.000670302,
+          "ready": 4,
+          "error": null
+        }
+      ],
+      "hlsErrors": [],
+      "player": "hls.js",
+      "currentTime": 2.014252858,
+      "duration": 16.044965,
+      "videoWidth": 426,
+      "videoHeight": 240,
+      "readyState": 4,
+      "error": null,
+      "pageErrors": [],
+      "externalBrowserRequests": [],
+      "pass": true,
+      "suite": "actual-owned-demo-playback.json"
+    },
+    {
+      "kind": "actual-owned-relay-video-playback",
+      "engine": "chromium",
+      "events": [
+        {
+          "name": "waiting",
+          "time": 0,
+          "ready": 0,
+          "error": null
+        },
+        {
+          "name": "loadstart",
+          "time": 0,
+          "ready": 0,
+          "error": null
+        },
+        {
+          "name": "loadedmetadata",
+          "time": 0,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "loadeddata",
+          "time": 0,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "canplay",
+          "time": 0,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "playing",
+          "time": 0,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.004707,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.24918,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.515063,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.780431,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.046072,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.311764,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.577356,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.843013,
+          "ready": 4,
+          "error": null
+        }
+      ],
+      "hlsErrors": [],
+      "player": "native",
+      "currentTime": 2.017106,
+      "duration": 16,
+      "videoWidth": 426,
+      "videoHeight": 240,
+      "readyState": 4,
+      "error": null,
+      "pageErrors": [],
+      "externalBrowserRequests": [],
+      "pass": true,
+      "suite": "actual-owned-demo-playback.json"
+    },
+    {
+      "kind": "master-all-URI-forms-pinned-current-encrypted",
+      "status": 200,
+      "urls": 2,
+      "legacyHostAbsent": true,
+      "destinations": [
+        "audio",
+        "video"
+      ],
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "nested-playlist-key-map-segment-rewrapped",
+      "status": 200,
+      "urls": 3,
+      "destinations": [
+        "key",
+        "map",
+        "segment"
+      ],
+      "legacyHostAbsent": true,
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "nested-segment-range-forwarded",
+      "status": 206,
+      "range": "bytes 0-7/8",
+      "bytes": 8,
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "nested-segment-head-forwarded",
+      "status": 200,
+      "bytes": 0,
+      "method": "HEAD",
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "mixed-quoted-unquoted-URI-rejected",
+      "status": 502,
+      "code": "MANIFEST",
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "cross-origin-fails-before-network",
+      "status": 403,
+      "code": "ORIGIN",
+      "networkCalls": 0,
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "current-origin-binding-rejected",
+      "status": 403,
+      "code": "MEDIA_TOKEN",
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "expired-current-cap-rejected",
+      "status": 403,
+      "code": "MEDIA_TOKEN",
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "stream-cancel-propagates-to-upstream",
+      "firstChunkBytes": 4,
+      "canceled": true,
+      "aborted": true,
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    },
+    {
+      "kind": "fixed-app-user-agent-present",
+      "allCallsHaveUserAgent": true,
+      "pass": true,
+      "suite": "nested-fixture-report.json"
+    }
+  ],
+  "reports": [
+    "validation/hotfix-2.1.5/actual-owned-demo-playback.json",
+    "validation/hotfix-2.1.5/nested-fixture-report.json",
+    "validation/hotfix-2.1.5/provider-negative-auth-probe.json",
+    "validation/hotfix-2.1.5/adapter-negative-auth-local.json"
+  ],
+  "scope": "Vercel server compatibility only; original worker, browser code, native binaries and old owned Site unchanged",
+  "remainingVerification": [
+    "Published Vercel API path pending at package preparation time",
+    "No real customer account or physical iPhone used"
+  ],
+  "ownedServiceRole": "owner/public/active confirmed by Sites get_site",
+  "ownedServiceModified": false,
+  "adapterSHA256": "59dbdfb7c3bd3792d9c3ed68762948ac6f3f99d9a7dca5ae790c54beef29c8e8"
+}

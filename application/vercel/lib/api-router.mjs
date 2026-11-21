@@ -1,5 +1,5 @@
 import {routeTVAPI} from './tv-api.mjs';
-import {handleClient,handleClientMedia} from '../../worker/client-api.mjs';
+import {handleOwnedClient,handleOwnedClientMedia} from './owned-client-relay.mjs';
 import {watchParty} from '../../worker/watch-party.mjs';
 import {devicePairing} from '../../worker/device-pairing.mjs';
 import {announcements} from '../../worker/announcements.mjs';
@@ -18,8 +18,8 @@ export async function routeAPI(request,env){
   if(path.startsWith('/api/tv/'))return await routeTVAPI(request,env,routeAPI);
   try{
     if(path==='/api/health')return Response.json({app:'ابوناصر TV',name:'abbeedo TV',platforms:['web','iOS','Windows'],version,hosting:'vercel',storage:!!env.BUCKET,mediaConfigured:typeof env.CLIENT_SECRET==='string'&&/^[a-f0-9]{64}$/i.test(env.CLIENT_SECRET)},{headers});
-    if(path==='/api/client')return await handleClient(request,env);
-    if(path==='/api/media')return await handleClientMedia(boundedMediaRequest(request),env);
+    if(path==='/api/client')return await handleOwnedClient(request,env);
+    if(path==='/api/media')return await handleOwnedClientMedia(boundedMediaRequest(request),env);
     if(path==='/api/relay'||path==='/api/stream')return await relay(boundedMediaRequest(request),env);
     if(path==='/api/watch/rooms/diagnostics')return Response.json({error:'Not found'},{status:404,headers});
     if(path==='/api/watch/rooms'||path.startsWith('/api/watch/rooms/'))return await watchParty(boundedMediaRequest(request),env);

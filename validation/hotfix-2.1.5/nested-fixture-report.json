@@ -1,0 +1,139 @@
+{
+  "at": "2026-11-21T18:13:36.844Z",
+  "scope": "Independent nested HLS contract fixture using ephemeral local QA key. External fetch is injected; fixture results do not claim provider reachability.",
+  "checks": [
+    {
+      "kind": "master-all-URI-forms-pinned-current-encrypted",
+      "status": 200,
+      "urls": 2,
+      "legacyHostAbsent": true,
+      "destinations": [
+        "audio",
+        "video"
+      ],
+      "pass": true
+    },
+    {
+      "kind": "nested-playlist-key-map-segment-rewrapped",
+      "status": 200,
+      "urls": 3,
+      "destinations": [
+        "key",
+        "map",
+        "segment"
+      ],
+      "legacyHostAbsent": true,
+      "pass": true
+    },
+    {
+      "kind": "nested-segment-range-forwarded",
+      "status": 206,
+      "range": "bytes 0-7/8",
+      "bytes": 8,
+      "pass": true
+    },
+    {
+      "kind": "nested-segment-head-forwarded",
+      "status": 200,
+      "bytes": 0,
+      "method": "HEAD",
+      "pass": true
+    },
+    {
+      "kind": "mixed-quoted-unquoted-URI-rejected",
+      "status": 502,
+      "code": "MANIFEST",
+      "pass": true
+    },
+    {
+      "kind": "cross-origin-fails-before-network",
+      "status": 403,
+      "code": "ORIGIN",
+      "networkCalls": 0,
+      "pass": true
+    },
+    {
+      "kind": "current-origin-binding-rejected",
+      "status": 403,
+      "code": "MEDIA_TOKEN",
+      "pass": true
+    },
+    {
+      "kind": "expired-current-cap-rejected",
+      "status": 403,
+      "code": "MEDIA_TOKEN",
+      "pass": true
+    },
+    {
+      "kind": "stream-cancel-propagates-to-upstream",
+      "firstChunkBytes": 4,
+      "canceled": true,
+      "aborted": true,
+      "pass": true
+    },
+    {
+      "kind": "fixed-app-user-agent-present",
+      "allCallsHaveUserAgent": true,
+      "pass": true
+    }
+  ],
+  "calls": [
+    {
+      "host": "abunasser-apple-web.m05871268.chatgpt.site",
+      "path": "/api/media",
+      "id": "master",
+      "method": "GET",
+      "range": null,
+      "userAgent": "abbeedo-TV/1.2"
+    },
+    {
+      "host": "abunasser-apple-web.m05871268.chatgpt.site",
+      "path": "/api/media",
+      "id": "video",
+      "method": "GET",
+      "range": null,
+      "userAgent": "abbeedo-TV/1.2"
+    },
+    {
+      "host": "abunasser-apple-web.m05871268.chatgpt.site",
+      "path": "/api/media",
+      "id": "segment",
+      "method": "GET",
+      "range": "bytes=0-7",
+      "userAgent": "abbeedo-TV/1.2"
+    },
+    {
+      "host": "abunasser-apple-web.m05871268.chatgpt.site",
+      "path": "/api/media",
+      "id": "segment",
+      "method": "HEAD",
+      "range": null,
+      "userAgent": "abbeedo-TV/1.2"
+    },
+    {
+      "host": "abunasser-apple-web.m05871268.chatgpt.site",
+      "path": "/api/media",
+      "id": "bad",
+      "method": "GET",
+      "range": null,
+      "userAgent": "abbeedo-TV/1.2"
+    },
+    {
+      "host": "abunasser-apple-web.m05871268.chatgpt.site",
+      "path": "/api/media",
+      "id": "slow",
+      "method": "GET",
+      "range": null,
+      "userAgent": "abbeedo-TV/1.2"
+    }
+  ],
+  "summary": {
+    "checks": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "adapterSource": {
+    "path": "/workspace/publish/abbeedo-site-git/application/vercel/lib/owned-client-relay.mjs",
+    "sha256": "59dbdfb7c3bd3792d9c3ed68762948ac6f3f99d9a7dca5ae790c54beef29c8e8"
+  }
+}

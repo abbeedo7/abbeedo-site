@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "status": 401,
+  "code": "AUTH",
+  "elapsedMilliseconds": 633,
+  "initialSourceBlock": "fixture",
+  "ownedTransport": "actual-existing-service",
+  "actualProviderResponse": true,
+  "realAccountUsed": false,
+  "privateTokensOrCredentialsLogged": false
+}

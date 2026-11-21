@@ -1,0 +1,461 @@
+{
+  "at": "2026-11-21T18:16:31.706Z",
+  "adapterSource": {
+    "path": "/workspace/publish/abbeedo-site-git/application/vercel/lib/owned-client-relay.mjs",
+    "sha256": "59dbdfb7c3bd3792d9c3ed68762948ac6f3f99d9a7dca5ae790c54beef29c8e8"
+  },
+  "story": "Native WebKit and Chromium video consume encrypted current-origin relay HLS, which retrieves the existing user-owned public demo through its real legacy media service.",
+  "checks": [
+    {
+      "kind": "actual-owned-direct-resolution",
+      "status": 200,
+      "source": {
+        "host": "abunasser-apple-web.m05871268.chatgpt.site",
+        "path": "/watch-demo.m3u8",
+        "currentEncrypted": false
+      },
+      "result": {
+        "host": "abunasser-apple-web.m05871268.chatgpt.site",
+        "path": "/api/media",
+        "currentEncrypted": false
+      },
+      "code": null,
+      "pass": true
+    },
+    {
+      "kind": "actual-owned-manifest-current-origin-encrypted",
+      "status": 200,
+      "type": "application/vnd.apple.mpegurl",
+      "segments": 8,
+      "allCurrentOrigin": true,
+      "allEncrypted": true,
+      "legacyHostnameAbsent": true,
+      "pass": true
+    },
+    {
+      "kind": "actual-owned-segment-head",
+      "status": 200,
+      "type": "video/mp2t",
+      "length": "118252",
+      "bytes": 0,
+      "pass": true
+    },
+    {
+      "kind": "actual-owned-segment-range",
+      "status": 206,
+      "type": "video/mp2t",
+      "range": "bytes 0-1023/118252",
+      "length": 1024,
+      "transportSync": true,
+      "sha256": "d606c4600a37f64ad118c0d415a0f6fd4f255ebfa6a520c1f3690cb42d516293",
+      "pass": true
+    },
+    {
+      "kind": "invalid-range-rejected",
+      "status": 416,
+      "code": "RANGE",
+      "pass": true
+    },
+    {
+      "kind": "tampered-current-token-rejected",
+      "status": 403,
+      "code": "MEDIA_TOKEN",
+      "pass": true
+    },
+    {
+      "kind": "actual-owned-relay-video-playback",
+      "engine": "webkit",
+      "events": [
+        {
+          "name": "waiting",
+          "time": 0,
+          "ready": 0,
+          "error": null
+        },
+        {
+          "name": "loadstart",
+          "time": 0,
+          "ready": 0,
+          "error": null
+        },
+        {
+          "name": "loadedmetadata",
+          "time": 0,
+          "ready": 1,
+          "error": null
+        },
+        {
+          "name": "loadeddata",
+          "time": 0.001015748,
+          "ready": 3,
+          "error": null
+        },
+        {
+          "name": "canplay",
+          "time": 0.001015748,
+          "ready": 3,
+          "error": null
+        },
+        {
+          "name": "playing",
+          "time": 0.001015748,
+          "ready": 3,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.250404303,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.500464008,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.750549682,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.000589095,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.250621745,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.500651244,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.750601524,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 2.000670302,
+          "ready": 4,
+          "error": null
+        }
+      ],
+      "hlsErrors": [],
+      "player": "hls.js",
+      "currentTime": 2.014252858,
+      "duration": 16.044965,
+      "videoWidth": 426,
+      "videoHeight": 240,
+      "readyState": 4,
+      "error": null,
+      "pageErrors": [],
+      "externalBrowserRequests": [],
+      "pass": true
+    },
+    {
+      "kind": "actual-owned-relay-video-playback",
+      "engine": "chromium",
+      "events": [
+        {
+          "name": "waiting",
+          "time": 0,
+          "ready": 0,
+          "error": null
+        },
+        {
+          "name": "loadstart",
+          "time": 0,
+          "ready": 0,
+          "error": null
+        },
+        {
+          "name": "loadedmetadata",
+          "time": 0,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "loadeddata",
+          "time": 0,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "canplay",
+          "time": 0,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "playing",
+          "time": 0,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.004707,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.24918,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.515063,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 0.780431,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.046072,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.311764,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.577356,
+          "ready": 4,
+          "error": null
+        },
+        {
+          "name": "timeupdate",
+          "time": 1.843013,
+          "ready": 4,
+          "error": null
+        }
+      ],
+      "hlsErrors": [],
+      "player": "native",
+      "currentTime": 2.017106,
+      "duration": 16,
+      "videoWidth": 426,
+      "videoHeight": 240,
+      "readyState": 4,
+      "error": null,
+      "pageErrors": [],
+      "externalBrowserRequests": [],
+      "pass": true
+    }
+  ],
+  "browserVersions": {
+    "webkit": "27.2",
+    "chromium": "156.0.8078.79"
+  },
+  "limitations": [
+    "Ephemeral local QA secret is generated per run; no production secret, provider account, or provider credentials are used.",
+    "Browser builds are Linux WebKit and Chromium, not physical iPhone Safari.",
+    "Actual legacy service and public owned-demo bytes are fetched over HTTPS; current deployment and provider egress are separately checked by root."
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "application/vnd.apple.mpegurl",
+      "contentRange": null
+    },
+    {
+      "method": "HEAD",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 206,
+      "range": "bytes=0-1023",
+      "contentType": "video/mp2t",
+      "contentRange": "bytes 0-1023/118252"
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 416,
+      "range": "bytes=0-10,20-30",
+      "contentType": "application/json",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 403,
+      "range": null,
+      "contentType": "application/json",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "application/vnd.apple.mpegurl",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": null,
+      "contentType": "video/mp2t",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": "bytes=0-",
+      "contentType": "application/vnd.apple.mpegurl",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 200,
+      "range": "bytes=0-",
+      "contentType": "application/vnd.apple.mpegurl",
+      "contentRange": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 206,
+      "range": "bytes=0-",
+      "contentType": "video/mp2t",
+      "contentRange": "bytes 0-118251/118252"
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 206,
+      "range": "bytes=0-",
+      "contentType": "video/mp2t",
+      "contentRange": "bytes 0-130471/130472"
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 206,
+      "range": "bytes=0-",
+      "contentType": "video/mp2t",
+      "contentRange": "bytes 0-135359/135360"
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 206,
+      "range": "bytes=0-",
+      "contentType": "video/mp2t",
+      "contentRange": "bytes 0-132727/132728"
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 206,
+      "range": "bytes=0-",
+      "contentType": "video/mp2t",
+      "contentRange": "bytes 0-123703/123704"
+    },
+    {
+      "method": "GET",
+      "path": "/api/media",
+      "status": 206,
+      "range": "bytes=0-",
+      "contentType": "video/mp2t",
+      "contentRange": "bytes 0-118627/118628"
+    }
+  ],
+  "base": "http://127.0.0.1:46167",
+  "summary": {
+    "checks": 8,
+    "passed": 8,
+    "failed": 0
+  }
+}

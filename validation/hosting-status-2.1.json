@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-11-21T17:44:34.257500+00:00",
+  "checked_at_utc": "2026-11-21T18:15:47.682837+00:00",
   "checks": [
     {
       "url": "https://www.abbeedo.com/site-version.json",
@@ -16,8 +16,8 @@
   "public_downloads_ready": true,
   "private_backend_configured": true,
   "production_origin": "https://www.abbeedo.com",
-  "production_version": "2.1.3",
-  "production_revision": "web-99b55f94da47a3b7",
-  "production_commit": "ac439581f8f8f3b75b8f1ae895f7c37728f72fb7",
-  "production_deployment_id": "dpl_Z3kkU6LUf72op4ZTngkCE9HPMeCo"
+  "production_version": "2.1.4",
+  "production_revision": "web-b33eecb65c65da2c",
+  "production_commit": "9f7468b866452f21bcd5e0b27ca8ed0222e3a222",
+  "production_deployment_id": "dpl_AWmVSVhGg98SU1iXC3MSoQe6GMew"
 }
